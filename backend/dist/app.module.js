@@ -17,6 +17,7 @@ const validation_1 = require("./config/validation");
 const database_module_1 = require("./database/database.module");
 const health_module_1 = require("./health/health.module");
 const auth_module_1 = require("./auth/auth.module");
+const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,6 +32,7 @@ exports.AppModule = AppModule = __decorate([
             database_module_1.DatabaseModule,
             health_module_1.HealthModule,
             auth_module_1.AuthModule,
+            users_module_1.UsersModule,
         ],
     })
 ], AppModule);
