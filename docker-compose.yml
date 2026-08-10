@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: perfume-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: perfume
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: perfume_shop
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

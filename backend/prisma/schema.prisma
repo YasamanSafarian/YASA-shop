@@ -1,0 +1,251 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model addresses {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String    @db.Uuid
+  receiver_name  String    @db.VarChar(150)
+  receiver_phone String    @db.VarChar(20)
+  province       String    @db.VarChar(100)
+  city           String    @db.VarChar(100)
+  postal_code    String    @db.VarChar(20)
+  address        String
+  is_default     Boolean   @default(false)
+  created_at     DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at     DateTime? @db.Timestamptz(6)
+  users          users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_addresses_user")
+}
+
+model attributes {
+  id                       String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                     String                     @unique @db.VarChar(100)
+  slug                     String                     @unique @db.VarChar(100)
+  created_at               DateTime                   @default(now()) @db.Timestamptz(6)
+  product_attribute_values product_attribute_values[]
+}
+
+model brands {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String     @db.VarChar(150)
+  slug       String     @unique @db.VarChar(180)
+  logo_url   String?
+  is_active  Boolean    @default(true)
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at DateTime   @default(now()) @db.Timestamptz(6)
+  deleted_at DateTime?  @db.Timestamptz(6)
+  products   products[]
+}
+
+model categories {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parent_id          String?              @db.Uuid
+  name               String               @db.VarChar(150)
+  slug               String               @unique @db.VarChar(180)
+  image_url          String?
+  sort_order         Int                  @default(0)
+  is_active          Boolean              @default(true)
+  created_at         DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime             @default(now()) @db.Timestamptz(6)
+  deleted_at         DateTime?            @db.Timestamptz(6)
+  categories         categories?          @relation("categoriesTocategories", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_parent")
+  other_categories   categories[]         @relation("categoriesTocategories")
+  product_categories product_categories[]
+}
+
+model fragrance_families {
+  id                         String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                       String                       @unique @db.VarChar(100)
+  slug                       String                       @unique @db.VarChar(120)
+  product_fragrance_families product_fragrance_families[]
+}
+
+model notes {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @unique @db.VarChar(100)
+  slug          String          @unique @db.VarChar(120)
+  product_notes product_notes[]
+}
+
+model product_attribute_values {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id   String     @db.Uuid
+  attribute_id String     @db.Uuid
+  value        String
+  attributes   attributes @relation(fields: [attribute_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pav_attribute")
+  products     products   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pav_product")
+
+  @@unique([product_id, attribute_id], map: "uq_product_attribute")
+}
+
+model product_categories {
+  product_id  String     @db.Uuid
+  category_id String     @db.Uuid
+  categories  categories @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pc_category")
+  products    products   @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pc_product")
+
+  @@id([product_id, category_id])
+}
+
+model product_fragrance_families {
+  product_id          String             @db.Uuid
+  fragrance_family_id String             @db.Uuid
+  fragrance_families  fragrance_families @relation(fields: [fragrance_family_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pff_family")
+  products            products           @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pff_product")
+
+  @@id([product_id, fragrance_family_id])
+}
+
+model product_images {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  variant_id       String           @db.Uuid
+  image_url        String
+  alt_text         String?          @db.VarChar(255)
+  sort_order       Int              @default(0)
+  is_primary       Boolean          @default(false)
+  created_at       DateTime         @default(now()) @db.Timestamptz(6)
+  product_variants product_variants @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_variant_image")
+}
+
+model product_notes {
+  product_id String         @db.Uuid
+  note_id    String         @db.Uuid
+  note_type  note_type_enum
+  notes      notes          @relation(fields: [note_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_note_note")
+  products   products       @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_product_note_product")
+
+  @@id([product_id, note_id, note_type])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model product_variants {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product_id       String              @db.Uuid
+  sku              String              @unique @db.VarChar(100)
+  barcode          String?             @db.VarChar(100)
+  format           product_format_enum
+  volume_ml        Int
+  price            Decimal             @db.Decimal(12, 2)
+  compare_at_price Decimal?            @db.Decimal(12, 2)
+  stock_quantity   Int                 @default(0)
+  weight           Int?
+  is_default       Boolean             @default(false)
+  is_active        Boolean             @default(true)
+  created_at       DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime            @default(now()) @db.Timestamptz(6)
+  deleted_at       DateTime?           @db.Timestamptz(6)
+  product_images   product_images[]
+  products         products            @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_variant_product")
+}
+
+model products {
+  id                         String                       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  brand_id                   String                       @db.Uuid
+  name                       String                       @db.VarChar(255)
+  slug                       String                       @unique @db.VarChar(255)
+  description                String?
+  gender                     gender_enum?
+  concentration              concentration_enum?
+  release_year               Int?
+  seasons                    String[]                     @default([])
+  occasions                  String[]                     @default([])
+  is_active                  Boolean                      @default(true)
+  created_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime                     @default(now()) @db.Timestamptz(6)
+  deleted_at                 DateTime?                    @db.Timestamptz(6)
+  product_attribute_values   product_attribute_values[]
+  product_categories         product_categories[]
+  product_fragrance_families product_fragrance_families[]
+  product_notes              product_notes[]
+  product_variants           product_variants[]
+  brands                     brands                       @relation(fields: [brand_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_brand")
+}
+
+model roles {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar(50)
+  description String?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @db.Timestamptz(6)
+  deleted_at  DateTime? @db.Timestamptz(6)
+  users       users[]
+}
+
+model users {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role_id       String      @db.Uuid
+  first_name    String?     @db.VarChar(100)
+  last_name     String?     @db.VarChar(100)
+  phone         String      @unique @db.VarChar(20)
+  email         String?     @unique @db.VarChar(255)
+  password_hash String
+  is_active     Boolean     @default(true)
+  last_login    DateTime?   @db.Timestamptz(6)
+  created_at    DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime    @default(now()) @db.Timestamptz(6)
+  deleted_at    DateTime?   @db.Timestamptz(6)
+  addresses     addresses[]
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_users_role")
+}
+
+enum concentration_enum {
+  edc
+  edt
+  edp
+  parfum
+  extrait
+}
+
+enum coupon_type_enum {
+  fixed
+  percentage
+}
+
+enum gender_enum {
+  male
+  female
+  unisex
+}
+
+enum note_type_enum {
+  top
+  middle
+  base
+}
+
+enum order_status_enum {
+  pending
+  paid
+  packing
+  shipped
+  delivered
+  cancelled
+  returned
+}
+
+enum payment_status_enum {
+  pending
+  paid
+  failed
+  refunded
+}
+
+enum product_format_enum {
+  original
+  decant
+  sample
+  gift_set
+}
+
+enum shipment_status_enum {
+  pending
+  ready
+  sent
+  delivered
+  returned
+}
