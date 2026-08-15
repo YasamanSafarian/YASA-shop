@@ -1,0 +1,102 @@
+<section class="auth">
+  <div class="container auth__inner">
+    <div class="auth__card">
+      <p class="eyebrow">Join YASA</p>
+      <h1 class="auth__title">Create account</h1>
+      <p class="auth__lead">Sign up to track orders and manage your profile.</p>
+
+      @if (errorMessage()) {
+        <div class="alert" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-field">
+          <label class="form-label" for="firstName">First name</label>
+          <input
+            id="firstName"
+            class="form-control"
+            type="text"
+            formControlName="firstName"
+            autocomplete="given-name"
+            placeholder="Your first name"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="lastName">Last name</label>
+          <input
+            id="lastName"
+            class="form-control"
+            type="text"
+            formControlName="lastName"
+            autocomplete="family-name"
+            placeholder="Your last name"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="phone">Phone number *</label>
+          <input
+            id="phone"
+            class="form-control"
+            [class.is-invalid]="phone.invalid && phone.touched"
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            placeholder="+1234567890"
+          />
+          @if (phone.invalid && phone.touched) {
+            <span class="form-error">
+              Use 6–20 characters: digits, +, - and spaces.
+            </span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="email">Email (optional)</label>
+          <input
+            id="email"
+            class="form-control"
+            [class.is-invalid]="email.invalid && email.touched"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+          @if (email.invalid && email.touched) {
+            <span class="form-error">Enter a valid email address.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password *</label>
+          <input
+            id="password"
+            class="form-control"
+            [class.is-invalid]="password.invalid && password.touched"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+          />
+          @if (password.invalid && password.touched) {
+            <span class="form-error">Password must be at least 8 characters.</span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn--primary btn--block btn--lg"
+          [disabled]="submitting()"
+        >
+          {{ submitting() ? 'Creating account…' : 'Create account' }}
+        </button>
+      </form>
+
+      <p class="auth__footer">
+        Already have an account?
+        <a routerLink="/login" class="link">Sign in</a>
+      </p>
+    </div>
+  </div>
+</section>

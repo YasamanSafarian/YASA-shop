@@ -1,0 +1,60 @@
+<section class="auth">
+  <div class="container auth__inner">
+    <div class="auth__card">
+      <p class="eyebrow">Welcome back</p>
+      <h1 class="auth__title">Sign in</h1>
+      <p class="auth__lead">Use your email or phone number to continue.</p>
+
+      @if (errorMessage()) {
+        <div class="alert" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-field">
+          <label class="form-label" for="identifier">Email or phone</label>
+          <input
+            id="identifier"
+            class="form-control"
+            [class.is-invalid]="identifier.invalid && identifier.touched"
+            type="text"
+            formControlName="identifier"
+            autocomplete="username"
+            placeholder="you@example.com or +1234567890"
+          />
+          @if (identifier.invalid && identifier.touched) {
+            <span class="form-error">Enter your email or phone number.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password</label>
+          <input
+            id="password"
+            class="form-control"
+            [class.is-invalid]="password.invalid && password.touched"
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Your password"
+          />
+          @if (password.invalid && password.touched) {
+            <span class="form-error">Enter your password.</span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn--primary btn--block btn--lg"
+          [disabled]="submitting()"
+        >
+          {{ submitting() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <p class="auth__footer">
+        New to YASA?
+        <a routerLink="/register" class="link">Create an account</a>
+      </p>
+    </div>
+  </div>
+</section>

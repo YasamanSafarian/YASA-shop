@@ -1,0 +1,28 @@
+.not-found {
+  padding-block: clamp(3rem, 10vh, 6rem);
+}
+
+.not-found__inner {
+  display: flex;
+  justify-content: center;
+}
+
+.not-found__card {
+  width: 100%;
+  max-width: 520px;
+  padding: clamp(2.25rem, 6vw, 4rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+.not-found__title {
+  margin-bottom: 0.75rem;
+}
+
+.not-found__message {
+  margin-bottom: 2rem;
+  color: var(--color-text-muted);
+}

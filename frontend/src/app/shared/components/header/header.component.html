@@ -1,0 +1,75 @@
+<header class="header">
+  <div class="header__inner container">
+    <button
+      type="button"
+      class="header__toggle"
+      [class.is-open]="mobileOpen"
+      (click)="toggleMenu()"
+      [attr.aria-label]="mobileOpen ? 'Close menu' : 'Open menu'"
+      [attr.aria-expanded]="mobileOpen"
+    >
+      @if (mobileOpen) {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      }
+    </button>
+
+    <a routerLink="/" class="logo" (click)="mobileOpen = false">
+      <span class="logo__mark" aria-hidden="true"></span>
+      <span class="logo__text">YASA</span>
+      <span class="logo__tagline">Perfume House</span>
+    </a>
+
+    <nav class="header__nav" [class.is-open]="mobileOpen" aria-label="Main navigation">
+      <a
+        routerLink="/"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="mobileOpen = false"
+      >Home</a>
+      <a routerLink="/products" routerLinkActive="is-active" (click)="mobileOpen = false">Perfumes</a>
+      <a routerLink="/brands" routerLinkActive="is-active" (click)="mobileOpen = false">Brands</a>
+      <a routerLink="/categories" routerLinkActive="is-active" (click)="mobileOpen = false">Categories</a>
+    </nav>
+
+    <div class="header__actions">
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/profile" class="header__link" title="My account">
+          <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
+          </svg>
+          <span class="header__label">{{ displayName() }}</span>
+        </a>
+        <button type="button" class="header__icon-btn" title="Sign out" (click)="logout()">
+          <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="m16 17 5-5-5-5" />
+            <path d="M21 12H9" />
+          </svg>
+        </button>
+      } @else {
+        <a routerLink="/login" class="header__link" title="Sign in">
+          <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
+          </svg>
+          <span class="header__label">Sign in</span>
+        </a>
+      }
+
+      <a routerLink="/cart" class="header__icon-btn" title="Shopping cart">
+        <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1.4" />
+          <circle cx="18" cy="21" r="1.4" />
+          <path d="M2.5 3h2l2.4 12.2a1.5 1.5 0 0 0 1.5 1.3h8.9a1.5 1.5 0 0 0 1.5-1.2L21 8H6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</header>
