@@ -1,0 +1,38 @@
+.brands {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.brands__header {
+  max-width: 42rem;
+  margin-bottom: 2.5rem;
+}
+
+.brands__title {
+  margin-bottom: 0.5rem;
+}
+
+.brands__subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+}
+
+/* Grid */
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .brand-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .brand-grid {
+    grid-template-columns: 1fr;
+  }
+}

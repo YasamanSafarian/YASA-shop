@@ -1,0 +1,22 @@
+:host {
+  display: inline-flex;
+}
+
+:host.is-block {
+  display: flex;
+}
+
+:host .btn--link {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-rose-gold);
+  transform: none;
+}
+
+:host .btn--link:hover {
+  color: var(--color-rose-gold-600);
+}

@@ -1,0 +1,23 @@
+<section class="brands">
+  <div class="container">
+    <header class="brands__header">
+      <p class="eyebrow">{{ translate.t('brands.eyebrow') }}</p>
+      <h1 class="brands__title">{{ translate.t('brands.title') }}</h1>
+      <p class="brands__subtitle">{{ translate.t('brands.subtitle') }}</p>
+    </header>
+
+    @if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('brands.loading')" />
+    } @else if (error()) {
+      <app-ui-state state="error" [message]="error()" />
+    } @else if (brands().length === 0) {
+      <app-ui-state state="empty" [message]="translate.t('brands.empty')" />
+    } @else {
+      <div class="brand-grid">
+        @for (brand of brands(); track brand.id) {
+          <app-brand-card [brand]="brand" [productsLabel]="translate.t('brands.products')" />
+        }
+      </div>
+    }
+  </div>
+</section>

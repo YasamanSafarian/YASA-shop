@@ -1,0 +1,8 @@
+<div
+  class="ui-state"
+  [class.ui-state--error]="state() === 'error'"
+  [attr.role]="state() === 'error' ? 'alert' : 'status'"
+>
+  <p class="ui-state__message">{{ message() }}</p>
+  <ng-content />
+</div>

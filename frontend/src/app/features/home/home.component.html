@@ -1,15 +1,12 @@
 <section class="hero">
   <div class="container hero__inner">
     <div class="hero__content">
-      <p class="eyebrow">Perfume House</p>
-      <h1 class="hero__title">Elegance you wear,<br />crafted to remember.</h1>
-      <p class="hero__subtitle">
-        Original fragrances from the world's finest houses and YASA's own
-        handcrafted compositions — made for every story.
-      </p>
+      <p class="eyebrow">{{ translate.t('home.hero.eyebrow') }}</p>
+      <h1 class="hero__title">{{ translate.t('home.hero.title') }}</h1>
+      <p class="hero__subtitle">{{ translate.t('home.hero.subtitle') }}</p>
       <div class="hero__actions">
-        <a routerLink="/products" class="btn btn--primary btn--lg">Shop perfumes</a>
-        <a routerLink="/brands" class="btn btn--ghost btn--lg">Explore brands</a>
+        <app-ui-button variant="primary" size="lg" [link]="['/products']">{{ translate.t('home.hero.shop') }}</app-ui-button>
+        <app-ui-button variant="ghost" size="lg" [link]="['/brands']">{{ translate.t('home.hero.explore') }}</app-ui-button>
       </div>
     </div>
     <div class="hero__visual" aria-hidden="true">
@@ -32,8 +29,8 @@
           </svg>
         </span>
         <div>
-          <h3 class="feature__title">Authentic originals</h3>
-          <p class="feature__text">Genuine perfumes sourced directly from renowned houses.</p>
+          <h3 class="feature__title">{{ translate.t('home.feature.originals.title') }}</h3>
+          <p class="feature__text">{{ translate.t('home.feature.originals.text') }}</p>
         </div>
       </div>
       <div class="feature">
@@ -43,8 +40,8 @@
           </svg>
         </span>
         <div>
-          <h3 class="feature__title">Handcrafted local scents</h3>
-          <p class="feature__text">Unique YASA compositions blended in small batches.</p>
+          <h3 class="feature__title">{{ translate.t('home.feature.handcrafted.title') }}</h3>
+          <p class="feature__text">{{ translate.t('home.feature.handcrafted.text') }}</p>
         </div>
       </div>
       <div class="feature">
@@ -54,8 +51,8 @@
           </svg>
         </span>
         <div>
-          <h3 class="feature__title">For her, him & everyone</h3>
-          <p class="feature__text">Collections curated for every wearer and every occasion.</p>
+          <h3 class="feature__title">{{ translate.t('home.feature.forEveryone.title') }}</h3>
+          <p class="feature__text">{{ translate.t('home.feature.forEveryone.text') }}</p>
         </div>
       </div>
     </div>
@@ -66,27 +63,27 @@
   <div class="container">
     <div class="section__head">
       <div>
-        <p class="eyebrow">Collections</p>
-        <h2>Find your signature</h2>
+        <p class="eyebrow">{{ translate.t('home.collections.eyebrow') }}</p>
+        <h2>{{ translate.t('home.collections.title') }}</h2>
       </div>
-      <a routerLink="/products" class="link">View all</a>
+      <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
     </div>
 
     <div class="promo-grid">
       <a routerLink="/brands" class="promo promo--originals">
         <div class="promo__body">
-          <p class="promo__eyebrow">Original Houses</p>
-          <h3 class="promo__title">World-famous brands</h3>
-          <p class="promo__text">Dior and other renowned perfume houses, carefully selected.</p>
-          <span class="promo__cta">Discover brands</span>
+          <p class="promo__eyebrow">{{ translate.t('home.promo.originals.eyebrow') }}</p>
+          <h3 class="promo__title">{{ translate.t('home.promo.originals.title') }}</h3>
+          <p class="promo__text">{{ translate.t('home.promo.originals.text') }}</p>
+          <span class="promo__cta">{{ translate.t('home.promo.originals.cta') }}</span>
         </div>
       </a>
       <a routerLink="/products" class="promo promo--yasa">
         <div class="promo__body">
-          <p class="promo__eyebrow">YASA Originals</p>
-          <h3 class="promo__title">Handcrafted by hand</h3>
-          <p class="promo__text">Our own perfumes, blended locally in small batches.</p>
-          <span class="promo__cta">Explore the collection</span>
+          <p class="promo__eyebrow">{{ translate.t('home.promo.yasa.eyebrow') }}</p>
+          <h3 class="promo__title">{{ translate.t('home.promo.yasa.title') }}</h3>
+          <p class="promo__text">{{ translate.t('home.promo.yasa.text') }}</p>
+          <span class="promo__cta">{{ translate.t('home.promo.yasa.cta') }}</span>
         </div>
       </a>
     </div>

@@ -3,36 +3,34 @@
     <div class="footer__grid">
       <div class="footer__brand">
         <a routerLink="/" class="footer__logo">YASA</a>
-        <p class="footer__tagline">
-          Handcrafted perfumes and curated originals from the world's finest
-          houses — elegant, honest, and made to be worn.
-        </p>
+        <p class="footer__tagline">{{ translate.t('footer.tagline') }}</p>
       </div>
 
-      <nav class="footer__col" aria-label="Shop">
-        <h4 class="footer__title">Shop</h4>
-        <a routerLink="/products">Perfumes</a>
-        <a routerLink="/brands">Brands</a>
-        <a routerLink="/categories">Categories</a>
-        <a routerLink="/cart">Shopping cart</a>
+      <nav class="footer__col" [attr.aria-label]="translate.t('footer.shop')">
+        <h4 class="footer__title">{{ translate.t('footer.shop') }}</h4>
+        <a routerLink="/products">{{ translate.t('footer.perfumes') }}</a>
+        <a routerLink="/brands">{{ translate.t('footer.brands') }}</a>
+        <a routerLink="/categories">{{ translate.t('footer.categories') }}</a>
+        <a routerLink="/cart">{{ translate.t('footer.cart') }}</a>
       </nav>
 
-      <nav class="footer__col" aria-label="Account">
-        <h4 class="footer__title">Account</h4>
-        <a routerLink="/profile">My profile</a>
-        <a routerLink="/login">Sign in</a>
-        <a routerLink="/register">Create account</a>
+      <nav class="footer__col" [attr.aria-label]="translate.t('footer.account')">
+        <h4 class="footer__title">{{ translate.t('footer.account') }}</h4>
+        <a routerLink="/profile">{{ translate.t('footer.myProfile') }}</a>
+        <a routerLink="/login">{{ translate.t('footer.signIn') }}</a>
+        <a routerLink="/register">{{ translate.t('footer.createAccount') }}</a>
       </nav>
 
       <div class="footer__col">
-        <h4 class="footer__title">Contact</h4>
-        <p class="footer__text">hello&#64;yasa.store</p>
-        <p class="footer__text">Support available 7 days a week</p>
+        <h4 class="footer__title">{{ translate.t('footer.contact') }}</h4>
+        <p class="footer__text">the.yasa.store&#64;gmail.com</p>
+        <p class="footer__text">yasa_support&#64;</p>
+        <p class="footer__text">{{ translate.t('footer.contactSupport') }}</p>
       </div>
     </div>
 
     <div class="footer__bottom">
-      <p>© 2026 YASA Perfume House. All rights reserved.</p>
+      <p>{{ translate.t('footer.copyright') }}</p>
     </div>
   </div>
 </footer>

@@ -1,0 +1,116 @@
+<section class="product-detail">
+  <div class="container product-detail__inner">
+    <a class="link product-detail__back" [routerLink]="['/products']">
+      &larr; {{ translate.t('productDetail.backToProducts') }}
+    </a>
+
+    @if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('productDetail.loading')" />
+    } @else if (notFound()) {
+      <app-ui-state state="empty" [message]="translate.t('productDetail.notFound')">
+        <app-ui-button [link]="['/products']">
+          {{ translate.t('productDetail.backToProducts') }}
+        </app-ui-button>
+      </app-ui-state>
+    } @else if (error()) {
+      <app-ui-state state="error" [message]="error()" />
+    } @else {
+      @let p = product()!;
+      <div class="product-detail__grid">
+        <div class="product-detail__media card">
+          @if (primaryImage(); as image) {
+            <img class="product-detail__img" [src]="image" [alt]="p.name" />
+          } @else {
+            <div class="product-detail__placeholder" aria-hidden="true"></div>
+          }
+        </div>
+
+        <div class="product-detail__info">
+          <p class="eyebrow">{{ translate.t('productDetail.brand') }}</p>
+          <a class="product-detail__brand" [routerLink]="['/brands', p.brand.slug]">
+            {{ p.brand.name }}
+          </a>
+          <h1 class="product-detail__name">{{ p.name }}</h1>
+
+          <div class="product-detail__meta">
+            @if (p.gender) {
+              <app-ui-badge [label]="translate.t(genderKey(p))" />
+            }
+            @if (p.concentration) {
+              <app-ui-badge [label]="p.concentration" />
+            }
+            @if (p.releaseYear) {
+              <app-ui-badge
+                [label]="translate.t('productDetail.releaseYear') + ' ' + p.releaseYear"
+              />
+            }
+          </div>
+
+          @if (p.description) {
+            <p class="product-detail__description">{{ p.description }}</p>
+          }
+
+          <div class="product-detail__section">
+            <h2 class="product-detail__section-title">{{ translate.t('productDetail.notes') }}</h2>
+            <dl class="notes">
+              <div class="notes__row">
+                <dt class="notes__label">{{ translate.t('productDetail.notesTop') }}</dt>
+                <dd class="notes__value">{{ p.notes.top.join(', ') }}</dd>
+              </div>
+              <div class="notes__row">
+                <dt class="notes__label">{{ translate.t('productDetail.notesMiddle') }}</dt>
+                <dd class="notes__value">{{ p.notes.middle.join(', ') }}</dd>
+              </div>
+              <div class="notes__row">
+                <dt class="notes__label">{{ translate.t('productDetail.notesBase') }}</dt>
+                <dd class="notes__value">{{ p.notes.base.join(', ') }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          @if (fragranceFamilies().length > 0) {
+            <div class="product-detail__section">
+              <h2 class="product-detail__section-title">{{ translate.t('productDetail.fragranceFamilies') }}</h2>
+              <div class="chip-row">
+                @for (family of fragranceFamilies(); track family.id) {
+                  <app-ui-chip [label]="family.name" />
+                }
+              </div>
+            </div>
+          }
+
+          @if (seasons().length > 0) {
+            <div class="product-detail__section">
+              <h2 class="product-detail__section-title">{{ translate.t('productDetail.seasons') }}</h2>
+              <div class="chip-row">
+                @for (season of seasons(); track season) {
+                  <app-ui-chip [label]="season" />
+                }
+              </div>
+            </div>
+          }
+
+          @if (occasions().length > 0) {
+            <div class="product-detail__section">
+              <h2 class="product-detail__section-title">{{ translate.t('productDetail.occasions') }}</h2>
+              <div class="chip-row">
+                @for (occasion of occasions(); track occasion) {
+                  <app-ui-chip [label]="occasion" />
+                }
+              </div>
+            </div>
+          }
+
+          <div class="product-detail__section">
+            <h2 class="product-detail__section-title">{{ translate.t('productDetail.variants') }}</h2>
+            <div class="variant-list">
+              @for (variant of variants(); track variant.id) {
+                <app-product-variant [variant]="variant" />
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

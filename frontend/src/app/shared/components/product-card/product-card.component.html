@@ -1,0 +1,18 @@
+<a class="product-card" [routerLink]="['/products', product().slug]">
+  <div class="product-card__media">
+    @if (image(); as image) {
+      <img [src]="image" [alt]="product().name" loading="lazy" />
+    } @else {
+      <div class="product-card__placeholder" aria-hidden="true"></div>
+    }
+  </div>
+  <div class="product-card__body">
+    <p class="product-card__brand">{{ product().brand.name }}</p>
+    <h3 class="product-card__name">{{ product().name }}</h3>
+    @if (minPrice(); as price) {
+      <p class="product-card__price">
+        {{ translate.t('products.from') }} {{ formatPrice(price) }}
+      </p>
+    }
+  </div>
+</a>

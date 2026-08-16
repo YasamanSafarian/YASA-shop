@@ -3,17 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-type QueryParams = Record<
-  string,
-  string | number | boolean | null | undefined
->;
-
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
 
-  get<T>(path: string, params?: QueryParams): Observable<T> {
+  get<T>(path: string, params?: object): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}${path}`, {
       params: this.buildParams(params),
     });
@@ -31,11 +26,12 @@ export class ApiService {
     return this.http.delete<T>(`${this.baseUrl}${path}`);
   }
 
-  private buildParams(params?: QueryParams): HttpParams {
+  private buildParams(params?: object): HttpParams {
     let httpParams = new HttpParams();
     if (params) {
-      for (const key of Object.keys(params)) {
-        const value = params[key];
+      const record = params as Record<string, unknown>;
+      for (const key of Object.keys(record)) {
+        const value = record[key];
         if (value !== undefined && value !== null && value !== '') {
           httpParams = httpParams.set(key, String(value));
         }

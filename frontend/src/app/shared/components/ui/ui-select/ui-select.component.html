@@ -1,0 +1,24 @@
+<div class="form-field" [class.form-field--dense]="dense()">
+  @if (label(); as label) {
+    <label class="form-label" [for]="id()">{{ label }}</label>
+  }
+  <select
+    [id]="id()"
+    class="form-control"
+    [class.is-invalid]="invalid()"
+    [value]="value"
+    [disabled]="disabled"
+    (change)="onSelect($event)"
+    (blur)="onTouched()"
+  >
+    @if (placeholder(); as placeholder) {
+      <option value="">{{ placeholder }}</option>
+    }
+    @for (option of options(); track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  @if (invalid() && error(); as error) {
+    <span class="form-error">{{ error }}</span>
+  }
+</div>

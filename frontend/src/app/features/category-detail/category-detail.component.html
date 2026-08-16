@@ -1,0 +1,31 @@
+<section class="category-detail">
+  <div class="container">
+    <a class="link category-detail__back" [routerLink]="['/categories']">
+      &larr; {{ translate.t('categoryDetail.backToCategories') }}
+    </a>
+
+    @if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('categoryDetail.loading')" />
+    } @else if (error()) {
+      <app-ui-state state="error" [message]="error()" />
+    } @else {
+      <header class="category-detail__header">
+        <p class="eyebrow">{{ translate.t('categoryDetail.eyebrow') }}</p>
+        <h1 class="category-detail__name">{{ categoryName() ?? translate.t('categoryDetail.eyebrow') }}</h1>
+        <p class="category-detail__count">
+          {{ products().length }} {{ translate.t('categoryDetail.productsLabel') }}
+        </p>
+      </header>
+
+      @if (products().length === 0) {
+        <app-ui-state state="empty" [message]="translate.t('categoryDetail.empty')" />
+      } @else {
+        <div class="product-grid">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

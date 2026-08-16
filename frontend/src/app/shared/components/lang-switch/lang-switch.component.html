@@ -1,0 +1,14 @@
+<div class="lang-switch" role="group" [attr.aria-label]="translate.t('header.language')">
+  <button
+    type="button"
+    class="lang-switch__btn"
+    [class.is-active]="translate.lang() === 'en'"
+    (click)="translate.switchLang('en')"
+  >EN</button>
+  <button
+    type="button"
+    class="lang-switch__btn"
+    [class.is-active]="translate.lang() === 'fa'"
+    (click)="translate.switchLang('fa')"
+  >فا</button>
+</div>

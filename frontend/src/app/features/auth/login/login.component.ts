@@ -1,13 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { UiAlertComponent } from '../../../shared/components/ui/ui-alert/ui-alert.component';
+import { UiButtonComponent } from '../../../shared/components/ui/ui-button/ui-button.component';
+import { UiInputComponent } from '../../../shared/components/ui/ui-input/ui-input.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslateService } from '../../../core/services/translate.service';
 import { getErrorMessage } from '../../../shared/utils/errors';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, UiAlertComponent, UiButtonComponent, UiInputComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -16,6 +20,7 @@ export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly translate = inject(TranslateService);
 
   readonly form = this.fb.nonNullable.group({
     identifier: ['', [Validators.required, Validators.minLength(3)]],

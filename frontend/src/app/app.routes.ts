@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
+import { ProductsComponent } from './features/products/products.component';
+import { ProductDetailComponent } from './features/product-detail/product-detail.component';
+import { BrandsComponent } from './features/brands/brands.component';
+import { BrandDetailComponent } from './features/brand-detail/brand-detail.component';
+import { CategoriesComponent } from './features/categories/categories.component';
+import { CategoryDetailComponent } from './features/category-detail/category-detail.component';
 import { PlaceholderComponent } from './shared/components/placeholder/placeholder.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
@@ -10,61 +16,16 @@ import { guestGuard } from './core/guards/guest.guard';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
 
-  {
-    path: 'products',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Perfumes',
-      message: 'Our full collection is being curated and will be here soon.',
-    },
-  },
-  {
-    path: 'products/:slug',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Product',
-      message: 'Product details are on the way.',
-    },
-  },
-  {
-    path: 'brands',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Brands',
-      message: 'World-renowned houses and YASA originals, coming soon.',
-    },
-  },
-  {
-    path: 'brands/:slug',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Brand',
-      message: 'Brand details are on the way.',
-    },
-  },
-  {
-    path: 'categories',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Categories',
-      message: 'Browse our curated collections, coming soon.',
-    },
-  },
-  {
-    path: 'categories/:slug',
-    component: PlaceholderComponent,
-    data: {
-      title: 'Category',
-      message: 'Category products are on the way.',
-    },
-  },
+  { path: 'products', component: ProductsComponent },
+  { path: 'products/:slug', component: ProductDetailComponent },
+  { path: 'brands', component: BrandsComponent },
+  { path: 'brands/:slug', component: BrandDetailComponent },
+  { path: 'categories', component: CategoriesComponent },
+  { path: 'categories/:slug', component: CategoryDetailComponent },
   {
     path: 'cart',
     component: PlaceholderComponent,
-    data: {
-      title: 'Shopping Cart',
-      message: 'Your cart will appear here.',
-    },
+    data: { titleKey: 'page.cart.title', messageKey: 'page.cart.message' },
   },
 
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
@@ -73,10 +34,7 @@ export const routes: Routes = [
     path: 'profile',
     component: PlaceholderComponent,
     canActivate: [authGuard],
-    data: {
-      title: 'My Profile',
-      message: 'Your profile details are on the way.',
-    },
+    data: { titleKey: 'page.profile.title', messageKey: 'page.profile.message' },
   },
 
   { path: '**', component: NotFoundComponent },

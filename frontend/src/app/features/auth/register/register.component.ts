@@ -5,13 +5,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { UiAlertComponent } from '../../../shared/components/ui/ui-alert/ui-alert.component';
+import { UiButtonComponent } from '../../../shared/components/ui/ui-button/ui-button.component';
+import { UiInputComponent } from '../../../shared/components/ui/ui-input/ui-input.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslateService } from '../../../core/services/translate.service';
 import { getErrorMessage } from '../../../shared/utils/errors';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, UiAlertComponent, UiButtonComponent, UiInputComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
@@ -19,6 +23,7 @@ export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  readonly translate = inject(TranslateService);
 
   readonly form = this.fb.nonNullable.group({
     phone: [

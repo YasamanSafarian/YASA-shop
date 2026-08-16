@@ -1,0 +1,21 @@
+<a class="category-card" [routerLink]="['/categories', category().slug]">
+  <div class="category-card__media">
+    @if (category().imageUrl; as imageUrl) {
+      <img [src]="imageUrl" [alt]="category().name" loading="lazy" />
+    } @else {
+      <span class="category-card__monogram" aria-hidden="true">
+        {{ category().name.charAt(0).toUpperCase() }}
+      </span>
+    }
+  </div>
+  <div class="category-card__body">
+    <h2 class="category-card__name">{{ category().name }}</h2>
+    @if (category().children.length > 0) {
+      <p class="category-card__children">
+        @for (child of category().children; track child.id) {
+          <span>{{ child.name }}</span>
+        }
+      </p>
+    }
+  </div>
+</a>

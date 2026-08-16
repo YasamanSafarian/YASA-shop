@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+:host .ui-state {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: center;
+  padding: 4rem 1.5rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+:host .ui-state--error {
+  border-color: rgb(214 69 69 / 0.4);
+  color: #c93535;
+  background: rgb(214 69 69 / 0.04);
+}
+
+:host .ui-state__message {
+  margin: 0;
+}

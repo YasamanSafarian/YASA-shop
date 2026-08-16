@@ -1,0 +1,49 @@
+<section class="brand-detail">
+  <div class="container">
+    <a class="link brand-detail__back" [routerLink]="['/brands']">
+      &larr; {{ translate.t('brandDetail.backToBrands') }}
+    </a>
+
+    @if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('brandDetail.loading')" />
+    } @else if (notFound()) {
+      <app-ui-state state="empty" [message]="translate.t('brandDetail.notFound')">
+        <app-ui-button [link]="['/brands']">
+          {{ translate.t('brandDetail.backToBrands') }}
+        </app-ui-button>
+      </app-ui-state>
+    } @else if (error()) {
+      <app-ui-state state="error" [message]="error()" />
+    } @else {
+      @let b = brand()!;
+      <header class="brand-detail__header card">
+        <div class="brand-detail__logo">
+          @if (b.logoUrl; as logoUrl) {
+            <img [src]="logoUrl" [alt]="b.name" />
+          } @else {
+            <span class="brand-detail__monogram" aria-hidden="true">
+              {{ b.name.charAt(0).toUpperCase() }}
+            </span>
+          }
+        </div>
+        <div class="brand-detail__intro">
+          <p class="eyebrow">{{ translate.t('brandDetail.eyebrow') }}</p>
+          <h1 class="brand-detail__name">{{ b.name }}</h1>
+          <p class="brand-detail__count">
+            {{ products().length }} {{ translate.t('brandDetail.productsLabel') }}
+          </p>
+        </div>
+      </header>
+
+      @if (products().length === 0) {
+        <app-ui-state state="empty" [message]="translate.t('brandDetail.empty')" />
+      } @else {
+        <div class="product-grid">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

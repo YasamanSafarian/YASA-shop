@@ -1,0 +1,114 @@
+<section class="products">
+  <div class="container products__inner">
+    <header class="products__header">
+      <p class="eyebrow">{{ translate.t('products.eyebrow') }}</p>
+      <h1 class="products__title">{{ translate.t('products.title') }}</h1>
+      <p class="products__subtitle">{{ translate.t('products.subtitle') }}</p>
+    </header>
+
+    <div class="products__layout">
+      <aside class="products__filters" [formGroup]="filterForm" aria-label="Filters">
+        <div class="filters__head">
+          <h2 class="filters__title">{{ translate.t('products.filters') }}</h2>
+          @if (filterCount() > 0) {
+            <app-ui-button
+              type="button"
+              variant="link"
+              (click)="clearFilters()"
+            >{{ translate.t('products.clearFilters') }}</app-ui-button>
+          }
+        </div>
+
+        <app-ui-input
+          id="product-search"
+          type="search"
+          formControlName="search"
+          [dense]="true"
+          [label]="translate.t('products.search')"
+          [placeholder]="translate.t('products.searchPlaceholder')"
+        />
+
+        <app-ui-select
+          id="product-brand"
+          formControlName="brand"
+          [dense]="true"
+          [label]="translate.t('products.brand')"
+          [placeholder]="translate.t('products.allBrands')"
+          [options]="brandOptions()"
+        />
+
+        <app-ui-select
+          id="product-category"
+          formControlName="category"
+          [dense]="true"
+          [label]="translate.t('products.category')"
+          [placeholder]="translate.t('products.allCategories')"
+          [options]="categoryOptions()"
+        />
+
+        <app-ui-select
+          id="product-gender"
+          formControlName="gender"
+          [dense]="true"
+          [label]="translate.t('products.gender')"
+          [placeholder]="translate.t('products.allGenders')"
+          [options]="genderOptions()"
+        />
+
+        <app-ui-select
+          id="product-sort"
+          formControlName="sort"
+          [dense]="true"
+          [label]="translate.t('products.sort')"
+          [options]="sortOptions()"
+        />
+      </aside>
+
+      <div class="products__main">
+        <p class="products__count" aria-live="polite">
+          {{ translate.t('products.resultsLabel') }}: {{ total() }}
+        </p>
+
+        @if (loading()) {
+          <app-ui-state state="loading" [message]="translate.t('products.loading')" />
+        } @else if (error()) {
+          <app-ui-state
+            state="error"
+            [message]="error()"
+          />
+        } @else if (products().length === 0) {
+          <app-ui-state
+            state="empty"
+            [message]="translate.t('products.empty')"
+          />
+        } @else {
+          <div class="product-grid">
+            @for (product of products(); track product.id) {
+              <app-product-card [product]="product" />
+            }
+          </div>
+
+          @if (totalPages() > 1) {
+            <nav class="pagination" aria-label="Pagination">
+              <app-ui-button
+                type="button"
+                variant="outline"
+                size="sm"
+                [disabled]="page() <= 1"
+                (click)="goToPage(page() - 1)"
+              >{{ translate.t('products.prev') }}</app-ui-button>
+              <span class="pagination__info">{{ page() }} / {{ totalPages() }}</span>
+              <app-ui-button
+                type="button"
+                variant="outline"
+                size="sm"
+                [disabled]="page() >= totalPages()"
+                (click)="goToPage(page() + 1)"
+              >{{ translate.t('products.next') }}</app-ui-button>
+            </nav>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</section>

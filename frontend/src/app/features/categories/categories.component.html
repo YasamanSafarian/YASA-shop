@@ -1,0 +1,23 @@
+<section class="categories">
+  <div class="container">
+    <header class="categories__header">
+      <p class="eyebrow">{{ translate.t('categories.eyebrow') }}</p>
+      <h1 class="categories__title">{{ translate.t('categories.title') }}</h1>
+      <p class="categories__subtitle">{{ translate.t('categories.subtitle') }}</p>
+    </header>
+
+    @if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('categories.loading')" />
+    } @else if (error()) {
+      <app-ui-state state="error" [message]="error()" />
+    } @else if (categories().length === 0) {
+      <app-ui-state state="empty" [message]="translate.t('categories.empty')" />
+    } @else {
+      <div class="category-grid">
+        @for (category of categories(); track category.id) {
+          <app-category-card [category]="category" />
+        }
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,9 @@
+@if (link(); as link) {
+  <a class="{{ classes() }}" [routerLink]="link">
+    <ng-content />
+  </a>
+} @else {
+  <button type="{{ type() }}" class="{{ classes() }}" [disabled]="disabled()">
+    <ng-content />
+  </button>
+}

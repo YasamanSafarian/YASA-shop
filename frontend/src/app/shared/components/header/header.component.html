@@ -5,7 +5,7 @@
       class="header__toggle"
       [class.is-open]="mobileOpen"
       (click)="toggleMenu()"
-      [attr.aria-label]="mobileOpen ? 'Close menu' : 'Open menu'"
+      [attr.aria-label]="mobileOpen ? translate.t('header.closeMenu') : translate.t('header.openMenu')"
       [attr.aria-expanded]="mobileOpen"
     >
       @if (mobileOpen) {
@@ -22,7 +22,7 @@
     <a routerLink="/" class="logo" (click)="mobileOpen = false">
       <span class="logo__mark" aria-hidden="true"></span>
       <span class="logo__text">YASA</span>
-      <span class="logo__tagline">Perfume House</span>
+      <span class="logo__tagline">{{ translate.t('header.tagline') }}</span>
     </a>
 
     <nav class="header__nav" [class.is-open]="mobileOpen" aria-label="Main navigation">
@@ -31,22 +31,24 @@
         routerLinkActive="is-active"
         [routerLinkActiveOptions]="{ exact: true }"
         (click)="mobileOpen = false"
-      >Home</a>
-      <a routerLink="/products" routerLinkActive="is-active" (click)="mobileOpen = false">Perfumes</a>
-      <a routerLink="/brands" routerLinkActive="is-active" (click)="mobileOpen = false">Brands</a>
-      <a routerLink="/categories" routerLinkActive="is-active" (click)="mobileOpen = false">Categories</a>
+      >{{ translate.t('header.nav.home') }}</a>
+      <a routerLink="/products" routerLinkActive="is-active" (click)="mobileOpen = false">{{ translate.t('header.nav.perfumes') }}</a>
+      <a routerLink="/brands" routerLinkActive="is-active" (click)="mobileOpen = false">{{ translate.t('header.nav.brands') }}</a>
+      <a routerLink="/categories" routerLinkActive="is-active" (click)="mobileOpen = false">{{ translate.t('header.nav.categories') }}</a>
     </nav>
 
     <div class="header__actions">
+      <app-lang-switch />
+
       @if (auth.isAuthenticated()) {
-        <a routerLink="/profile" class="header__link" title="My account">
+        <a routerLink="/profile" class="header__link" [attr.title]="translate.t('header.myAccount')">
           <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="4" />
             <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
           </svg>
           <span class="header__label">{{ displayName() }}</span>
         </a>
-        <button type="button" class="header__icon-btn" title="Sign out" (click)="logout()">
+        <button type="button" class="header__icon-btn" [attr.title]="translate.t('header.signOut')" (click)="logout()">
           <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <path d="m16 17 5-5-5-5" />
@@ -54,16 +56,16 @@
           </svg>
         </button>
       } @else {
-        <a routerLink="/login" class="header__link" title="Sign in">
+        <a routerLink="/login" class="header__link" [attr.title]="translate.t('header.signIn')">
           <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="4" />
             <path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
           </svg>
-          <span class="header__label">Sign in</span>
+          <span class="header__label">{{ translate.t('header.signIn') }}</span>
         </a>
       }
 
-      <a routerLink="/cart" class="header__icon-btn" title="Shopping cart">
+      <a routerLink="/cart" class="header__icon-btn" [attr.title]="translate.t('header.cart')">
         <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="21" r="1.4" />
           <circle cx="18" cy="21" r="1.4" />

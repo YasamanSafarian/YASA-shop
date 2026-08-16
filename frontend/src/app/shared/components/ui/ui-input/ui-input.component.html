@@ -1,0 +1,23 @@
+<div class="form-field" [class.form-field--dense]="dense()">
+  @if (label(); as label) {
+    <label class="form-label" [for]="id()">{{ label }}</label>
+  }
+  <input
+    [id]="id()"
+    class="form-control"
+    [class.is-invalid]="invalid()"
+    [type]="type()"
+    [value]="value"
+    [disabled]="disabled"
+    [attr.placeholder]="placeholder()"
+    [attr.autocomplete]="autocomplete()"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  />
+  @if (invalid() && error(); as error) {
+    <span class="form-error">{{ error }}</span>
+  }
+  @if (hint(); as hint) {
+    <span class="form-hint">{{ hint }}</span>
+  }
+</div>

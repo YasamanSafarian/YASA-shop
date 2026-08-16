@@ -1,0 +1,143 @@
+.product-detail {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.product-detail__back {
+  display: inline-block;
+  margin-bottom: 2rem;
+}
+
+.product-detail__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.product-detail__media {
+  position: sticky;
+  top: calc(var(--header-height) + 1.5rem);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: #f2efe9;
+}
+
+.product-detail__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-detail__placeholder {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 25%, rgb(183 110 121 / 0.16), transparent 55%),
+    linear-gradient(160deg, #efece4, #e2ddcf);
+}
+
+.product-detail__info {
+  min-width: 0;
+}
+
+.product-detail__brand {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-rose-gold);
+  transition: color 0.15s ease;
+}
+
+.product-detail__brand:hover {
+  color: var(--color-rose-gold-600);
+}
+
+.product-detail__name {
+  margin-bottom: 1rem;
+}
+
+.product-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.product-detail__description {
+  color: var(--color-text-muted);
+  font-size: 1.02rem;
+}
+
+.product-detail__section {
+  margin-top: 1.75rem;
+}
+
+.product-detail__section-title {
+  margin-bottom: 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Notes */
+.notes {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.notes__row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.notes__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.notes__value {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+/* Chips row */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Variant list */
+.variant-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .product-detail__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-detail__media {
+    position: static;
+  }
+}
+
+@media (max-width: 560px) {
+  .notes__row {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}

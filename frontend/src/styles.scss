@@ -346,3 +346,24 @@ textarea {
   white-space: nowrap;
   border: 0;
 }
+
+/* ---------- Persian (RTL) ---------- */
+html[dir='rtl'] {
+  --font-body: 'Vazirmatn', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Vazirmatn', Georgia, 'Times New Roman', serif;
+}
+
+/* Persian script must not be letter-spaced or uppercased */
+html[dir='rtl'] .eyebrow,
+html[dir='rtl'] .footer__title,
+html[dir='rtl'] .logo__tagline,
+html[dir='rtl'] .promo__eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+html[dir='rtl'] .form-error::before {
+  content: '* ';
+  margin-inline-start: 0.25rem;
+}

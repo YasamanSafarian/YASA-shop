@@ -1,16 +1,19 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TranslateService } from '../../../core/services/translate.service';
+import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, LangSwitchComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   readonly auth = inject(AuthService);
+  readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
   mobileOpen = false;

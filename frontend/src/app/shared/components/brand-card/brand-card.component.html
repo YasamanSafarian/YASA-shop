@@ -1,0 +1,17 @@
+<a class="brand-card" [routerLink]="['/brands', brand().slug]">
+  <div class="brand-card__logo">
+    @if (brand().logoUrl; as logoUrl) {
+      <img [src]="logoUrl" [alt]="brand().name" loading="lazy" />
+    } @else {
+      <span class="brand-card__monogram" aria-hidden="true">
+        {{ brand().name.charAt(0).toUpperCase() }}
+      </span>
+    }
+  </div>
+  <div class="brand-card__body">
+    <h2 class="brand-card__name">{{ brand().name }}</h2>
+    <p class="brand-card__count">
+      {{ brand().productCount }} {{ productsLabel() }}
+    </p>
+  </div>
+</a>

@@ -1,0 +1,34 @@
+:host {
+  display: inline-flex;
+}
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  margin-inline: 0.35rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.lang-switch__btn {
+  padding: 0.28rem 0.62rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: rgb(255 255 255 / 0.65);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.lang-switch__btn:hover {
+  color: #fff;
+}
+
+.lang-switch__btn.is-active {
+  background: var(--color-rose-gold);
+  color: #fff;
+}

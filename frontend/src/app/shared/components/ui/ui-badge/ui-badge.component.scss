@@ -1,0 +1,12 @@
+:host {
+  display: inline-flex;
+}
+
+:host .badge {
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-navy);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+}

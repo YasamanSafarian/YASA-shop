@@ -1,0 +1,23 @@
+<div class="variant">
+  <div class="variant__info">
+    <span class="variant__size">
+      {{ variant().volumeMl }} {{ translate.t('productDetail.ml') }}
+    </span>
+    @if (variant().format) {
+      <span class="variant__format">{{ variant().format }}</span>
+    }
+  </div>
+  <div class="variant__price">
+    @if (hasComparePrice()) {
+      <span class="variant__compare">{{ formatPrice(variant().compareAtPrice!) }}</span>
+    }
+    <span class="variant__current">{{ formatPrice(variant().price) }}</span>
+  </div>
+  <span class="variant__stock" [class.variant__stock--out]="!isAvailable()">
+    @if (isAvailable()) {
+      {{ translate.t('productDetail.inStock') }}
+    } @else {
+      {{ translate.t('productDetail.outOfStock') }}
+    }
+  </span>
+</div>

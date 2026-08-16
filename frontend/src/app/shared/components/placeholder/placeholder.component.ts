@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslateService } from '../../../core/services/translate.service';
 
 @Component({
   selector: 'app-placeholder',
@@ -10,14 +11,15 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class PlaceholderComponent {
   private readonly route = inject(ActivatedRoute);
+  readonly translate = inject(TranslateService);
 
-  readonly title = signal('Coming soon');
-  readonly message = signal<string | null>(null);
+  readonly titleKey = signal('placeholder.comingSoon');
+  readonly messageKey = signal<string | null>(null);
 
   constructor() {
     this.route.data.subscribe((data) => {
-      this.title.set((data['title'] as string) ?? 'Coming soon');
-      this.message.set((data['message'] as string | null) ?? null);
+      this.titleKey.set((data['titleKey'] as string) ?? 'placeholder.comingSoon');
+      this.messageKey.set((data['messageKey'] as string | null) ?? null);
     });
   }
 }

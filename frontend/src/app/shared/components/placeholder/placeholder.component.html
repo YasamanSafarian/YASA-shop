@@ -2,13 +2,13 @@
   <div class="container placeholder__inner">
     <div class="placeholder__card">
       <p class="eyebrow">YASA</p>
-      <h1 class="placeholder__title">{{ title() }}</h1>
-      @if (message()) {
-        <p class="placeholder__message">{{ message() }}</p>
+      <h1 class="placeholder__title">{{ translate.t(titleKey()) }}</h1>
+      @if (messageKey()) {
+        <p class="placeholder__message">{{ translate.t(messageKey()!) }}</p>
       }
       <div class="placeholder__actions">
-        <a routerLink="/products" class="btn btn--primary">Explore perfumes</a>
-        <a routerLink="/" class="btn btn--outline">Back home</a>
+        <a routerLink="/products" class="btn btn--primary">{{ translate.t('placeholder.explorePerfumes') }}</a>
+        <a routerLink="/" class="btn btn--outline">{{ translate.t('placeholder.backHome') }}</a>
       </div>
     </div>
   </div>
