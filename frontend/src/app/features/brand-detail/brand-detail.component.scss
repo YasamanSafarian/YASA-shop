@@ -1,26 +1,26 @@
 .brand-detail {
-  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  padding-block: 1.5rem 3rem;
 }
 
 .brand-detail__back {
   display: inline-block;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .brand-detail__header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem;
-  margin-bottom: 2.5rem;
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .brand-detail__logo {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 96px;
-  height: 96px;
+  width: 64px;
+  height: 64px;
   overflow: hidden;
   border-radius: 50%;
   background: #f2efe9;
@@ -34,7 +34,7 @@
 
 .brand-detail__monogram {
   font-family: var(--font-display);
-  font-size: 2.4rem;
+  font-size: 1.8rem;
   font-weight: 600;
   color: var(--color-rose-gold);
 }
@@ -44,28 +44,51 @@
 }
 
 .brand-detail__name {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 .brand-detail__count {
   margin: 0;
+  font-size: 0.92rem;
   color: var(--color-text-muted);
 }
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
 }
 
-@media (max-width: 900px) {
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (min-width: 900px) {
+  .brand-detail {
+    padding-block: 2.5rem 4.5rem;
   }
-}
 
-@media (max-width: 560px) {
+  .brand-detail__back {
+    margin-bottom: 2rem;
+  }
+
+  .brand-detail__header {
+    gap: 1.5rem;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .brand-detail__logo {
+    width: 96px;
+    height: 96px;
+  }
+
+  .brand-detail__monogram {
+    font-size: 2.4rem;
+  }
+
+  .brand-detail__count {
+    font-size: 1rem;
+  }
+
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
   }
 }

@@ -7,16 +7,40 @@
     </header>
 
     <div class="products__layout">
-      <aside class="products__filters" [formGroup]="filterForm" aria-label="Filters">
+      <div
+        class="products__filters-backdrop"
+        [class.is-open]="filtersOpen()"
+        (click)="filtersOpen.set(false)"
+        [attr.aria-hidden]="!filtersOpen()"
+      ></div>
+
+      <aside
+        class="products__filters"
+        [class.is-open]="filtersOpen()"
+        [formGroup]="filterForm"
+        aria-label="Filters"
+      >
         <div class="filters__head">
           <h2 class="filters__title">{{ translate.t('products.filters') }}</h2>
-          @if (filterCount() > 0) {
-            <app-ui-button
+          <div class="filters__head-actions">
+            @if (filterCount() > 0) {
+              <app-ui-button
+                type="button"
+                variant="link"
+                (click)="clearFilters()"
+              >{{ translate.t('products.clearFilters') }}</app-ui-button>
+            }
+            <button
               type="button"
-              variant="link"
-              (click)="clearFilters()"
-            >{{ translate.t('products.clearFilters') }}</app-ui-button>
-          }
+              class="filters__close"
+              (click)="filtersOpen.set(false)"
+              [attr.aria-label]="translate.t('products.closeFilters')"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <app-ui-input
@@ -65,9 +89,25 @@
       </aside>
 
       <div class="products__main">
-        <p class="products__count" aria-live="polite">
-          {{ translate.t('products.resultsLabel') }}: {{ total() }}
-        </p>
+        <div class="products__toolbar">
+          <button
+            type="button"
+            class="products__filter-toggle"
+            (click)="filtersOpen.set(true)"
+            [attr.aria-label]="translate.t('products.openFilters')"
+          >
+            <svg class="products__filter-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 6h16M7 12h10M10 18h4" />
+            </svg>
+            <span>{{ translate.t('products.filters') }}</span>
+            @if (filterCount() > 0) {
+              <span class="products__filter-toggle-count" aria-hidden="true">{{ filterCount() }}</span>
+            }
+          </button>
+          <p class="products__count" aria-live="polite">
+            {{ translate.t('products.resultsLabel') }}: {{ total() }}
+          </p>
+        </div>
 
         @if (loading()) {
           <app-ui-state state="loading" [message]="translate.t('products.loading')" />

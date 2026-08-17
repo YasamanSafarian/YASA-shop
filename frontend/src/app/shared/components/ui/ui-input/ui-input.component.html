@@ -5,7 +5,7 @@
   <input
     [id]="id()"
     class="form-control"
-    [class.is-invalid]="invalid()"
+    [class.is-invalid]="invalid"
     [type]="type()"
     [value]="value"
     [disabled]="disabled"
@@ -14,7 +14,7 @@
     (input)="onInput($event)"
     (blur)="onBlur()"
   />
-  @if (invalid() && error(); as error) {
+  @if (invalid && error(); as error) {
     <span class="form-error">{{ error }}</span>
   }
   @if (hint(); as hint) {

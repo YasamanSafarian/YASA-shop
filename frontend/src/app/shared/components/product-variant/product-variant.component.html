@@ -20,4 +20,28 @@
       {{ translate.t('productDetail.outOfStock') }}
     }
   </span>
+  @if (isAvailable()) {
+    @if (auth.isAuthenticated()) {
+      <app-ui-button
+        variant="primary"
+        size="sm"
+        [disabled]="adding()"
+        (click)="addToCart()"
+      >
+        @if (adding()) {
+          {{ translate.t('cart.adding') }}
+        } @else {
+          {{ translate.t('cart.addToCart') }}
+        }
+      </app-ui-button>
+    } @else {
+      <app-ui-button
+        variant="outline"
+        size="sm"
+        [link]="['/login']"
+      >
+        {{ translate.t('cart.loginToAdd') }}
+      </app-ui-button>
+    }
+  }
 </div>

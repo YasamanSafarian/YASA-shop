@@ -5,7 +5,7 @@
   <select
     [id]="id()"
     class="form-control"
-    [class.is-invalid]="invalid()"
+    [class.is-invalid]="invalid"
     [value]="value"
     [disabled]="disabled"
     (change)="onSelect($event)"
@@ -18,7 +18,7 @@
       <option [value]="option.value">{{ option.label }}</option>
     }
   </select>
-  @if (invalid() && error(); as error) {
+  @if (invalid && error(); as error) {
     <span class="form-error">{{ error }}</span>
   }
 </div>

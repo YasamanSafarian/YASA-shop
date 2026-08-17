@@ -8,6 +8,7 @@ import { BrandsComponent } from './features/brands/brands.component';
 import { BrandDetailComponent } from './features/brand-detail/brand-detail.component';
 import { CategoriesComponent } from './features/categories/categories.component';
 import { CategoryDetailComponent } from './features/category-detail/category-detail.component';
+import { CartComponent } from './features/cart/cart.component';
 import { PlaceholderComponent } from './shared/components/placeholder/placeholder.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
@@ -22,11 +23,7 @@ export const routes: Routes = [
   { path: 'brands/:slug', component: BrandDetailComponent },
   { path: 'categories', component: CategoriesComponent },
   { path: 'categories/:slug', component: CategoryDetailComponent },
-  {
-    path: 'cart',
-    component: PlaceholderComponent,
-    data: { titleKey: 'page.cart.title', messageKey: 'page.cart.message' },
-  },
+  { path: 'cart', component: CartComponent },
 
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },

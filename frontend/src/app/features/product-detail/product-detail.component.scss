@@ -1,22 +1,20 @@
 .product-detail {
-  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  padding-block: 1.5rem 3rem;
 }
 
 .product-detail__back {
   display: inline-block;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .product-detail__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: clamp(1.5rem, 4vw, 3.5rem);
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
   align-items: start;
 }
 
 .product-detail__media {
-  position: sticky;
-  top: calc(var(--header-height) + 1.5rem);
   overflow: hidden;
   aspect-ratio: 1 / 1;
   background: #f2efe9;
@@ -68,24 +66,23 @@
 
 .product-detail__description {
   color: var(--color-text-muted);
-  font-size: 1.02rem;
+  font-size: 1rem;
 }
 
 .product-detail__section {
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
 }
 
 .product-detail__section-title {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-/* Notes */
 .notes {
   display: grid;
   gap: 0.5rem;
@@ -94,13 +91,13 @@
 
 .notes__row {
   display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 0.1rem;
   align-items: baseline;
 }
 
 .notes__label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-navy);
 }
@@ -108,36 +105,49 @@
 .notes__value {
   margin: 0;
   color: var(--color-text);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
-/* Chips row */
 .chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-/* Variant list */
 .variant-list {
   display: grid;
   gap: 0.75rem;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
+@media (min-width: 900px) {
+  .product-detail {
+    padding-block: 2.5rem 4.5rem;
+  }
+
+  .product-detail__back {
+    margin-bottom: 2rem;
+  }
+
   .product-detail__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
   }
 
   .product-detail__media {
-    position: static;
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
   }
-}
 
-@media (max-width: 560px) {
+  .product-detail__description {
+    font-size: 1.02rem;
+  }
+
+  .product-detail__section {
+    margin-top: 1.75rem;
+  }
+
   .notes__row {
-    grid-template-columns: 1fr;
-    gap: 0.1rem;
+    grid-template-columns: 110px 1fr;
+    gap: 1rem;
   }
 }

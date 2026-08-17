@@ -65,12 +65,15 @@
         </a>
       }
 
-      <a routerLink="/cart" class="header__icon-btn" [attr.title]="translate.t('header.cart')">
+      <a routerLink="/cart" class="header__icon-btn header__cart" [attr.title]="translate.t('header.cart')">
         <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="9" cy="21" r="1.4" />
           <circle cx="18" cy="21" r="1.4" />
           <path d="M2.5 3h2l2.4 12.2a1.5 1.5 0 0 0 1.5 1.3h8.9a1.5 1.5 0 0 0 1.5-1.2L21 8H6" />
         </svg>
+        @if (cart.itemCount() > 0) {
+          <span class="header__cart-badge">{{ cart.itemCount() }}</span>
+        }
       </a>
     </div>
   </div>

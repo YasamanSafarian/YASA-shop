@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
@@ -48,6 +55,7 @@ export class ProductsComponent implements OnInit {
   readonly total = signal(0);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly filtersOpen = signal(false);
 
   readonly filterForm = this.fb.group({
     search: [''],
@@ -157,6 +165,11 @@ export class ProductsComponent implements OnInit {
     });
     this.page.set(1);
     this.loadProducts();
+  }
+
+  @HostListener('window:keydown.escape')
+  closeFilters(): void {
+    this.filtersOpen.set(false);
   }
 
   private loadFilters(): void {

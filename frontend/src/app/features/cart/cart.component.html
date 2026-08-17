@@ -1,0 +1,101 @@
+<section class="cart-page">
+  <div class="container cart-page__inner">
+    <header class="cart-page__header">
+      <h1 class="cart-page__title">{{ translate.t('cart.title') }}</h1>
+    </header>
+
+    @if (!auth.isAuthenticated()) {
+      <app-ui-state state="empty" [message]="translate.t('cart.loginRequired')">
+        <app-ui-button [link]="['/login']">{{ translate.t('cart.signIn') }}</app-ui-button>
+      </app-ui-state>
+    } @else if (loading()) {
+      <app-ui-state state="loading" [message]="translate.t('cart.loading')" />
+    } @else if (!cart || cart.items.length === 0) {
+      <app-ui-state state="empty" [message]="translate.t('cart.empty')">
+        <app-ui-button [link]="['/products']">{{ translate.t('cart.shopNow') }}</app-ui-button>
+      </app-ui-state>
+    } @else {
+      <div class="cart-layout">
+        <div class="cart-items">
+          @for (item of cart.items; track item.id) {
+            <div class="cart-item" [class.cart-item--updating]="updatingId() === item.id">
+              <div class="cart-item__media">
+                @if (item.variant.imageUrl) {
+                  <img [src]="item.variant.imageUrl" [alt]="item.variant.product.name" loading="lazy" />
+                } @else {
+                  <div class="cart-item__placeholder" aria-hidden="true"></div>
+                }
+              </div>
+              <div class="cart-item__info">
+                <a class="cart-item__brand" [routerLink]="['/brands', item.variant.product.brand.slug]">
+                  {{ item.variant.product.brand.name }}
+                </a>
+                <a class="cart-item__name" [routerLink]="['/products', item.variant.product.slug]">
+                  {{ item.variant.product.name }}
+                </a>
+                <span class="cart-item__variant">
+                  {{ item.variant.volumeMl }}ml · {{ item.variant.format }}
+                </span>
+              </div>
+              <div class="cart-item__qty">
+                <button
+                  type="button"
+                  class="cart-item__qty-btn"
+                  (click)="updateQuantity(item, -1)"
+                  [disabled]="updatingId() === item.id"
+                  [attr.aria-label]="translate.t('cart.decreaseQty')"
+                >−</button>
+                <span class="cart-item__qty-value">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  class="cart-item__qty-btn"
+                  (click)="updateQuantity(item, 1)"
+                  [disabled]="updatingId() === item.id"
+                  [attr.aria-label]="translate.t('cart.increaseQty')"
+                >+</button>
+              </div>
+              <div class="cart-item__price">
+                {{ formatPrice(item.lineTotal) }}
+              </div>
+              <button
+                type="button"
+                class="cart-item__remove"
+                (click)="removeItem(item)"
+                [disabled]="updatingId() === item.id"
+                [attr.aria-label]="translate.t('cart.removeItem')"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+
+        <aside class="cart-summary">
+          <h2 class="cart-summary__title">{{ translate.t('cart.summary') }}</h2>
+          <dl class="cart-summary__rows">
+            <div class="cart-summary__row">
+              <dt>{{ translate.t('cart.items') }}</dt>
+              <dd>{{ cart.totals.itemCount }}</dd>
+            </div>
+            <div class="cart-summary__row cart-summary__row--total">
+              <dt>{{ translate.t('cart.subtotal') }}</dt>
+              <dd>{{ formatPrice(cart.totals.subtotal) }}</dd>
+            </div>
+          </dl>
+          <app-ui-button variant="primary" size="lg" [block]="true" [disabled]="true">
+            {{ translate.t('cart.checkout') }}
+          </app-ui-button>
+          <app-ui-button
+            variant="link"
+            size="sm"
+            (click)="clearCart()"
+          >
+            {{ translate.t('cart.clearCart') }}
+          </app-ui-button>
+        </aside>
+      </div>
+    }
+  </div>
+</section>

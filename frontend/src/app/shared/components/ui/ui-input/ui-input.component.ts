@@ -1,6 +1,6 @@
 import {
   Component,
-  computed,
+  Injector,
   forwardRef,
   inject,
   input,
@@ -32,21 +32,23 @@ export class UiInputComponent implements ControlValueAccessor {
   readonly hint = input<string | null>(null);
   readonly dense = input(false);
 
-  private readonly ngControl = inject(NgControl, {
-    optional: true,
-    self: true,
-  });
+  private readonly injector = inject(Injector);
 
   value = '';
   disabled = false;
   onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};
 
-  readonly invalid = computed(
-    () =>
+  get invalid(): boolean {
+    const ngControl = this.injector.get<NgControl | null>(NgControl, null, {
+      self: true,
+      optional: true,
+    });
+    return (
       this.error() !== null ||
-      (!!this.ngControl?.control?.invalid && !!this.ngControl?.control?.touched),
-  );
+      (!!ngControl?.control?.invalid && !!ngControl?.control?.touched)
+    );
+  }
 
   writeValue(value: string): void {
     this.value = value ?? '';

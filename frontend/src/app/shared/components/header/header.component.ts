@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { TranslateService } from '../../../core/services/translate.service';
 import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 
@@ -13,6 +14,7 @@ import { LangSwitchComponent } from '../lang-switch/lang-switch.component';
 })
 export class HeaderComponent {
   readonly auth = inject(AuthService);
+  readonly cart = inject(CartService);
   readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
