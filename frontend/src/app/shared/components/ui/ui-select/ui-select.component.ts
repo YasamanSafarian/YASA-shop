@@ -11,7 +11,6 @@ export interface UiSelectOption {
   value: string;
   label: string;
 }
-
 @Component({
   selector: 'app-ui-select',
   standalone: true,
@@ -25,6 +24,7 @@ export interface UiSelectOption {
     },
   ],
 })
+// change the select to dropdwon.
 export class UiSelectComponent implements ControlValueAccessor {
   readonly id = input('select');
   readonly label = input<string | null>(null);

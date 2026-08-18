@@ -1,0 +1,200 @@
+<section class="profile">
+  <div class="container profile__inner">
+    <div class="profile__card">
+      <div class="profile__avatar">
+        <span class="profile__avatar-text">{{ initials() }}</span>
+      </div>
+
+      <h1 class="profile__name">{{ displayName }}</h1>
+
+      <div class="profile__details">
+        @if (user?.phone) {
+          <div class="profile__row">
+            <svg class="profile__row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z" />
+            </svg>
+            <div class="profile__row-content">
+              <span class="profile__row-label">{{ translate.t('profile.phone') }}</span>
+              <span class="profile__row-value">{{ user!.phone }}</span>
+            </div>
+          </div>
+        }
+
+        @if (user?.email) {
+          <div class="profile__row">
+            <svg class="profile__row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            <div class="profile__row-content">
+              <span class="profile__row-label">{{ translate.t('profile.email') }}</span>
+              <span class="profile__row-value">{{ user!.email }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="profile__row">
+          <svg class="profile__row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+          </svg>
+          <div class="profile__row-content">
+            <span class="profile__row-label">{{ translate.t('profile.role') }}</span>
+            <span class="profile__row-value">{{ user!.role === 'admin' ? translate.t('profile.admin') : translate.t('profile.customer') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile__actions">
+        <app-ui-button variant="outline" [link]="['/cart']">
+          {{ translate.t('profile.myCart') }}
+        </app-ui-button>
+        <app-ui-button variant="primary" [link]="['/']">
+          {{ translate.t('profile.continueShopping') }}
+        </app-ui-button>
+      </div>
+    </div>
+
+    <div class="profile__orders">
+      <h2 class="profile__orders-title">{{ translate.t('orders.title') }}</h2>
+
+      @if (orderService.loading()) {
+        <app-ui-state state="loading" [message]="translate.t('orders.loading')" />
+      } @else if (orderService.error()) {
+        <app-ui-state state="error" [message]="orderService.error()!" />
+      } @else if (orderService.orders().length === 0) {
+        <app-ui-state state="empty" [message]="translate.t('orders.empty')">
+          <app-ui-button [link]="['/products']">{{ translate.t('orders.shopNow') }}</app-ui-button>
+        </app-ui-state>
+      } @else {
+        <div class="orders-list">
+          @for (order of orderService.orders(); track order.id) {
+            <div class="order-card" [class.order-card--expanded]="expandedId() === order.id">
+              <button
+                type="button"
+                class="order-card__header"
+                (click)="toggleExpand(order.id)"
+              >
+                <div class="order-card__header-info">
+                  <span class="order-card__number">{{ order.orderNumber }}</span>
+                  <span class="order-card__date">{{ formatDate(order.createdAt) }}</span>
+                </div>
+                <div class="order-card__header-right">
+                  <span class="order-card__total">{{ formatPrice(order.total) }}</span>
+                  <span class="order-card__status order-card__status--{{ order.statuses.order }}">
+                    {{ statusLabel(order.statuses.order) }}
+                  </span>
+                  <svg class="order-card__chevron" [class.is-open]="expandedId() === order.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </div>
+              </button>
+
+              @if (expandedId() === order.id) {
+                <div class="order-card__body">
+                  <div class="order-card__statuses">
+                    <div class="order-card__status-row">
+                      <span class="order-card__status-label">{{ translate.t('orders.orderStatus') }}</span>
+                      <span class="order-card__status-value order-card__status--{{ order.statuses.order }}">
+                        {{ statusLabel(order.statuses.order) }}
+                      </span>
+                    </div>
+                    <div class="order-card__status-row">
+                      <span class="order-card__status-label">{{ translate.t('orders.paymentStatus') }}</span>
+                      <span class="order-card__status-value order-card__status--{{ order.statuses.payment }}">
+                        {{ statusLabel(order.statuses.payment) }}
+                      </span>
+                    </div>
+                    <div class="order-card__status-row">
+                      <span class="order-card__status-label">{{ translate.t('orders.shipmentStatus') }}</span>
+                      <span class="order-card__status-value order-card__status--{{ order.statuses.shipment }}">
+                        {{ statusLabel(order.statuses.shipment) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="order-card__items">
+                    @for (item of order.items; track item.id) {
+                      <div class="order-card__item">
+                        <div class="order-card__item-info">
+                          <a class="order-card__item-name" [routerLink]="['/products', item.productSlug]">
+                            {{ item.productName }}
+                          </a>
+                          <span class="order-card__item-variant">{{ item.volumeMl }}ml · {{ item.format }}</span>
+                        </div>
+                        <div class="order-card__item-qty">
+                          × {{ item.quantity }}
+                        </div>
+                        <div class="order-card__item-price">
+                          {{ formatPrice(item.lineTotal) }}
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="order-card__summary">
+                    <div class="order-card__summary-row">
+                      <span>{{ translate.t('orders.subtotal') }}</span>
+                      <span>{{ formatPrice(order.subtotal) }}</span>
+                    </div>
+                    <div class="order-card__summary-row">
+                      <span>{{ translate.t('orders.shipping') }}</span>
+                      <span>{{ formatPrice(order.shippingFee) }}</span>
+                    </div>
+                    @if (order.discountAmount > 0) {
+                      <div class="order-card__summary-row order-card__summary-row--discount">
+                        <span>{{ translate.t('orders.discount') }}</span>
+                        <span>-{{ formatPrice(order.discountAmount) }}</span>
+                      </div>
+                    }
+                    <div class="order-card__summary-row order-card__summary-row--total">
+                      <span>{{ translate.t('orders.total') }}</span>
+                      <span>{{ formatPrice(order.total) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="order-card__address">
+                    <span class="order-card__address-label">{{ translate.t('orders.deliveryAddress') }}</span>
+                    <span class="order-card__address-text">
+                      {{ order.address.receiverName }} — {{ order.address.province }}، {{ order.address.city }}، {{ order.address.address }}
+                    </span>
+                    <span class="order-card__address-phone">{{ order.address.receiverPhone }}</span>
+                  </div>
+
+                  @if (order.statuses.order === 'pending' || order.statuses.order === 'paid') {
+                    <div class="order-card__actions">
+                      <app-ui-button
+                        variant="outline"
+                        size="sm"
+                        [disabled]="cancellingId() === order.id"
+                        (click)="cancelOrder(order)"
+                      >
+                        @if (cancellingId() === order.id) {
+                          {{ translate.t('orders.cancelling') }}
+                        } @else {
+                          {{ translate.t('orders.cancel') }}
+                        }
+                      </app-ui-button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (totalPages > 1) {
+          <div class="orders-pagination">
+            @for (p of [].constructor(totalPages); track p; let i = $index) {
+              <button
+                type="button"
+                class="orders-pagination__btn"
+                [class.is-active]="orderService.page() === i + 1"
+                (click)="loadPage(i + 1)"
+              >{{ i + 1 }}</button>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

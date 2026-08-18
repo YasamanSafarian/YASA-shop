@@ -79,13 +79,31 @@
               <dt>{{ translate.t('cart.items') }}</dt>
               <dd>{{ cart.totals.itemCount }}</dd>
             </div>
-            <div class="cart-summary__row cart-summary__row--total">
+            <div class="cart-summary__row">
               <dt>{{ translate.t('cart.subtotal') }}</dt>
               <dd>{{ formatPrice(cart.totals.subtotal) }}</dd>
             </div>
+            <div class="cart-summary__row">
+              <dt>{{ translate.t('cart.shipping') }}</dt>
+              <dd>{{ formatPrice(shippingCost()) }}</dd>
+            </div>
+            <div class="cart-summary__row cart-summary__row--total">
+              <dt>{{ translate.t('cart.total') }}</dt>
+              <dd>{{ formatPrice(grandTotal()) }}</dd>
+            </div>
           </dl>
-          <app-ui-button variant="primary" size="lg" [block]="true" [disabled]="true">
-            {{ translate.t('cart.checkout') }}
+          <app-ui-button
+            variant="primary"
+            size="lg"
+            [block]="true"
+            [disabled]="ordering()"
+            (click)="checkout()"
+          >
+            @if (ordering()) {
+              {{ translate.t('cart.processing') }}
+            } @else {
+              {{ translate.t('cart.checkout') }}
+            }
           </app-ui-button>
           <app-ui-button
             variant="link"

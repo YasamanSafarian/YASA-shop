@@ -1,0 +1,41 @@
+<section class="order-confirm">
+  <div class="container order-confirm__inner">
+    <div class="order-confirm__card">
+      <div class="order-confirm__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      </div>
+
+      <h1 class="order-confirm__title">{{ translate.t('orderConfirm.title') }}</h1>
+      <p class="order-confirm__message">{{ translate.t('orderConfirm.message') }}</p>
+
+      <div class="order-confirm__details">
+        <div class="order-confirm__row">
+          <span class="order-confirm__label">{{ translate.t('orderConfirm.cartNumber') }}</span>
+          <span class="order-confirm__value order-confirm__value--mono">{{ cartNumber() }}</span>
+        </div>
+        <div class="order-confirm__row">
+          <span class="order-confirm__label">{{ translate.t('orderConfirm.name') }}</span>
+          <span class="order-confirm__value">{{ name() }}</span>
+        </div>
+        <div class="order-confirm__row">
+          <span class="order-confirm__label">{{ translate.t('orderConfirm.status') }}</span>
+          <span class="order-confirm__value order-confirm__value--pending">{{ translate.t('orderConfirm.pendingReview') }}</span>
+        </div>
+      </div>
+
+      <p class="order-confirm__note">{{ translate.t('orderConfirm.note') }}</p>
+
+      <div class="order-confirm__actions">
+        <app-ui-button variant="primary" [link]="['/products']">
+          {{ translate.t('orderConfirm.continueShopping') }}
+        </app-ui-button>
+        <app-ui-button variant="outline" [link]="['/profile']">
+          {{ translate.t('orderConfirm.viewProfile') }}
+        </app-ui-button>
+      </div>
+    </div>
+  </div>
+</section>

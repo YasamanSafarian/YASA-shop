@@ -1,21 +1,79 @@
 <section class="hero">
-  <div class="container hero__inner">
-    <div class="hero__content">
-      <p class="eyebrow">{{ translate.t('home.hero.eyebrow') }}</p>
-      <h1 class="hero__title">{{ translate.t('home.hero.title') }}</h1>
-      <p class="hero__subtitle">{{ translate.t('home.hero.subtitle') }}</p>
-      <div class="hero__actions">
-        <app-ui-button variant="primary" size="lg" [link]="['/products']">{{ translate.t('home.hero.shop') }}</app-ui-button>
-        <app-ui-button variant="ghost" size="lg" [link]="['/brands']">{{ translate.t('home.hero.explore') }}</app-ui-button>
+  <div class="hero__slider">
+    @for (slide of slides; track slide.image; let i = $index) {
+      <div
+        class="hero__slide"
+        [class.is-active]="current() === i"
+        [class.is-prev]="current() === (i - 1 + slides.length) % slides.length"
+      >
+        <div class="hero__bg" [style.background-image]="'url(' + slide.image + ')'"></div>
+        <div class="hero__overlay"></div>
+        <div class="hero__content container">
+          <div class="hero__text">
+            <p class="hero__eyebrow" [class.is-active]="current() === i">
+              {{ translate.t('home.hero.eyebrow') }}
+            </p>
+            <h1 class="hero__title" [class.is-active]="current() === i">
+              {{ translate.t(slide.titleKey) }}
+            </h1>
+            <p class="hero__subtitle" [class.is-active]="current() === i">
+              {{ translate.t(slide.subtitleKey) }}
+            </p>
+            <div class="hero__actions" [class.is-active]="current() === i">
+              <app-ui-button variant="primary" size="lg" [link]="slide.link">
+                {{ translate.t('home.hero.shop') }}
+              </app-ui-button>
+              <app-ui-button variant="ghost" size="lg" [link]="['/brands']">
+                {{ translate.t('home.hero.explore') }}
+              </app-ui-button>
+            </div>
+          </div>
+          <div class="hero__visual" [class.is-active]="current() === i">
+            <img
+              [src]="slide.image"
+              [alt]="translate.t(slide.titleKey)"
+              class="hero__product-img"
+            />
+          </div>
+        </div>
       </div>
+    }
+  </div>
+
+  <div class="hero__controls container">
+    <!-- <button
+      type="button"
+      class="hero__arrow hero__arrow--prev"
+      (click)="prev()"
+      aria-label="Previous slide"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+    </button> -->
+
+    <div class="hero__bullets">
+      @for (slide of slides; track slide.image; let i = $index) {
+        <button
+          type="button"
+          class="hero__bullet"
+          [class.is-active]="current() === i"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Go to slide ' + (i + 1)"
+        ></button>
+      }
     </div>
-    <div class="hero__visual" aria-hidden="true">
-      <div class="hero__bottle">
-        <span class="hero__bottle-cap"></span>
-        <span class="hero__bottle-body"></span>
-        <span class="hero__bottle-glint"></span>
-      </div>
-    </div>
+
+    <!-- <button
+      type="button"
+      class="hero__arrow hero__arrow--next"
+      (click)="next()"
+      aria-label="Next slide"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </button> -->
   </div>
 </section>
 
