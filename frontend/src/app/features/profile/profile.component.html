@@ -59,8 +59,6 @@
 
       @if (orderService.loading()) {
         <app-ui-state state="loading" [message]="translate.t('orders.loading')" />
-      } @else if (orderService.error()) {
-        <app-ui-state state="error" [message]="orderService.error()!" />
       } @else if (orderService.orders().length === 0) {
         <app-ui-state state="empty" [message]="translate.t('orders.empty')">
           <app-ui-button [link]="['/products']">{{ translate.t('orders.shopNow') }}</app-ui-button>
@@ -91,26 +89,19 @@
 
               @if (expandedId() === order.id) {
                 <div class="order-card__body">
-                  <div class="order-card__statuses">
-                    <div class="order-card__status-row">
-                      <span class="order-card__status-label">{{ translate.t('orders.orderStatus') }}</span>
-                      <span class="order-card__status-value order-card__status--{{ order.statuses.order }}">
-                        {{ statusLabel(order.statuses.order) }}
-                      </span>
+                  @if (isCancelled(order)) {
+                    <div class="order-card__cancelled">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="m15 9-6 6M9 9l6 6" />
+                      </svg>
+                      <span>{{ statusLabel(order.statuses.order) }}</span>
                     </div>
-                    <div class="order-card__status-row">
-                      <span class="order-card__status-label">{{ translate.t('orders.paymentStatus') }}</span>
-                      <span class="order-card__status-value order-card__status--{{ order.statuses.payment }}">
-                        {{ statusLabel(order.statuses.payment) }}
-                      </span>
+                  } @else {
+                    <div class="order-card__stepper">
+                      <app-ui-stepper [steps]="getSteps()" [currentStep]="getStepIndex(order)" />
                     </div>
-                    <div class="order-card__status-row">
-                      <span class="order-card__status-label">{{ translate.t('orders.shipmentStatus') }}</span>
-                      <span class="order-card__status-value order-card__status--{{ order.statuses.shipment }}">
-                        {{ statusLabel(order.statuses.shipment) }}
-                      </span>
-                    </div>
-                  </div>
+                  }
 
                   <div class="order-card__items">
                     @for (item of order.items; track item.id) {

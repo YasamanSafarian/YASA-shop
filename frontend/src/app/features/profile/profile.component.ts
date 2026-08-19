@@ -5,12 +5,13 @@ import { OrderService } from '../../core/services/order.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { UiStateComponent } from '../../shared/components/ui/ui-state/ui-state.component';
+import { UiStepperComponent, StepperStep } from '../../shared/components/ui/ui-stepper/ui-stepper.component';
 import { Order } from '../../core/models/order';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, UiButtonComponent, UiStateComponent],
+  imports: [RouterLink, UiButtonComponent, UiStateComponent, UiStepperComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })
@@ -78,6 +79,36 @@ export class ProfileComponent implements OnInit {
     const key = `orders.status.${status}`;
     const label = this.translate.t(key);
     return label === key ? status : label;
+  }
+
+  getSteps(): StepperStep[] {
+    return [
+      { label: this.translate.t('stepper.paid') },
+      { label: this.translate.t('stepper.confirmed') },
+      { label: this.translate.t('stepper.inProgress') },
+      { label: this.translate.t('stepper.toPost') },
+      { label: this.translate.t('stepper.delivered') },
+    ];
+  }
+
+  getStepIndex(order: Order): number {
+    const { payment, order: orderStatus, shipment } = order.statuses;
+
+    if (orderStatus === 'cancelled' || orderStatus === 'returned') {
+      return -1;
+    }
+
+    if (payment !== 'paid') return 0;
+    if (orderStatus === 'paid') return 1;
+    if (orderStatus === 'packing') return 2;
+    if (shipment === 'sent' || orderStatus === 'shipped') return 3;
+    if (orderStatus === 'delivered') return 4;
+
+    return 0;
+  }
+
+  isCancelled(order: Order): boolean {
+    return order.statuses.order === 'cancelled' || order.statuses.order === 'returned';
   }
 
   loadPage(page: number): void {

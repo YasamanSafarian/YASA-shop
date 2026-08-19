@@ -1,0 +1,119 @@
+.stepper {
+  display: flex;
+  gap: 0;
+}
+
+.stepper__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.stepper__indicator {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.stepper__circle {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.stepper__check {
+  width: 14px;
+  height: 14px;
+}
+
+.stepper__number {
+  line-height: 1;
+}
+
+.stepper__line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  margin: 0 -1px;
+  transition: background 0.3s ease;
+}
+
+.stepper__label {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.3;
+  max-width: 80px;
+  transition: color 0.3s ease;
+}
+
+/* Completed */
+.stepper__step.is-completed .stepper__circle {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+}
+
+.stepper__step.is-completed .stepper__line {
+  background: var(--color-navy);
+}
+
+.stepper__step.is-completed .stepper__label {
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+/* Active */
+.stepper__step.is-active .stepper__circle {
+  background: var(--color-rose-gold);
+  border-color: var(--color-rose-gold);
+  color: #fff;
+  box-shadow: 0 0 0 3px rgb(183 110 121 / 0.25);
+}
+
+.stepper__step.is-active .stepper__label {
+  color: var(--color-rose-gold);
+  font-weight: 600;
+}
+
+/* Pending */
+.stepper__step.is-pending .stepper__circle {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* Mobile: smaller */
+@media (max-width: 599px) {
+  .stepper__circle {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+  }
+
+  .stepper__check {
+    width: 12px;
+    height: 12px;
+  }
+
+  .stepper__label {
+    font-size: 0.6rem;
+    max-width: 56px;
+  }
+}

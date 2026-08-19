@@ -9,7 +9,6 @@ import { ProductVariant } from '../../../core/models/catalog';
 import { TranslateService } from '../../../core/services/translate.service';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { AlertService } from '../../../core/services/alert.service';
 import { UiButtonComponent } from '../ui/ui-button/ui-button.component';
 
 @Component({
@@ -24,7 +23,6 @@ export class ProductVariantComponent {
   readonly translate = inject(TranslateService);
   private readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
-  private readonly alert = inject(AlertService);
 
   readonly adding = signal(false);
 
@@ -45,9 +43,8 @@ export class ProductVariantComponent {
     this.adding.set(true);
     try {
       await this.cart.addItem(this.variant().id);
-      this.alert.success(this.translate.t('cart.addedSuccess'));
     } catch {
-      this.alert.error(this.translate.t('cart.addedError'));
+      // error handled by interceptor
     } finally {
       this.adding.set(false);
     }

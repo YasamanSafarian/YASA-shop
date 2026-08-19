@@ -1,7 +1,21 @@
 <section class="cart-page">
   <div class="container cart-page__inner">
     <header class="cart-page__header">
-      <h1 class="cart-page__title">{{ translate.t('cart.title') }}</h1>
+      <h1 class="cart-page__title">
+        @if (step() === 'address') {
+          {{ translate.t('address.title') }}
+        } @else {
+          {{ translate.t('cart.title') }}
+        }
+      </h1>
+      @if (step() === 'address') {
+        <button type="button" class="cart-page__back" (click)="backToReview()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          {{ translate.t('cart.backToCart') }}
+        </button>
+      }
     </header>
 
     @if (!auth.isAuthenticated()) {
@@ -17,58 +31,109 @@
     } @else {
       <div class="cart-layout">
         <div class="cart-items">
-          @for (item of cart.items; track item.id) {
-            <div class="cart-item" [class.cart-item--updating]="updatingId() === item.id">
-              <div class="cart-item__media">
-                @if (item.variant.imageUrl) {
-                  <img [src]="item.variant.imageUrl" [alt]="item.variant.product.name" loading="lazy" />
-                } @else {
-                  <div class="cart-item__placeholder" aria-hidden="true"></div>
-                }
+          @if (step() === 'address') {
+            <form [formGroup]="addressForm" class="address-form" (ngSubmit)="placeOrder()">
+              <div class="address-form__row">
+                <app-ui-input
+                  formControlName="receiverName"
+                  [label]="translate.t('address.receiverName')"
+                  [placeholder]="translate.t('address.receiverNamePlaceholder')"
+                  [error]="fieldError('receiverName')"
+                />
               </div>
-              <div class="cart-item__info">
-                <a class="cart-item__brand" [routerLink]="['/brands', item.variant.product.brand.slug]">
-                  {{ item.variant.product.brand.name }}
-                </a>
-                <a class="cart-item__name" [routerLink]="['/products', item.variant.product.slug]">
-                  {{ item.variant.product.name }}
-                </a>
-                <span class="cart-item__variant">
-                  {{ item.variant.volumeMl }}ml · {{ item.variant.format }}
-                </span>
+              <div class="address-form__row">
+                <app-ui-input
+                  formControlName="receiverPhone"
+                  [label]="translate.t('address.receiverPhone')"
+                  [placeholder]="translate.t('address.receiverPhonePlaceholder')"
+                  [error]="fieldError('receiverPhone')"
+                />
               </div>
-              <div class="cart-item__qty">
+              <div class="address-form__row address-form__row--half">
+                <app-ui-input
+                  formControlName="province"
+                  [label]="translate.t('address.province')"
+                  [placeholder]="translate.t('address.provincePlaceholder')"
+                  [error]="fieldError('province')"
+                />
+                <app-ui-input
+                  formControlName="city"
+                  [label]="translate.t('address.city')"
+                  [placeholder]="translate.t('address.cityPlaceholder')"
+                  [error]="fieldError('city')"
+                />
+              </div>
+              <div class="address-form__row address-form__row--half">
+                <app-ui-input
+                  formControlName="postalCode"
+                  [label]="translate.t('address.postalCode')"
+                  [placeholder]="translate.t('address.postalCodePlaceholder')"
+                  [error]="fieldError('postalCode')"
+                />
+              </div>
+              <div class="address-form__row">
+                <app-ui-input
+                  formControlName="address"
+                  [label]="translate.t('address.fullAddress')"
+                  [placeholder]="translate.t('address.fullAddressPlaceholder')"
+                  [error]="fieldError('address')"
+                />
+              </div>
+            </form>
+          } @else {
+            @for (item of cart.items; track item.id) {
+              <div class="cart-item" [class.cart-item--updating]="updatingId() === item.id">
+                <div class="cart-item__media">
+                  @if (item.variant.imageUrl) {
+                    <img [src]="item.variant.imageUrl" [alt]="item.variant.product.name" loading="lazy" />
+                  } @else {
+                    <div class="cart-item__placeholder" aria-hidden="true"></div>
+                  }
+                </div>
+                <div class="cart-item__info">
+                  <a class="cart-item__brand" [routerLink]="['/brands', item.variant.product.brand.slug]">
+                    {{ item.variant.product.brand.name }}
+                  </a>
+                  <a class="cart-item__name" [routerLink]="['/products', item.variant.product.slug]">
+                    {{ item.variant.product.name }}
+                  </a>
+                  <span class="cart-item__variant">
+                    {{ item.variant.volumeMl }}ml · {{ item.variant.format }}
+                  </span>
+                </div>
+                <div class="cart-item__qty">
+                  <button
+                    type="button"
+                    class="cart-item__qty-btn"
+                    (click)="updateQuantity(item, -1)"
+                    [disabled]="updatingId() === item.id"
+                    [attr.aria-label]="translate.t('cart.decreaseQty')"
+                  >−</button>
+                  <span class="cart-item__qty-value">{{ item.quantity }}</span>
+                  <button
+                    type="button"
+                    class="cart-item__qty-btn"
+                    (click)="updateQuantity(item, 1)"
+                    [disabled]="updatingId() === item.id"
+                    [attr.aria-label]="translate.t('cart.increaseQty')"
+                  >+</button>
+                </div>
+                <div class="cart-item__price">
+                  {{ formatPrice(item.lineTotal) }}
+                </div>
                 <button
                   type="button"
-                  class="cart-item__qty-btn"
-                  (click)="updateQuantity(item, -1)"
+                  class="cart-item__remove"
+                  (click)="removeItem(item)"
                   [disabled]="updatingId() === item.id"
-                  [attr.aria-label]="translate.t('cart.decreaseQty')"
-                >−</button>
-                <span class="cart-item__qty-value">{{ item.quantity }}</span>
-                <button
-                  type="button"
-                  class="cart-item__qty-btn"
-                  (click)="updateQuantity(item, 1)"
-                  [disabled]="updatingId() === item.id"
-                  [attr.aria-label]="translate.t('cart.increaseQty')"
-                >+</button>
+                  [attr.aria-label]="translate.t('cart.removeItem')"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div class="cart-item__price">
-                {{ formatPrice(item.lineTotal) }}
-              </div>
-              <button
-                type="button"
-                class="cart-item__remove"
-                (click)="removeItem(item)"
-                [disabled]="updatingId() === item.id"
-                [attr.aria-label]="translate.t('cart.removeItem')"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            }
           }
         </div>
 
@@ -92,26 +157,42 @@
               <dd>{{ formatPrice(grandTotal()) }}</dd>
             </div>
           </dl>
-          <app-ui-button
-            variant="primary"
-            size="lg"
-            [block]="true"
-            [disabled]="ordering()"
-            (click)="checkout()"
-          >
-            @if (ordering()) {
-              {{ translate.t('cart.processing') }}
-            } @else {
-              {{ translate.t('cart.checkout') }}
-            }
-          </app-ui-button>
-          <app-ui-button
-            variant="link"
-            size="sm"
-            (click)="clearCart()"
-          >
-            {{ translate.t('cart.clearCart') }}
-          </app-ui-button>
+
+          @if (step() === 'address') {
+            <app-ui-button
+              variant="primary"
+              size="lg"
+              [block]="true"
+              [disabled]="ordering()"
+              (click)="placeOrder()"
+            >
+              @if (ordering()) {
+                {{ translate.t('cart.placingOrder') }}
+              } @else {
+                {{ translate.t('cart.confirmOrder') }}
+              }
+            </app-ui-button>
+          } @else {
+            <app-ui-button
+              variant="primary"
+              size="lg"
+              [block]="true"
+              (click)="goToAddress()"
+            >
+              {{ translate.t('cart.placeOrder') }}
+            </app-ui-button>
+            <app-ui-button
+              variant="link"
+              size="sm"
+              (click)="clearCart()"
+            >
+              {{ translate.t('cart.clearCart') }}
+            </app-ui-button>
+          }
+
+          @if (error()) {
+            <p class="cart-summary__error">{{ error() }}</p>
+          }
         </aside>
       </div>
     }

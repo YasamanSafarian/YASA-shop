@@ -76,33 +76,6 @@
   margin: 0;
 }
 
-.footer__socials {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 1rem;
-}
-
-.footer__social {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.08);
-  color: rgb(255 255 255 / 0.7);
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.footer__social:hover {
-  background: var(--color-rose-gold);
-  color: #fff;
-}
-
-.footer__social svg {
-  width: 18px;
-  height: 18px;
-}
-
 @media (min-width: 520px) {
   .footer__brand {
     grid-column: auto;

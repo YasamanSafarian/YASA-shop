@@ -57,10 +57,9 @@
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
-  justify-content-items: center;
-  gap: 1.5rem;
-  padding-block: 2rem 3.5rem;
-  min-height: 360px;
+  gap: 2rem;
+  padding-block: 3rem 3.5rem;
+  min-height: 420px;
 }
 
 /* ── Text animations ── */
@@ -124,22 +123,19 @@
 
 /* ── Product visual ── */
 .hero__visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  order: -1;
+  display: none;
 }
 
 .hero__product-img {
-  width: 55%;
-  max-width: 180px;
+  width: 100%;
+  max-width: 320px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 16px 32px rgb(0 0 0 / 0.3));
+  filter: drop-shadow(0 20px 40px rgb(0 0 0 / 0.35));
   opacity: 0;
-  transform: translateY(28px) scale(0.88);
+  transform: translateY(30px) scale(0.92);
   transition: opacity 0.6s ease, transform 0.6s ease;
-  transition-delay: 0.15s;
+  transition-delay: 0.3s;
 }
 
 .hero__visual.is-active .hero__product-img {
@@ -147,9 +143,10 @@
   transform: translateY(0) scale(1);
 }
 
+/* Float animation for active product */
 @keyframes hero-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
 .hero__visual.is-active .hero__product-img {
@@ -344,10 +341,6 @@
     min-height: 480px;
   }
 
-  .hero__product-img {
-    max-width: 260px;
-  }
-
   .promo-grid {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
@@ -384,7 +377,9 @@
   }
 
   .hero__visual {
-    order: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .hero__product-img {

@@ -11,11 +11,9 @@ export class OrderService {
   readonly total = signal(0);
   readonly page = signal(1);
   readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
 
   async load(page = 1, limit = 10): Promise<void> {
     this.loading.set(true);
-    this.error.set(null);
     try {
       const res = await firstValueFrom(
         this.api.get<PaginatedOrders>(`/orders?page=${page}&limit=${limit}`),
@@ -23,10 +21,6 @@ export class OrderService {
       this.orders.set(res.data);
       this.total.set(res.meta.total);
       this.page.set(page);
-    } catch (e: any) {
-      this.orders.set([]);
-      this.total.set(0);
-      this.error.set(e?.error?.message || e?.message || 'Failed to load orders');
     } finally {
       this.loading.set(false);
     }
