@@ -1,0 +1,295 @@
+.admin-page {
+  padding-block: 2rem 4rem;
+}
+
+.admin-page__header {
+  margin-bottom: 1.5rem;
+}
+
+.admin-page__header h1 {
+  margin: 0 0 1rem;
+}
+
+.admin-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.admin-page__filter {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-page__filter:hover {
+  background: var(--color-surface-alt, #f5f3ef);
+}
+
+.admin-page__filter.is-active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+}
+
+/* Order cards — reuse profile styles */
+.orders-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.order-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.order-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: start;
+  gap: 0.75rem;
+}
+
+.order-card__header:hover {
+  background: var(--color-surface-alt, #f5f3ef);
+}
+
+.order-card__header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.order-card__number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: monospace;
+  letter-spacing: 0.03em;
+  color: var(--color-navy);
+}
+
+.order-card__date {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.order-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.order-card__total {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.order-card__status {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.order-card__status--pending { background: #fff3cd; color: #856404; }
+.order-card__status--paid { background: #d4edda; color: #155724; }
+.order-card__status--packing { background: #cce5ff; color: #004085; }
+.order-card__status--shipped { background: #cce5ff; color: #004085; }
+.order-card__status--delivered { background: #d4edda; color: #155724; }
+.order-card__status--cancelled,
+.order-card__status--returned { background: #f8d7da; color: #721c24; }
+
+.order-card__chevron {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.order-card__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.order-card__body {
+  padding: 0 1.25rem 1.25rem;
+  display: grid;
+  gap: 1rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+.order-card__stepper {
+  padding: 0.75rem 0.25rem;
+}
+
+.order-card__cancelled {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: rgb(248 215 218 / 0.35);
+  border-radius: var(--radius-md);
+  color: #721c24;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.order-card__cancelled svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.order-card__items {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.order-card__item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border-light, #f0ede6);
+}
+
+.order-card__item:last-child {
+  border-bottom: 0;
+}
+
+.order-card__item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.order-card__item-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.order-card__item-variant {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.order-card__item-qty {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.order-card__item-price {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.order-card__summary {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.order-card__summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.order-card__summary-row--total {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-navy);
+}
+
+.order-card__address {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  background: var(--color-bg, #faf8f5);
+  border-radius: var(--radius-md);
+}
+
+.order-card__address-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.order-card__address-text {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.order-card__address-phone {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  direction: ltr;
+  text-align: end;
+}
+
+.order-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.orders-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 1rem;
+}
+
+.orders-pagination__btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.orders-pagination__btn:hover {
+  background: var(--color-surface-alt, #f5f3ef);
+}
+
+.orders-pagination__btn.is-active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+}

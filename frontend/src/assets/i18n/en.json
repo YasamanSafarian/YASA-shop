@@ -265,5 +265,16 @@
   "address.fullAddressPlaceholder": "Street, building, unit…",
   "address.error.required": "This field is required.",
   "address.error.pattern": "Invalid format.",
-  "address.error.maxLength": "Too long."
+  "address.error.maxLength": "Too long.",
+  "header.adminOrders": "Manage Orders",
+  "admin.title": "Manage Orders",
+  "admin.allOrders": "All",
+  "admin.loading": "Loading…",
+  "admin.empty": "No orders found.",
+  "admin.processing": "Processing…",
+  "admin.confirmPayment": "Confirm Payment",
+  "admin.confirmOrder": "Confirm Order",
+  "admin.shipOrder": "Ship Order",
+  "admin.deliverOrder": "Mark Delivered",
+  "admin.cancelOrder": "Cancel Order"
 }

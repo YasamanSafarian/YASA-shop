@@ -1,0 +1,173 @@
+<section class="admin-page">
+  <div class="container admin-page__inner">
+    <header class="admin-page__header">
+      <h1>{{ translate.t('admin.title') }}</h1>
+      <div class="admin-page__filters">
+        @for (s of statuses; track s.value) {
+          <button
+            type="button"
+            class="admin-page__filter"
+            [class.is-active]="filterStatus() === s.value"
+            (click)="onFilterChange(s.value)"
+          >{{ translate.t(s.labelKey) }}</button>
+        }
+      </div>
+    </header>
+
+    @if (adminService.loading()) {
+      <app-ui-state state="loading" [message]="translate.t('admin.loading')" />
+    } @else if (adminService.orders().length === 0) {
+      <app-ui-state state="empty" [message]="translate.t('admin.empty')" />
+    } @else {
+      <div class="orders-list">
+        @for (order of adminService.orders(); track order.id) {
+          <div class="order-card" [class.order-card--expanded]="expandedId() === order.id">
+            <button
+              type="button"
+              class="order-card__header"
+              (click)="toggleExpand(order.id)"
+            >
+              <div class="order-card__header-info">
+                <span class="order-card__number">{{ order.orderNumber }}</span>
+                <span class="order-card__date">
+                  {{ formatDate(order.createdAt) }} · {{ order.address.receiverName }}
+                </span>
+              </div>
+              <div class="order-card__header-right">
+                <span class="order-card__total">{{ formatPrice(order.total) }}</span>
+                <span class="order-card__status order-card__status--{{ order.statuses.order }}">
+                  {{ statusLabel(order.statuses.order) }}
+                </span>
+                <svg class="order-card__chevron" [class.is-open]="expandedId() === order.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </button>
+
+            @if (expandedId() === order.id) {
+              <div class="order-card__body">
+                @if (isCancelled(order)) {
+                  <div class="order-card__cancelled">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="m15 9-6 6M9 9l6 6" />
+                    </svg>
+                    <span>{{ statusLabel(order.statuses.order) }}</span>
+                  </div>
+                } @else {
+                  <div class="order-card__stepper">
+                    <app-ui-stepper [steps]="getSteps()" [currentStep]="getStepIndex(order)" />
+                  </div>
+                }
+
+                <div class="order-card__items">
+                  @for (item of order.items; track item.id) {
+                    <div class="order-card__item">
+                      <div class="order-card__item-info">
+                        <span class="order-card__item-name">{{ item.productName }}</span>
+                        <span class="order-card__item-variant">{{ item.volumeMl }}ml · {{ item.format }}</span>
+                      </div>
+                      <div class="order-card__item-qty">× {{ item.quantity }}</div>
+                      <div class="order-card__item-price">{{ formatPrice(item.lineTotal) }}</div>
+                    </div>
+                  }
+                </div>
+
+                <div class="order-card__summary">
+                  <div class="order-card__summary-row">
+                    <span>{{ translate.t('orders.subtotal') }}</span>
+                    <span>{{ formatPrice(order.subtotal) }}</span>
+                  </div>
+                  <div class="order-card__summary-row">
+                    <span>{{ translate.t('orders.shipping') }}</span>
+                    <span>{{ formatPrice(order.shippingFee) }}</span>
+                  </div>
+                  <div class="order-card__summary-row order-card__summary-row--total">
+                    <span>{{ translate.t('orders.total') }}</span>
+                    <span>{{ formatPrice(order.total) }}</span>
+                  </div>
+                </div>
+
+                <div class="order-card__address">
+                  <span class="order-card__address-label">{{ translate.t('orders.deliveryAddress') }}</span>
+                  <span class="order-card__address-text">
+                    {{ order.address.receiverName }} — {{ order.address.province }}، {{ order.address.city }}، {{ order.address.address }}
+                  </span>
+                  <span class="order-card__address-phone">{{ order.address.receiverPhone }}</span>
+                </div>
+
+                @if (!isCancelled(order)) {
+                  <div class="order-card__actions">
+                    @if (order.statuses.payment !== 'paid') {
+                      <app-ui-button
+                        variant="primary"
+                        size="sm"
+                        [disabled]="processingId() === order.id"
+                        (click)="confirmPayment(order)"
+                      >
+                        {{ processingId() === order.id ? translate.t('admin.processing') : translate.t('admin.confirmPayment') }}
+                      </app-ui-button>
+                    }
+                    @if (order.statuses.payment === 'paid' && order.statuses.order === 'paid') {
+                      <app-ui-button
+                        variant="primary"
+                        size="sm"
+                        [disabled]="processingId() === order.id"
+                        (click)="confirmOrder(order)"
+                      >
+                        {{ processingId() === order.id ? translate.t('admin.processing') : translate.t('admin.confirmOrder') }}
+                      </app-ui-button>
+                    }
+                    @if (order.statuses.order === 'packing') {
+                      <app-ui-button
+                        variant="primary"
+                        size="sm"
+                        [disabled]="processingId() === order.id"
+                        (click)="shipOrder(order)"
+                      >
+                        {{ processingId() === order.id ? translate.t('admin.processing') : translate.t('admin.shipOrder') }}
+                      </app-ui-button>
+                    }
+                    @if (order.statuses.order === 'shipped') {
+                      <app-ui-button
+                        variant="primary"
+                        size="sm"
+                        [disabled]="processingId() === order.id"
+                        (click)="deliverOrder(order)"
+                      >
+                        {{ processingId() === order.id ? translate.t('admin.processing') : translate.t('admin.deliverOrder') }}
+                      </app-ui-button>
+                    }
+                    @if (order.statuses.order !== 'cancelled' && order.statuses.order !== 'delivered') {
+                      <app-ui-button
+                        variant="outline"
+                        size="sm"
+                        [disabled]="processingId() === order.id"
+                        (click)="cancelOrder(order)"
+                      >
+                        {{ translate.t('admin.cancelOrder') }}
+                      </app-ui-button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <div class="orders-pagination">
+          @for (p of [].constructor(totalPages); track p; let i = $index) {
+            <button
+              type="button"
+              class="orders-pagination__btn"
+              [class.is-active]="adminService.page() === i + 1"
+              (click)="loadPage(i + 1)"
+            >{{ i + 1 }}</button>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

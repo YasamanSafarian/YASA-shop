@@ -11,9 +11,11 @@ import { CategoryDetailComponent } from './features/category-detail/category-det
 import { CartComponent } from './features/cart/cart.component';
 import { OrderConfirmationComponent } from './features/order-confirmation/order-confirmation.component';
 import { ProfileComponent } from './features/profile/profile.component';
+import { AdminOrdersComponent } from './features/admin/admin-orders.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -36,6 +38,12 @@ export const routes: Routes = [
     path: 'profile',
     component: ProfileComponent,
     canActivate: [authGuard],
+  },
+
+  {
+    path: 'admin/orders',
+    component: AdminOrdersComponent,
+    canActivate: [authGuard, adminGuard],
   },
 
   { path: '**', component: NotFoundComponent },

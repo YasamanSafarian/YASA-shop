@@ -265,5 +265,16 @@
   "address.fullAddressPlaceholder": "خیابان، کوچه، پلاک…",
   "address.error.required": "این فیلد الزامی است.",
   "address.error.pattern": "فرمت نامعتبر است.",
-  "address.error.maxLength": "خیلی طولانی است."
+  "address.error.maxLength": "خیلی طولانی است.",
+  "header.adminOrders": "مدیریت سفارش‌ها",
+  "admin.title": "مدیریت سفارش‌ها",
+  "admin.allOrders": "همه",
+  "admin.loading": "در حال بارگذاری…",
+  "admin.empty": "سفارشی یافت نشد.",
+  "admin.processing": "در حال پردازش…",
+  "admin.confirmPayment": "تأیید پرداخت",
+  "admin.confirmOrder": "تأیید سفارش",
+  "admin.shipOrder": "ارسال سفارش",
+  "admin.deliverOrder": "تحویل داده شد",
+  "admin.cancelOrder": "لغو سفارش"
 }
