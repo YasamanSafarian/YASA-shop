@@ -14,7 +14,7 @@
       </div>
     </header>
 
-    @if (adminService.loading()) {
+    @if (adminService.ordersLoading()) {
       <app-ui-state state="loading" [message]="translate.t('admin.loading')" />
     } @else if (adminService.orders().length === 0) {
       <app-ui-state state="empty" [message]="translate.t('admin.empty')" />
@@ -162,7 +162,7 @@
             <button
               type="button"
               class="orders-pagination__btn"
-              [class.is-active]="adminService.page() === i + 1"
+              [class.is-active]="adminService.ordersPage() === i + 1"
               (click)="loadPage(i + 1)"
             >{{ i + 1 }}</button>
           }

@@ -36,7 +36,7 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   loadOrders(): void {
-    this.adminService.load(1, 20, this.filterStatus() || undefined);
+    this.adminService.loadOrders(1, 20, this.filterStatus() || undefined);
   }
 
   onFilterChange(status: string): void {
@@ -94,7 +94,7 @@ export class AdminOrdersComponent implements OnInit {
   async confirmPayment(order: Order): Promise<void> {
     this.processingId.set(order.id);
     try {
-      await this.adminService.updateStatus(order.id, { paymentStatus: 'paid', orderStatus: 'paid' });
+      await this.adminService.updateOrderStatus(order.id, { paymentStatus: 'paid', orderStatus: 'paid' });
     } catch {
       // handled by interceptor
     } finally {
@@ -105,7 +105,7 @@ export class AdminOrdersComponent implements OnInit {
   async confirmOrder(order: Order): Promise<void> {
     this.processingId.set(order.id);
     try {
-      await this.adminService.updateStatus(order.id, { orderStatus: 'packing' });
+      await this.adminService.updateOrderStatus(order.id, { orderStatus: 'packing' });
     } catch {
       // handled by interceptor
     } finally {
@@ -116,7 +116,7 @@ export class AdminOrdersComponent implements OnInit {
   async shipOrder(order: Order): Promise<void> {
     this.processingId.set(order.id);
     try {
-      await this.adminService.updateStatus(order.id, { orderStatus: 'shipped', shipmentStatus: 'sent' });
+      await this.adminService.updateOrderStatus(order.id, { orderStatus: 'shipped', shipmentStatus: 'sent' });
     } catch {
       // handled by interceptor
     } finally {
@@ -127,7 +127,7 @@ export class AdminOrdersComponent implements OnInit {
   async deliverOrder(order: Order): Promise<void> {
     this.processingId.set(order.id);
     try {
-      await this.adminService.updateStatus(order.id, { orderStatus: 'delivered', shipmentStatus: 'delivered' });
+      await this.adminService.updateOrderStatus(order.id, { orderStatus: 'delivered', shipmentStatus: 'delivered' });
     } catch {
       // handled by interceptor
     } finally {
@@ -138,7 +138,7 @@ export class AdminOrdersComponent implements OnInit {
   async cancelOrder(order: Order): Promise<void> {
     this.processingId.set(order.id);
     try {
-      await this.adminService.updateStatus(order.id, { orderStatus: 'cancelled' });
+      await this.adminService.updateOrderStatus(order.id, { orderStatus: 'cancelled' });
     } catch {
       // handled by interceptor
     } finally {
@@ -147,10 +147,10 @@ export class AdminOrdersComponent implements OnInit {
   }
 
   loadPage(page: number): void {
-    this.adminService.load(page, 20, this.filterStatus() || undefined);
+    this.adminService.loadOrders(page, 20, this.filterStatus() || undefined);
   }
 
   get totalPages(): number {
-    return Math.ceil(this.adminService.total() / 20);
+    return Math.ceil(this.adminService.ordersTotal() / 20);
   }
 }

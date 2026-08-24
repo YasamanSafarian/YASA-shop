@@ -12,6 +12,7 @@ import { CartComponent } from './features/cart/cart.component';
 import { OrderConfirmationComponent } from './features/order-confirmation/order-confirmation.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { AdminOrdersComponent } from './features/admin/admin-orders.component';
+import { AdminProductsComponent } from './features/admin/admin-products.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -43,6 +44,11 @@ export const routes: Routes = [
   {
     path: 'admin/orders',
     component: AdminOrdersComponent,
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/products',
+    component: AdminProductsComponent,
     canActivate: [authGuard, adminGuard],
   },
 

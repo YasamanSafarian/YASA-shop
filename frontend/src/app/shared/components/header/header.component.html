@@ -56,6 +56,11 @@
               <path d="m9 14 2 2 4-4" />
             </svg>
           </a>
+          <a routerLink="/admin/products" class="header__link" [attr.title]="translate.t('header.adminProducts')">
+            <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4M4 7l8 4M4 7v10l8 4m0-10v10" />
+            </svg>
+          </a>
         }
         <button type="button" class="header__icon-btn" [attr.title]="translate.t('header.signOut')" (click)="logout()">
           <svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
