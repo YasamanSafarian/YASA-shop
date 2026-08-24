@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -24,6 +25,11 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 @Roles('admin')
 export class AdminCatalogController {
   constructor(private readonly adminCatalogService: AdminCatalogService) {}
+
+  @Get('notes')
+  listNotes() {
+    return this.adminCatalogService.listNotes();
+  }
 
   @Post('brands')
   @HttpCode(HttpStatus.CREATED)

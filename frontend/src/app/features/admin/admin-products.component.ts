@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AdminService, Brand, ProductDetail, ProductVariant } from '../../core/services/admin.service';
+import { AdminService, Brand, Note, ProductDetail, ProductVariant } from '../../core/services/admin.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { UiSelectComponent, UiSelectOption } from '../../shared/components/ui/ui-select/ui-select.component';
@@ -31,6 +31,16 @@ export class AdminProductsComponent implements OnInit {
   readonly editingVariantId = signal<string | null>(null);
   readonly variantError = signal('');
   readonly variantProductId = signal<string | null>(null);
+
+  /* ── Notes editing ── */
+  readonly notesEditMode = signal(false);
+  readonly notesSaving = signal(false);
+  readonly notesError = signal('');
+  notesDraft = { topIds: [] as string[], middleIds: [] as string[], baseIds: [] as string[] };
+
+  /* ── Image upload ── */
+  readonly uploadingImage = signal(false);
+  readonly uploadingVariantId = signal<string | null>(null);
 
   form = {
     name: '',
@@ -78,6 +88,7 @@ export class AdminProductsComponent implements OnInit {
   ngOnInit(): void {
     this.admin.loadProducts();
     this.admin.loadBrands();
+    this.admin.loadNotes();
   }
 
   onSearch(): void {
@@ -270,11 +281,95 @@ export class AdminProductsComponent implements OnInit {
     return price.toLocaleString('en-US');
   }
 
+  getPrimaryImage(variant: ProductVariant): string {
+    const primary = variant.images.find(i => i.isPrimary);
+    return primary?.imageUrl || variant.images[0]?.imageUrl || '';
+  }
+
   loadPage(page: number): void {
     this.admin.loadProducts(page, 20, this.search() || undefined);
   }
 
   get totalPages(): number {
     return Math.ceil(this.admin.productsTotal() / 20);
+  }
+
+  /* ── Notes editing ── */
+  openNotesEditor(pd: ProductDetail): void {
+    this.admin.loadNotes();
+    this.notesDraft = {
+      topIds: pd.notes.top.map(name => this.admin.allNotes().find(n => n.name === name)?.id).filter(Boolean) as string[],
+      middleIds: pd.notes.middle.map(name => this.admin.allNotes().find(n => n.name === name)?.id).filter(Boolean) as string[],
+      baseIds: pd.notes.base.map(name => this.admin.allNotes().find(n => n.name === name)?.id).filter(Boolean) as string[],
+    };
+    this.notesError.set('');
+    this.notesEditMode.set(true);
+  }
+
+  cancelNotesEdit(): void {
+    this.notesEditMode.set(false);
+    this.notesError.set('');
+  }
+
+  toggleNote(type: 'topIds' | 'middleIds' | 'baseIds', noteId: string): void {
+    const arr = this.notesDraft[type];
+    const idx = arr.indexOf(noteId);
+    if (idx === -1) {
+      arr.push(noteId);
+    } else {
+      arr.splice(idx, 1);
+    }
+  }
+
+  isNoteSelected(type: 'topIds' | 'middleIds' | 'baseIds', noteId: string): boolean {
+    return this.notesDraft[type].includes(noteId);
+  }
+
+  async saveNotes(productId: string): Promise<void> {
+    this.notesSaving.set(true);
+    this.notesError.set('');
+    try {
+      await this.admin.updateProductNotes(productId, this.notesDraft.topIds, this.notesDraft.middleIds, this.notesDraft.baseIds);
+      this.notesEditMode.set(false);
+      if (this.expandedSlug()) {
+        await this.admin.loadProductDetail(this.expandedSlug()!);
+      }
+    } catch (e: any) {
+      this.notesError.set(e?.error?.message || 'Failed to update notes');
+    } finally {
+      this.notesSaving.set(false);
+    }
+  }
+
+  /* ── Image upload ── */
+  onImageSelected(event: Event, variantId: string): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return Promise.resolve();
+    this.uploadingVariantId.set(variantId);
+    this.uploadingImage.set(true);
+    return this.admin.uploadImage(variantId, file).then(async () => {
+      if (this.expandedSlug()) {
+        await this.admin.loadProductDetail(this.expandedSlug()!);
+      }
+    }).finally(() => {
+      this.uploadingImage.set(false);
+      this.uploadingVariantId.set(null);
+      input.value = '';
+    });
+  }
+
+  async deleteImage(imageId: string): Promise<void> {
+    await this.admin.deleteImage(imageId);
+    if (this.expandedSlug()) {
+      await this.admin.loadProductDetail(this.expandedSlug()!);
+    }
+  }
+
+  async setPrimaryImage(imageId: string): Promise<void> {
+    await this.admin.updateImage(imageId, { isPrimary: true });
+    if (this.expandedSlug()) {
+      await this.admin.loadProductDetail(this.expandedSlug()!);
+    }
   }
 }

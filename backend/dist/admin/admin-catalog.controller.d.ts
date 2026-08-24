@@ -6,6 +6,11 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export declare class AdminCatalogController {
     private readonly adminCatalogService;
     constructor(adminCatalogService: AdminCatalogService);
+    listNotes(): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }[]>;
     createBrand(dto: CreateBrandDto): Promise<{
         name: string;
         id: string;

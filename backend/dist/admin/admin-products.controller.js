@@ -14,6 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminProductsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
+const crypto_1 = require("crypto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
@@ -24,6 +28,7 @@ const create_product_dto_2 = require("./dto/create-product.dto");
 const update_variant_dto_1 = require("./dto/update-variant.dto");
 const update_stock_dto_1 = require("./dto/update-stock.dto");
 const list_admin_products_query_1 = require("./dto/list-admin-products.query");
+const product_extras_dto_1 = require("./dto/product-extras.dto");
 let AdminProductsController = class AdminProductsController {
     adminProductsService;
     constructor(adminProductsService) {
@@ -52,6 +57,18 @@ let AdminProductsController = class AdminProductsController {
     }
     removeVariant(variantId) {
         return this.adminProductsService.removeVariant(variantId);
+    }
+    addImage(variantId, file) {
+        return this.adminProductsService.addImage(variantId, file);
+    }
+    updateImage(imageId, dto) {
+        return this.adminProductsService.updateImage(imageId, dto);
+    }
+    removeImage(imageId) {
+        return this.adminProductsService.removeImage(imageId);
+    }
+    updateNotes(id, dto) {
+        return this.adminProductsService.updateNotes(id, dto);
     }
 };
 exports.AdminProductsController = AdminProductsController;
@@ -117,6 +134,57 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AdminProductsController.prototype, "removeVariant", null);
+__decorate([
+    (0, common_1.Post)('variants/:variantId/images'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/products',
+            filename: (_req, file, cb) => {
+                const unique = (0, crypto_1.randomUUID)();
+                const ext = (0, path_1.extname)(file.originalname).toLowerCase();
+                cb(null, `${unique}${ext}`);
+            },
+        }),
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: (_req, file, cb) => {
+            const allowed = /\.(jpg|jpeg|png|webp|gif)$/i;
+            if (!allowed.test((0, path_1.extname)(file.originalname))) {
+                cb(new Error('Only image files are allowed'), false);
+                return;
+            }
+            cb(null, true);
+        },
+    })),
+    __param(0, (0, common_1.Param)('variantId', common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], AdminProductsController.prototype, "addImage", null);
+__decorate([
+    (0, common_1.Patch)('images/:imageId'),
+    __param(0, (0, common_1.Param)('imageId', common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, product_extras_dto_1.UpdateImageDto]),
+    __metadata("design:returntype", void 0)
+], AdminProductsController.prototype, "updateImage", null);
+__decorate([
+    (0, common_1.Delete)('images/:imageId'),
+    __param(0, (0, common_1.Param)('imageId', common_1.ParseUUIDPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AdminProductsController.prototype, "removeImage", null);
+__decorate([
+    (0, common_1.Patch)(':id/notes'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, product_extras_dto_1.UpdateProductNotesDto]),
+    __metadata("design:returntype", void 0)
+], AdminProductsController.prototype, "updateNotes", null);
 exports.AdminProductsController = AdminProductsController = __decorate([
     (0, common_1.Controller)('admin/products'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

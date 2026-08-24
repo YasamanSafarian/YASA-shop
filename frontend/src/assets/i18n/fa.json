@@ -322,5 +322,6 @@
   "adminProducts.price": "قیمت",
   "adminProducts.stockQuantity": "موجودی",
   "adminProducts.confirmDeleteVariant": "آیا از حذف این اندازه مطمئن هستید؟",
-  "adminProducts.variantErrorSku": "کد محصول الزامی است."
+  "adminProducts.variantErrorSku": "کد محصول الزامی است.",
+  "adminProducts.families": "خانواده‌های عطر"
 }

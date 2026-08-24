@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminProductsService = void 0;
 const common_1 = require("@nestjs/common");
+const fs_1 = require("fs");
+const path_1 = require("path");
 const prisma_service_1 = require("../database/prisma.service");
 const products_service_1 = require("../catalog/products/products.service");
 const slugify_1 = require("../common/utils/slugify");
@@ -192,6 +194,92 @@ let AdminProductsService = class AdminProductsService {
             sku: variant.sku,
             stockQuantity: variant.stock_quantity,
         };
+    }
+    async addImage(variantId, file) {
+        await this.findVariant(variantId);
+        const imageUrl = `/uploads/products/${file.filename}`;
+        const existingCount = await this.prisma.product_images.count({
+            where: { variant_id: variantId },
+        });
+        const image = await this.prisma.product_images.create({
+            data: {
+                variant_id: variantId,
+                image_url: imageUrl,
+                alt_text: file.originalname,
+                sort_order: existingCount,
+                is_primary: existingCount === 0,
+            },
+        });
+        return image;
+    }
+    async updateImage(imageId, dto) {
+        const image = await this.prisma.product_images.findUnique({
+            where: { id: imageId },
+        });
+        if (!image) {
+            throw new common_1.NotFoundException('image not found');
+        }
+        if (dto.isPrimary) {
+            await this.prisma.product_images.updateMany({
+                where: { variant_id: image.variant_id },
+                data: { is_primary: false },
+            });
+        }
+        return this.prisma.product_images.update({
+            where: { id: imageId },
+            data: {
+                ...(dto.isPrimary !== undefined && { is_primary: dto.isPrimary }),
+                ...(dto.altText !== undefined && { alt_text: dto.altText }),
+            },
+        });
+    }
+    async removeImage(imageId) {
+        const image = await this.prisma.product_images.findUnique({
+            where: { id: imageId },
+        });
+        if (!image) {
+            throw new common_1.NotFoundException('image not found');
+        }
+        const filePath = (0, path_1.join)(process.cwd(), image.image_url);
+        if ((0, fs_1.existsSync)(filePath)) {
+            (0, fs_1.unlinkSync)(filePath);
+        }
+        await this.prisma.product_images.delete({ where: { id: imageId } });
+        if (image.is_primary) {
+            const next = await this.prisma.product_images.findFirst({
+                where: { variant_id: image.variant_id },
+                orderBy: { sort_order: 'asc' },
+            });
+            if (next) {
+                await this.prisma.product_images.update({
+                    where: { id: next.id },
+                    data: { is_primary: true },
+                });
+            }
+        }
+        return { message: 'image deleted' };
+    }
+    async updateNotes(productId, dto) {
+        await this.findProduct(productId);
+        await this.prisma.$transaction(async (tx) => {
+            await tx.product_notes.deleteMany({
+                where: { product_id: productId },
+            });
+            const entries = [];
+            for (const noteId of dto.topNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'top' });
+            }
+            for (const noteId of dto.middleNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'middle' });
+            }
+            for (const noteId of dto.baseNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'base' });
+            }
+            if (entries.length) {
+                await tx.product_notes.createMany({ data: entries });
+            }
+        });
+        return { message: 'notes updated' };
     }
     async findProduct(id) {
         const product = await this.prisma.products.findFirst({

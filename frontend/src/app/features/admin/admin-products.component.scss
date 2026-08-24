@@ -136,10 +136,28 @@
   background: var(--color-surface-alt, #f5f3ef);
 }
 
+.product-row__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.product-row__thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-bg, #faf8f5);
+}
+
 .product-row__info {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
   min-width: 0;
 }
 
@@ -147,6 +165,13 @@
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--color-text);
+}
+
+.product-row__code {
+  font-size: 0.72rem;
+  font-family: monospace;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
 }
 
 .product-row__meta {
@@ -214,10 +239,108 @@
   line-height: 1.6;
 }
 
+.product-detail__families h4,
 .product-detail__notes h4 {
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
   color: var(--color-navy);
+}
+
+.product-detail__notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-detail__notes-header h4 {
+  margin: 0;
+}
+
+.product-detail__notes-edit-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.product-detail__notes-edit-btn:hover {
+  background: var(--color-surface-alt, #f5f3ef);
+  color: var(--color-text);
+}
+
+.product-detail__notes-edit-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ── Notes editor ── */
+.product-detail__notes-editor {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.notes-editor__section {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.notes-editor__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.notes-editor__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.notes-editor__chip {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  background: var(--color-bg, #faf8f5);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notes-editor__chip:hover {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+
+.notes-editor__chip.is-selected {
+  background: rgb(43 59 96 / 0.12);
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+.product-detail__families-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.product-detail__family-chip {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: rgb(43 59 96 / 0.08);
+  color: var(--color-navy);
+  border-radius: var(--radius-sm);
 }
 
 .product-detail__notes-grid {
@@ -266,6 +389,145 @@
   background: var(--color-bg, #faf8f5);
   border-radius: var(--radius-sm);
   margin-bottom: 0.4rem;
+}
+
+.variant-row__images {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.variant-row__img-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.variant-row__img-wrap .variant-row__img {
+  width: 40px;
+  height: 40px;
+}
+
+.variant-row__img-wrap.is-primary {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+
+.variant-row__img-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.6rem;
+  line-height: 1;
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+}
+
+.variant-row__img-actions {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  display: none;
+  justify-content: center;
+  gap: 2px;
+  background: rgb(0 0 0 / 0.55);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.variant-row__img-wrap:hover .variant-row__img-actions {
+  display: flex;
+}
+
+.variant-row__img-btn {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.variant-row__img-btn svg {
+  width: 11px;
+  height: 11px;
+}
+
+.variant-row__img-btn--danger:hover {
+  color: #ff6b6b;
+}
+
+.variant-row__img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-surface);
+}
+
+.variant-row__img--empty {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
+.variant-row__img--empty svg {
+  width: 20px;
+  height: 20px;
+}
+
+.variant-row__upload-btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.variant-row__upload-btn:hover {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+
+.variant-row__upload-btn.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.variant-row__upload-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.variant-row__upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-navy);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .variant-row__info {

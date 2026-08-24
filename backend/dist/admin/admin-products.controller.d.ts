@@ -5,6 +5,7 @@ import { CreateVariantDto } from './dto/create-product.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
+import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
 export declare class AdminProductsController {
     private readonly adminProductsService;
     constructor(adminProductsService: AdminProductsService);
@@ -257,6 +258,30 @@ export declare class AdminProductsController {
         weight: number | null;
     }>;
     removeVariant(variantId: string): Promise<{
+        message: string;
+    }>;
+    addImage(variantId: string, file: any): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    updateImage(imageId: string, dto: UpdateImageDto): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    removeImage(imageId: string): Promise<{
+        message: string;
+    }>;
+    updateNotes(id: string, dto: UpdateProductNotesDto): Promise<{
         message: string;
     }>;
 }

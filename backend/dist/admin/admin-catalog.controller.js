@@ -27,6 +27,9 @@ let AdminCatalogController = class AdminCatalogController {
     constructor(adminCatalogService) {
         this.adminCatalogService = adminCatalogService;
     }
+    listNotes() {
+        return this.adminCatalogService.listNotes();
+    }
     createBrand(dto) {
         return this.adminCatalogService.createBrand(dto);
     }
@@ -47,6 +50,12 @@ let AdminCatalogController = class AdminCatalogController {
     }
 };
 exports.AdminCatalogController = AdminCatalogController;
+__decorate([
+    (0, common_1.Get)('notes'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AdminCatalogController.prototype, "listNotes", null);
 __decorate([
     (0, common_1.Post)('brands'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),

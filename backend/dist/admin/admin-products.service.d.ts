@@ -5,6 +5,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
+import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
 export declare class AdminProductsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -258,6 +259,30 @@ export declare class AdminProductsService {
         id: string;
         sku: string;
         stockQuantity: number;
+    }>;
+    addImage(variantId: string, file: any): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    updateImage(imageId: string, dto: UpdateImageDto): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    removeImage(imageId: string): Promise<{
+        message: string;
+    }>;
+    updateNotes(productId: string, dto: UpdateProductNotesDto): Promise<{
+        message: string;
     }>;
     private findProduct;
     private findVariant;

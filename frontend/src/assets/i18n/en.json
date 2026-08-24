@@ -322,5 +322,6 @@
   "adminProducts.price": "Price",
   "adminProducts.stockQuantity": "Stock",
   "adminProducts.confirmDeleteVariant": "Are you sure you want to delete this variant?",
-  "adminProducts.variantErrorSku": "SKU is required."
+  "adminProducts.variantErrorSku": "SKU is required.",
+  "adminProducts.families": "Fragrance Families"
 }

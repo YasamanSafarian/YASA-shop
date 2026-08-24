@@ -56,6 +56,11 @@ export declare class AdminCatalogService {
     removeCategory(id: string): Promise<{
         message: string;
     }>;
+    listNotes(): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }[]>;
     private findBrand;
     private findCategory;
 }

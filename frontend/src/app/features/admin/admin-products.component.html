@@ -101,11 +101,21 @@
         @for (product of admin.products(); track product.id) {
           <div class="product-row" [class.product-row--expanded]="expandedId() === product.id">
             <button type="button" class="product-row__header" (click)="toggleExpand(product)">
-              <div class="product-row__info">
-                <span class="product-row__name">{{ product.name }}</span>
-                <span class="product-row__meta">
-                  {{ product.brand.name }} · {{ product.gender || '—' }} · {{ product.concentration || '—' }}
-                </span>
+              <div class="product-row__left">
+                @if (expandedId() === product.id && admin.productDetail()) {
+                  @for (variant of admin.productDetail()!.variants; track variant.id; let first = $first) {
+                    @if (first && variant.images.length) {
+                      <img class="product-row__thumb" [src]="getPrimaryImage(variant)" [alt]="product.name" />
+                    }
+                  }
+                }
+                <div class="product-row__info">
+                  <span class="product-row__name">{{ product.name }}</span>
+                  <span class="product-row__code">{{ product.slug }}</span>
+                  <span class="product-row__meta">
+                    {{ product.brand.name }} · {{ product.gender || '—' }} · {{ product.concentration || '—' }}
+                  </span>
+                </div>
               </div>
               <div class="product-row__right">
                 <span class="product-row__variants">{{ product.variantCount }} {{ translate.t('adminProducts.variants') }}</span>
@@ -129,29 +139,88 @@
                     <p class="product-detail__desc">{{ pd.description }}</p>
                   }
 
-                  @if (pd.notes.top.length || pd.notes.middle.length || pd.notes.base.length) {
-                    <div class="product-detail__notes">
-                      <h4>{{ translate.t('adminProducts.notes') }}</h4>
-                      <div class="product-detail__notes-grid">
-                        @if (pd.notes.top.length) {
-                          <div>
-                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesTop') }}</span>
-                            <span class="product-detail__notes-list">{{ pd.notes.top.join(', ') }}</span>
-                          </div>
-                        }
-                        @if (pd.notes.middle.length) {
-                          <div>
-                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesMiddle') }}</span>
-                            <span class="product-detail__notes-list">{{ pd.notes.middle.join(', ') }}</span>
-                          </div>
-                        }
-                        @if (pd.notes.base.length) {
-                          <div>
-                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesBase') }}</span>
-                            <span class="product-detail__notes-list">{{ pd.notes.base.join(', ') }}</span>
-                          </div>
+                  @if (pd.fragranceFamilies.length) {
+                    <div class="product-detail__families">
+                      <h4>{{ translate.t('adminProducts.families') }}</h4>
+                      <div class="product-detail__families-list">
+                        @for (fam of pd.fragranceFamilies; track fam.id) {
+                          <span class="product-detail__family-chip">{{ fam.name }}</span>
                         }
                       </div>
+                    </div>
+                  }
+
+                  @if (pd.notes.top.length || pd.notes.middle.length || pd.notes.base.length || notesEditMode()) {
+                    <div class="product-detail__notes">
+                      <div class="product-detail__notes-header">
+                        <h4>{{ translate.t('adminProducts.notes') }}</h4>
+                        @if (!notesEditMode()) {
+                          <button type="button" class="product-detail__notes-edit-btn" (click)="openNotesEditor(pd)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                          </button>
+                        }
+                      </div>
+
+                      @if (notesEditMode()) {
+                        <div class="product-detail__notes-editor">
+                          @if (notesError()) {
+                            <div class="product-form__error">{{ notesError() }}</div>
+                          }
+                          <div class="notes-editor__section">
+                            <span class="notes-editor__label">{{ translate.t('adminProducts.notesTop') }}</span>
+                            <div class="notes-editor__chips">
+                              @for (note of admin.allNotes(); track note.id) {
+                                <button type="button" class="notes-editor__chip" [class.is-selected]="isNoteSelected('topIds', note.id)" (click)="toggleNote('topIds', note.id)">{{ note.name }}</button>
+                              }
+                            </div>
+                          </div>
+                          <div class="notes-editor__section">
+                            <span class="notes-editor__label">{{ translate.t('adminProducts.notesMiddle') }}</span>
+                            <div class="notes-editor__chips">
+                              @for (note of admin.allNotes(); track note.id) {
+                                <button type="button" class="notes-editor__chip" [class.is-selected]="isNoteSelected('middleIds', note.id)" (click)="toggleNote('middleIds', note.id)">{{ note.name }}</button>
+                              }
+                            </div>
+                          </div>
+                          <div class="notes-editor__section">
+                            <span class="notes-editor__label">{{ translate.t('adminProducts.notesBase') }}</span>
+                            <div class="notes-editor__chips">
+                              @for (note of admin.allNotes(); track note.id) {
+                                <button type="button" class="notes-editor__chip" [class.is-selected]="isNoteSelected('baseIds', note.id)" (click)="toggleNote('baseIds', note.id)">{{ note.name }}</button>
+                              }
+                            </div>
+                          </div>
+                          <div class="product-form__actions">
+                            <app-ui-button variant="primary" size="sm" [disabled]="notesSaving()" (click)="saveNotes(pd.id)">
+                              {{ notesSaving() ? '…' : translate.t('adminProducts.save') }}
+                            </app-ui-button>
+                            <app-ui-button variant="ghost" size="sm" (click)="cancelNotesEdit()">
+                              {{ translate.t('adminProducts.cancel') }}
+                            </app-ui-button>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="product-detail__notes-grid">
+                          @if (pd.notes.top.length) {
+                            <div>
+                              <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesTop') }}</span>
+                              <span class="product-detail__notes-list">{{ pd.notes.top.join(', ') }}</span>
+                            </div>
+                          }
+                          @if (pd.notes.middle.length) {
+                            <div>
+                              <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesMiddle') }}</span>
+                              <span class="product-detail__notes-list">{{ pd.notes.middle.join(', ') }}</span>
+                            </div>
+                          }
+                          @if (pd.notes.base.length) {
+                            <div>
+                              <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesBase') }}</span>
+                              <span class="product-detail__notes-list">{{ pd.notes.base.join(', ') }}</span>
+                            </div>
+                          }
+                        </div>
+                      }
                     </div>
                   }
 
@@ -172,6 +241,36 @@
 
                     @for (variant of pd.variants; track variant.id) {
                       <div class="variant-row">
+                        <div class="variant-row__images">
+                          @if (variant.images.length) {
+                            @for (img of variant.images; track img.id) {
+                              <div class="variant-row__img-wrap" [class.is-primary]="img.isPrimary">
+                                <img class="variant-row__img" [src]="img.imageUrl" [alt]="img.altText || variant.sku" />
+                                @if (img.isPrimary) {
+                                  <span class="variant-row__img-badge">★</span>
+                                }
+                                <div class="variant-row__img-actions">
+                                  @if (!img.isPrimary) {
+                                    <button type="button" class="variant-row__img-btn" title="Set primary" (click)="setPrimaryImage(img.id)">
+                                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    </button>
+                                  }
+                                  <button type="button" class="variant-row__img-btn variant-row__img-btn--danger" title="Delete image" (click)="deleteImage(img.id)">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                  </button>
+                                </div>
+                              </div>
+                            }
+                          }
+                          <label class="variant-row__upload-btn" [class.is-disabled]="uploadingImage() && uploadingVariantId() === variant.id">
+                            <input type="file" accept="image/*" hidden (change)="onImageSelected($event, variant.id)" />
+                            @if (uploadingImage() && uploadingVariantId() === variant.id) {
+                              <span class="variant-row__upload-spinner"></span>
+                            } @else {
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            }
+                          </label>
+                        </div>
                         <div class="variant-row__info">
                           <span class="variant-row__sku">{{ variant.sku }}</span>
                           <span class="variant-row__meta">

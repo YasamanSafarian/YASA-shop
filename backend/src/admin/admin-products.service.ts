@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { existsSync, unlinkSync } from 'fs';
+import { join } from 'path';
 import { PrismaService } from '../database/prisma.service';
 import { productInclude } from '../catalog/products/products.service';
 import { slugify } from '../common/utils/slugify';
@@ -12,6 +14,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
+import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
 
 @Injectable()
 export class AdminProductsService {
@@ -214,6 +217,115 @@ export class AdminProductsService {
       sku: variant.sku,
       stockQuantity: variant.stock_quantity,
     };
+  }
+
+  /* ── Images ── */
+
+  async addImage(variantId: string, file: any) {
+    await this.findVariant(variantId);
+
+    const imageUrl = `/uploads/products/${file.filename}`;
+
+    const existingCount = await this.prisma.product_images.count({
+      where: { variant_id: variantId },
+    });
+
+    const image = await this.prisma.product_images.create({
+      data: {
+        variant_id: variantId,
+        image_url: imageUrl,
+        alt_text: file.originalname,
+        sort_order: existingCount,
+        is_primary: existingCount === 0,
+      },
+    });
+
+    return image;
+  }
+
+  async updateImage(imageId: string, dto: UpdateImageDto) {
+    const image = await this.prisma.product_images.findUnique({
+      where: { id: imageId },
+    });
+    if (!image) {
+      throw new NotFoundException('image not found');
+    }
+
+    if (dto.isPrimary) {
+      await this.prisma.product_images.updateMany({
+        where: { variant_id: image.variant_id },
+        data: { is_primary: false },
+      });
+    }
+
+    return this.prisma.product_images.update({
+      where: { id: imageId },
+      data: {
+        ...(dto.isPrimary !== undefined && { is_primary: dto.isPrimary }),
+        ...(dto.altText !== undefined && { alt_text: dto.altText }),
+      },
+    });
+  }
+
+  async removeImage(imageId: string): Promise<{ message: string }> {
+    const image = await this.prisma.product_images.findUnique({
+      where: { id: imageId },
+    });
+    if (!image) {
+      throw new NotFoundException('image not found');
+    }
+
+    const filePath = join(process.cwd(), image.image_url);
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+    }
+
+    await this.prisma.product_images.delete({ where: { id: imageId } });
+
+    if (image.is_primary) {
+      const next = await this.prisma.product_images.findFirst({
+        where: { variant_id: image.variant_id },
+        orderBy: { sort_order: 'asc' },
+      });
+      if (next) {
+        await this.prisma.product_images.update({
+          where: { id: next.id },
+          data: { is_primary: true },
+        });
+      }
+    }
+
+    return { message: 'image deleted' };
+  }
+
+  /* ── Notes ── */
+
+  async updateNotes(productId: string, dto: UpdateProductNotesDto) {
+    await this.findProduct(productId);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.product_notes.deleteMany({
+        where: { product_id: productId },
+      });
+
+      const entries: { product_id: string; note_id: string; note_type: 'top' | 'middle' | 'base' }[] = [];
+
+      for (const noteId of dto.topNoteIds) {
+        entries.push({ product_id: productId, note_id: noteId, note_type: 'top' });
+      }
+      for (const noteId of dto.middleNoteIds) {
+        entries.push({ product_id: productId, note_id: noteId, note_type: 'middle' });
+      }
+      for (const noteId of dto.baseNoteIds) {
+        entries.push({ product_id: productId, note_id: noteId, note_type: 'base' });
+      }
+
+      if (entries.length) {
+        await tx.product_notes.createMany({ data: entries });
+      }
+    });
+
+    return { message: 'notes updated' };
   }
 
   private async findProduct(id: string) {

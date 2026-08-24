@@ -106,6 +106,13 @@ export class AdminCatalogService {
     return { message: 'category deleted' };
   }
 
+  async listNotes() {
+    return this.prisma.notes.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, slug: true },
+    });
+  }
+
   private async findBrand(id: string) {
     const brand = await this.prisma.brands.findFirst({
       where: { id, deleted_at: null },

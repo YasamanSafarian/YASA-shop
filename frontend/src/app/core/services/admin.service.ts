@@ -26,6 +26,12 @@ export interface Brand {
   slug: string;
 }
 
+export interface Note {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface ProductVariant {
   id: string;
   sku: string;
@@ -38,7 +44,7 @@ export interface ProductVariant {
   weight: number | null;
   isDefault: boolean;
   isActive: boolean;
-  images: { id: string; imageUrl: string; isPrimary: boolean }[];
+  images: { id: string; imageUrl: string; isPrimary: boolean; altText: string | null }[];
 }
 
 export interface ProductDetail {
@@ -101,6 +107,10 @@ export class AdminService {
   /* ── Product detail ── */
   readonly productDetail = signal<ProductDetail | null>(null);
   readonly productDetailLoading = signal(false);
+
+  /* ── Notes (shared) ── */
+  readonly allNotes = signal<Note[]>([]);
+  readonly notesLoading = signal(false);
 
   /* ── Brands (shared) ── */
   readonly brands = signal<Brand[]>([]);
@@ -209,5 +219,34 @@ export class AdminService {
     const res = await firstValueFrom(this.api.get<Brand[] | { data: Brand[] }>('/brands'));
     const list = Array.isArray(res) ? res : res.data;
     this.brands.set(list);
+  }
+
+  /* ── Notes ── */
+  async loadNotes(): Promise<void> {
+    if (this.allNotes().length) return;
+    this.notesLoading.set(true);
+    try {
+      const res = await firstValueFrom(this.api.get<Note[]>('/admin/notes'));
+      this.allNotes.set(res);
+    } finally {
+      this.notesLoading.set(false);
+    }
+  }
+
+  async updateProductNotes(productId: string, topNoteIds: string[], middleNoteIds: string[], baseNoteIds: string[]): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/${productId}/notes`, { topNoteIds, middleNoteIds, baseNoteIds }));
+  }
+
+  /* ── Images ── */
+  async uploadImage(variantId: string, file: File): Promise<any> {
+    return firstValueFrom(this.api.upload(`/admin/products/variants/${variantId}/images`, file));
+  }
+
+  async updateImage(imageId: string, dto: { isPrimary?: boolean; altText?: string }): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/images/${imageId}`, dto));
+  }
+
+  async deleteImage(imageId: string): Promise<void> {
+    await firstValueFrom(this.api.delete(`/admin/products/images/${imageId}`));
   }
 }
