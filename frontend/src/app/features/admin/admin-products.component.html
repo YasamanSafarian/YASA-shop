@@ -25,7 +25,7 @@
 
     @if (showForm()) {
       <div class="product-form">
-        <h2>{{ translate.t('adminProducts.formTitle') }}</h2>
+        <h2>{{ editingId() ? translate.t('adminProducts.editTitle') : translate.t('adminProducts.formTitle') }}</h2>
 
         @if (error()) {
           <div class="product-form__error">{{ error() }}</div>
@@ -82,8 +82,8 @@
         </div>
 
         <div class="product-form__actions">
-          <app-ui-button variant="primary" size="sm" (click)="createProduct()">
-            {{ translate.t('adminProducts.create') }}
+          <app-ui-button variant="primary" size="sm" (click)="saveProduct()">
+            {{ editingId() ? translate.t('adminProducts.save') : translate.t('adminProducts.create') }}
           </app-ui-button>
           <app-ui-button variant="ghost" size="sm" (click)="resetForm()">
             {{ translate.t('adminProducts.cancel') }}
@@ -99,27 +99,113 @@
     } @else {
       <div class="products-list">
         @for (product of admin.products(); track product.id) {
-          <div class="product-row">
-            <div class="product-row__info">
-              <span class="product-row__name">{{ product.name }}</span>
-              <span class="product-row__meta">
-                {{ product.brand.name }} · {{ product.gender || '—' }} · {{ product.concentration || '—' }}
-              </span>
-            </div>
-            <div class="product-row__right">
-              <span class="product-row__variants">{{ product.variantCount }} {{ translate.t('adminProducts.variants') }}</span>
-              @if (!product.isActive) {
-                <span class="product-row__badge product-row__badge--inactive">{{ translate.t('adminProducts.inactive') }}</span>
-              }
-              <app-ui-button
-                variant="outline"
-                size="sm"
-                [disabled]="deletingId() === product.id"
-                (click)="deleteProduct(product.id)"
-              >
-                {{ deletingId() === product.id ? '…' : translate.t('adminProducts.delete') }}
-              </app-ui-button>
-            </div>
+          <div class="product-row" [class.product-row--expanded]="expandedId() === product.id">
+            <button type="button" class="product-row__header" (click)="toggleExpand(product)">
+              <div class="product-row__info">
+                <span class="product-row__name">{{ product.name }}</span>
+                <span class="product-row__meta">
+                  {{ product.brand.name }} · {{ product.gender || '—' }} · {{ product.concentration || '—' }}
+                </span>
+              </div>
+              <div class="product-row__right">
+                <span class="product-row__variants">{{ product.variantCount }} {{ translate.t('adminProducts.variants') }}</span>
+                @if (!product.isActive) {
+                  <span class="product-row__badge product-row__badge--inactive">{{ translate.t('adminProducts.inactive') }}</span>
+                }
+                <svg class="product-row__chevron" [class.is-open]="expandedId() === product.id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </button>
+
+            @if (expandedId() === product.id) {
+              <div class="product-row__body">
+                @if (admin.productDetailLoading()) {
+                  <app-ui-state state="loading" [message]="translate.t('adminProducts.loading')" />
+                }
+
+                @if (admin.productDetail(); as pd) {
+                  @if (pd.description) {
+                    <p class="product-detail__desc">{{ pd.description }}</p>
+                  }
+
+                  @if (pd.notes.top.length || pd.notes.middle.length || pd.notes.base.length) {
+                    <div class="product-detail__notes">
+                      <h4>{{ translate.t('adminProducts.notes') }}</h4>
+                      <div class="product-detail__notes-grid">
+                        @if (pd.notes.top.length) {
+                          <div>
+                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesTop') }}</span>
+                            <span class="product-detail__notes-list">{{ pd.notes.top.join(', ') }}</span>
+                          </div>
+                        }
+                        @if (pd.notes.middle.length) {
+                          <div>
+                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesMiddle') }}</span>
+                            <span class="product-detail__notes-list">{{ pd.notes.middle.join(', ') }}</span>
+                          </div>
+                        }
+                        @if (pd.notes.base.length) {
+                          <div>
+                            <span class="product-detail__notes-label">{{ translate.t('adminProducts.notesBase') }}</span>
+                            <span class="product-detail__notes-list">{{ pd.notes.base.join(', ') }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <div class="product-detail__stock-summary">
+                    <span>{{ translate.t('adminProducts.totalStock') }}: <strong>{{ totalStock(pd.variants) }}</strong></span>
+                    @if (isSoldOut(pd.variants)) {
+                      <span class="product-row__badge product-row__badge--soldout">{{ translate.t('adminProducts.soldOut') }}</span>
+                    }
+                  </div>
+
+                  <div class="product-detail__variants">
+                    <div class="product-detail__variants-header">
+                      <h4>{{ translate.t('adminProducts.variantsTitle') }}</h4>
+                      <app-ui-button variant="outline" size="sm" (click)="openAddVariant(pd.id)">
+                        {{ translate.t('adminProducts.addVariant') }}
+                      </app-ui-button>
+                    </div>
+
+                    @for (variant of pd.variants; track variant.id) {
+                      <div class="variant-row">
+                        <div class="variant-row__info">
+                          <span class="variant-row__sku">{{ variant.sku }}</span>
+                          <span class="variant-row__meta">
+                            {{ variant.volumeMl }}ml · {{ variant.format }} · {{ formatPrice(variant.price) }}
+                          </span>
+                        </div>
+                        <div class="variant-row__stock">
+                          <button type="button" class="variant-row__qty-btn" (click)="updateStockQuick(variant, -1)">−</button>
+                          <span class="variant-row__qty" [class.is-zero]="variant.stockQuantity === 0">{{ variant.stockQuantity }}</span>
+                          <button type="button" class="variant-row__qty-btn" (click)="updateStockQuick(variant, 1)">+</button>
+                        </div>
+                        <div class="variant-row__actions">
+                          <button type="button" class="variant-row__action-btn" (click)="openEditVariant(variant, pd.id)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                          </button>
+                          <button type="button" class="variant-row__action-btn variant-row__action-btn--danger" (click)="deleteVariant(variant)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="product-detail__actions">
+                    <app-ui-button variant="outline" size="sm" (click)="startEdit(pd)">
+                      {{ translate.t('adminProducts.edit') }}
+                    </app-ui-button>
+                    <app-ui-button variant="outline" size="sm" [disabled]="deletingId() === pd.id" (click)="deleteProduct(pd.id)">
+                      {{ deletingId() === pd.id ? '…' : translate.t('adminProducts.delete') }}
+                    </app-ui-button>
+                  </div>
+                }
+              </div>
+            }
           </div>
         }
       </div>
@@ -136,6 +222,55 @@
           }
         </div>
       }
+    }
+
+    @if (showVariantForm()) {
+      <div class="variant-modal" (click)="closeVariantForm()">
+        <div class="variant-modal__content" (click)="$event.stopPropagation()">
+          <h3>{{ editingVariantId() ? translate.t('adminProducts.editVariant') : translate.t('adminProducts.addVariant') }}</h3>
+
+          @if (variantError()) {
+            <div class="product-form__error">{{ variantError() }}</div>
+          }
+
+          <div class="product-form__grid">
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.sku') }} *</label>
+              <input type="text" [(ngModel)]="variantForm.sku" placeholder="SKU-001" />
+            </div>
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.format') }}</label>
+              <app-ui-select
+                id="variant-format"
+                [options]="formatOptions"
+                ngModel
+                (ngModelChange)="variantForm.format = $event"
+              />
+            </div>
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.volumeMl') }}</label>
+              <input type="number" [(ngModel)]="variantForm.volumeMl" min="1" />
+            </div>
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.price') }}</label>
+              <input type="number" [(ngModel)]="variantForm.price" min="0" />
+            </div>
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.stockQuantity') }}</label>
+              <input type="number" [(ngModel)]="variantForm.stockQuantity" min="0" />
+            </div>
+          </div>
+
+          <div class="product-form__actions">
+            <app-ui-button variant="primary" size="sm" (click)="saveVariant()">
+              {{ translate.t('adminProducts.save') }}
+            </app-ui-button>
+            <app-ui-button variant="ghost" size="sm" (click)="closeVariantForm()">
+              {{ translate.t('adminProducts.cancel') }}
+            </app-ui-button>
+          </div>
+        </div>
+      </div>
     }
   </div>
 </section>

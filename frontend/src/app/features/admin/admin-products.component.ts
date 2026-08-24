@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AdminService, Brand } from '../../core/services/admin.service';
+import { RouterLink } from '@angular/router';
+import { AdminService, Brand, ProductDetail, ProductVariant } from '../../core/services/admin.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { UiSelectComponent, UiSelectOption } from '../../shared/components/ui/ui-select/ui-select.component';
@@ -9,7 +10,7 @@ import { UiStateComponent } from '../../shared/components/ui/ui-state/ui-state.c
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [FormsModule, UiButtonComponent, UiSelectComponent, UiStateComponent],
+  imports: [FormsModule, RouterLink, UiButtonComponent, UiSelectComponent, UiStateComponent],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
 })
@@ -18,9 +19,18 @@ export class AdminProductsComponent implements OnInit {
   readonly translate = inject(TranslateService);
 
   readonly showForm = signal(false);
+  readonly editingId = signal<string | null>(null);
   readonly deletingId = signal<string | null>(null);
   readonly search = signal('');
   readonly error = signal('');
+  readonly expandedId = signal<string | null>(null);
+  readonly expandedSlug = signal<string | null>(null);
+
+  /* ── Variant modal ── */
+  readonly showVariantForm = signal(false);
+  readonly editingVariantId = signal<string | null>(null);
+  readonly variantError = signal('');
+  readonly variantProductId = signal<string | null>(null);
 
   form = {
     name: '',
@@ -29,6 +39,15 @@ export class AdminProductsComponent implements OnInit {
     gender: '',
     brandId: '',
     concentration: '',
+  };
+
+  variantForm = {
+    sku: '',
+    format: 'original',
+    volumeMl: 25,
+    price: 0,
+    stockQuantity: 0,
+    isDefault: false,
   };
 
   readonly genderOptions: UiSelectOption[] = [
@@ -45,6 +64,13 @@ export class AdminProductsComponent implements OnInit {
     { value: 'extrait', label: 'Extrait' },
   ];
 
+  readonly formatOptions: UiSelectOption[] = [
+    { value: 'original', label: 'Original' },
+    { value: 'decant', label: 'Decant' },
+    { value: 'sample', label: 'Sample' },
+    { value: 'gift_set', label: 'Gift Set' },
+  ];
+
   get brandOptions(): UiSelectOption[] {
     return this.admin.brands().map(b => ({ value: b.id, label: b.name }));
   }
@@ -58,18 +84,38 @@ export class AdminProductsComponent implements OnInit {
     this.admin.loadProducts(1, 20, this.search() || undefined);
   }
 
+  /* ── Product form ── */
   toggleForm(): void {
-    this.showForm.update(v => !v);
-    this.error.set('');
+    if (this.showForm()) {
+      this.resetForm();
+    } else {
+      this.showForm.set(true);
+      this.editingId.set(null);
+    }
   }
 
   resetForm(): void {
     this.form = { name: '', slug: '', description: '', gender: '', brandId: '', concentration: '' };
     this.showForm.set(false);
+    this.editingId.set(null);
     this.error.set('');
   }
 
-  async createProduct(): Promise<void> {
+  async startEdit(product: ProductDetail): Promise<void> {
+    this.form = {
+      name: product.name,
+      slug: product.slug,
+      description: product.description || '',
+      gender: product.gender || '',
+      brandId: product.brand.id,
+      concentration: product.concentration || '',
+    };
+    this.editingId.set(product.id);
+    this.showForm.set(true);
+    this.error.set('');
+  }
+
+  async saveProduct(): Promise<void> {
     if (!this.form.name || !this.form.brandId) {
       this.error.set(this.translate.t('adminProducts.errorRequired'));
       return;
@@ -77,14 +123,25 @@ export class AdminProductsComponent implements OnInit {
 
     this.error.set('');
     try {
-      await this.admin.createProduct({
-        name: this.form.name,
-        slug: this.form.slug || undefined,
-        description: this.form.description || undefined,
-        gender: this.form.gender || undefined,
-        brandId: this.form.brandId,
-        concentration: this.form.concentration || undefined,
-      });
+      if (this.editingId()) {
+        await this.admin.updateProduct(this.editingId()!, {
+          name: this.form.name,
+          slug: this.form.slug || undefined,
+          description: this.form.description || undefined,
+          gender: this.form.gender || undefined,
+          brandId: this.form.brandId,
+          concentration: this.form.concentration || undefined,
+        });
+      } else {
+        await this.admin.createProduct({
+          name: this.form.name,
+          slug: this.form.slug || undefined,
+          description: this.form.description || undefined,
+          gender: this.form.gender || undefined,
+          brandId: this.form.brandId,
+          concentration: this.form.concentration || undefined,
+        });
+      }
       this.resetForm();
       this.admin.loadProducts(this.admin.productsPage());
     } catch (e: any) {
@@ -102,6 +159,115 @@ export class AdminProductsComponent implements OnInit {
     } finally {
       this.deletingId.set(null);
     }
+  }
+
+  /* ── Expand / detail ── */
+  async toggleExpand(product: any): Promise<void> {
+    if (this.expandedId() === product.id) {
+      this.expandedId.set(null);
+      this.expandedSlug.set(null);
+      this.admin.productDetail.set(null);
+      return;
+    }
+    this.expandedId.set(product.id);
+    this.expandedSlug.set(product.slug);
+    await this.admin.loadProductDetail(product.slug);
+  }
+
+  /* ── Variant form ── */
+  openAddVariant(productId: string): void {
+    this.variantProductId.set(productId);
+    this.editingVariantId.set(null);
+    this.variantForm = { sku: '', format: 'original', volumeMl: 25, price: 0, stockQuantity: 0, isDefault: false };
+    this.variantError.set('');
+    this.showVariantForm.set(true);
+  }
+
+  openEditVariant(variant: ProductVariant, productId: string): void {
+    this.variantProductId.set(productId);
+    this.editingVariantId.set(variant.id);
+    this.variantForm = {
+      sku: variant.sku,
+      format: variant.format,
+      volumeMl: variant.volumeMl,
+      price: variant.price,
+      stockQuantity: variant.stockQuantity,
+      isDefault: variant.isDefault,
+    };
+    this.variantError.set('');
+    this.showVariantForm.set(true);
+  }
+
+  closeVariantForm(): void {
+    this.showVariantForm.set(false);
+    this.editingVariantId.set(null);
+    this.variantProductId.set(null);
+  }
+
+  async saveVariant(): Promise<void> {
+    if (!this.variantForm.sku) {
+      this.variantError.set(this.translate.t('adminProducts.variantErrorSku'));
+      return;
+    }
+
+    this.variantError.set('');
+    try {
+      if (this.editingVariantId()) {
+        await this.admin.updateVariant(this.editingVariantId()!, {
+          sku: this.variantForm.sku,
+          format: this.variantForm.format,
+          volumeMl: this.variantForm.volumeMl,
+          price: this.variantForm.price,
+          stockQuantity: this.variantForm.stockQuantity,
+          isDefault: this.variantForm.isDefault,
+        });
+      } else {
+        await this.admin.addVariant(this.variantProductId()!, {
+          sku: this.variantForm.sku,
+          format: this.variantForm.format,
+          volumeMl: this.variantForm.volumeMl,
+          price: this.variantForm.price,
+          stockQuantity: this.variantForm.stockQuantity,
+          isDefault: this.variantForm.isDefault,
+        });
+      }
+      this.closeVariantForm();
+      if (this.expandedSlug()) {
+        await this.admin.loadProductDetail(this.expandedSlug()!);
+      }
+      this.admin.loadProducts(this.admin.productsPage());
+    } catch (e: any) {
+      this.variantError.set(e?.error?.message || this.translate.t('adminProducts.errorCreate'));
+    }
+  }
+
+  async updateStockQuick(variant: ProductVariant, delta: number): Promise<void> {
+    const newQty = Math.max(0, variant.stockQuantity + delta);
+    await this.admin.updateStock(variant.id, newQty);
+    if (this.expandedSlug()) {
+      await this.admin.loadProductDetail(this.expandedSlug()!);
+    }
+  }
+
+  async deleteVariant(variant: ProductVariant): Promise<void> {
+    if (!confirm(this.translate.t('adminProducts.confirmDeleteVariant'))) return;
+    await this.admin.deleteVariant(variant.id);
+    if (this.expandedSlug()) {
+      await this.admin.loadProductDetail(this.expandedSlug()!);
+    }
+    this.admin.loadProducts(this.admin.productsPage());
+  }
+
+  totalStock(variants: ProductVariant[]): number {
+    return variants.reduce((sum, v) => sum + v.stockQuantity, 0);
+  }
+
+  isSoldOut(variants: ProductVariant[]): boolean {
+    return variants.length > 0 && variants.every(v => v.stockQuantity === 0);
+  }
+
+  formatPrice(price: number): string {
+    return price.toLocaleString('en-US');
   }
 
   loadPage(page: number): void {

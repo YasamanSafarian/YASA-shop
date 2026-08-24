@@ -26,6 +26,40 @@ export interface Brand {
   slug: string;
 }
 
+export interface ProductVariant {
+  id: string;
+  sku: string;
+  barcode: string | null;
+  format: string;
+  volumeMl: number;
+  price: number;
+  compareAtPrice: number | null;
+  stockQuantity: number;
+  weight: number | null;
+  isDefault: boolean;
+  isActive: boolean;
+  images: { id: string; imageUrl: string; isPrimary: boolean }[];
+}
+
+export interface ProductDetail {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  gender: string | null;
+  concentration: string | null;
+  releaseYear: number | null;
+  seasons: string[];
+  occasions: string[];
+  brand: { id: string; name: string };
+  categories: { id: string; name: string }[];
+  variants: ProductVariant[];
+  notes: { top: string[]; middle: string[]; base: string[] };
+  fragranceFamilies: { id: string; name: string }[];
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface CreateProductPayload {
   brandId: string;
   name: string;
@@ -63,6 +97,10 @@ export class AdminService {
   readonly productsTotal = signal(0);
   readonly productsPage = signal(1);
   readonly productsLoading = signal(false);
+
+  /* ── Product detail ── */
+  readonly productDetail = signal<ProductDetail | null>(null);
+  readonly productDetailLoading = signal(false);
 
   /* ── Brands (shared) ── */
   readonly brands = signal<Brand[]>([]);
@@ -108,6 +146,20 @@ export class AdminService {
     }
   }
 
+  async loadProductDetail(slug: string): Promise<void> {
+    this.productDetailLoading.set(true);
+    try {
+      const res = await firstValueFrom(this.api.get<ProductDetail>(`/products/${slug}`));
+      this.productDetail.set(res);
+    } finally {
+      this.productDetailLoading.set(false);
+    }
+  }
+
+  async updateProduct(id: string, dto: Partial<CreateProductPayload>): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/${id}`, dto));
+  }
+
   async createProduct(dto: CreateProductPayload): Promise<void> {
     await firstValueFrom(this.api.post('/admin/products', dto));
   }
@@ -116,6 +168,39 @@ export class AdminService {
     await firstValueFrom(this.api.delete(`/admin/products/${id}`));
     this.products.update(list => list.filter(p => p.id !== id));
     this.productsTotal.update(t => t - 1);
+  }
+
+  /* ── Variants ── */
+  async addVariant(productId: string, dto: {
+    sku: string;
+    format: string;
+    volumeMl: number;
+    price: number;
+    stockQuantity?: number;
+    isDefault?: boolean;
+  }): Promise<void> {
+    await firstValueFrom(this.api.post(`/admin/products/${productId}/variants`, dto));
+  }
+
+  async updateVariant(variantId: string, dto: Partial<{
+    sku: string;
+    format: string;
+    volumeMl: number;
+    price: number;
+    compareAtPrice: number;
+    stockQuantity: number;
+    isDefault: boolean;
+    isActive: boolean;
+  }>): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/variants/${variantId}`, dto));
+  }
+
+  async updateStock(variantId: string, stockQuantity: number): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/variants/${variantId}/stock`, { stockQuantity }));
+  }
+
+  async deleteVariant(variantId: string): Promise<void> {
+    await firstValueFrom(this.api.delete(`/admin/products/variants/${variantId}`));
   }
 
   /* ── Brands ── */
