@@ -20,6 +20,11 @@ export declare class AdminProductsService {
             };
             gender: import("@prisma/client").$Enums.gender_enum | null;
             concentration: import("@prisma/client").$Enums.concentration_enum | null;
+            categories: {
+                id: string;
+                name: string;
+                slug: string;
+            }[];
             isActive: boolean;
             variantCount: number;
             createdAt: string;
@@ -123,7 +128,7 @@ export declare class AdminProductsService {
         seasons: string[];
         occasions: string[];
     }>;
-    update(id: string, dto: UpdateProductDto): Promise<{
+    update(id: string, dto: UpdateProductDto): Promise<({
         brands: {
             name: string;
             id: string;
@@ -214,7 +219,7 @@ export declare class AdminProductsService {
         release_year: number | null;
         seasons: string[];
         occasions: string[];
-    }>;
+    }) | null>;
     remove(id: string): Promise<{
         message: string;
     }>;

@@ -69,4 +69,9 @@ export class UpdateProductDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  categoryIds?: string[];
 }

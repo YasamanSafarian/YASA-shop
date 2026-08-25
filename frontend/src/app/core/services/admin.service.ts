@@ -10,6 +10,7 @@ export interface AdminProduct {
   brand: { id: string; name: string };
   gender: string | null;
   concentration: string | null;
+  categories: { id: string; name: string; slug: string }[];
   isActive: boolean;
   variantCount: number;
   createdAt: string;
@@ -27,6 +28,12 @@ export interface Brand {
 }
 
 export interface Note {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface Category {
   id: string;
   name: string;
   slug: string;
@@ -111,6 +118,9 @@ export class AdminService {
   /* ── Notes (shared) ── */
   readonly allNotes = signal<Note[]>([]);
   readonly notesLoading = signal(false);
+
+  /* ── Categories (shared) ── */
+  readonly categories = signal<Category[]>([]);
 
   /* ── Brands (shared) ── */
   readonly brands = signal<Brand[]>([]);
@@ -219,6 +229,13 @@ export class AdminService {
     const res = await firstValueFrom(this.api.get<Brand[] | { data: Brand[] }>('/brands'));
     const list = Array.isArray(res) ? res : res.data;
     this.brands.set(list);
+  }
+
+  /* ── Categories ── */
+  async loadCategories(): Promise<void> {
+    if (this.categories().length) return;
+    const res = await firstValueFrom(this.api.get<Category[]>('/categories'));
+    this.categories.set(res);
   }
 
   /* ── Notes ── */

@@ -37,6 +37,7 @@ let AdminProductsService = class AdminProductsService {
                 where,
                 include: {
                     brands: true,
+                    product_categories: { include: { categories: true } },
                     _count: { select: { product_variants: true } },
                 },
                 orderBy: { created_at: 'desc' },
@@ -52,6 +53,11 @@ let AdminProductsService = class AdminProductsService {
                 brand: { id: product.brands.id, name: product.brands.name },
                 gender: product.gender,
                 concentration: product.concentration,
+                categories: product.product_categories.map((pc) => ({
+                    id: pc.categories.id,
+                    name: pc.categories.name,
+                    slug: pc.categories.slug,
+                })),
                 isActive: product.is_active,
                 variantCount: product._count.product_variants,
                 createdAt: product.created_at.toISOString(),
@@ -104,7 +110,10 @@ let AdminProductsService = class AdminProductsService {
                 throw new common_1.NotFoundException('brand not found');
             }
         }
-        const product = await this.prisma.products.update({
+        if (dto.categoryIds) {
+            await this.validateCategories(dto.categoryIds);
+        }
+        await this.prisma.products.update({
             where: { id },
             data: {
                 ...(dto.brandId !== undefined && { brand_id: dto.brandId }),
@@ -126,9 +135,24 @@ let AdminProductsService = class AdminProductsService {
                 ...(dto.occasions !== undefined && { occasions: dto.occasions }),
                 ...(dto.isActive !== undefined && { is_active: dto.isActive }),
             },
+        });
+        if (dto.categoryIds) {
+            await this.prisma.product_categories.deleteMany({
+                where: { product_id: id },
+            });
+            if (dto.categoryIds.length) {
+                await this.prisma.product_categories.createMany({
+                    data: dto.categoryIds.map((categoryId) => ({
+                        product_id: id,
+                        category_id: categoryId,
+                    })),
+                });
+            }
+        }
+        return this.prisma.products.findUnique({
+            where: { id },
             include: products_service_1.productInclude,
         });
-        return product;
     }
     async remove(id) {
         await this.findProduct(id);

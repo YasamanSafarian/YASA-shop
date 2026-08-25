@@ -46,7 +46,7 @@ export class AdminProductsComponent implements OnInit {
     name: '',
     slug: '',
     description: '',
-    gender: '',
+    categoryId: '',
     brandId: '',
     concentration: '',
   };
@@ -60,11 +60,9 @@ export class AdminProductsComponent implements OnInit {
     isDefault: false,
   };
 
-  readonly genderOptions: UiSelectOption[] = [
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-    { value: 'unisex', label: 'Unisex' },
-  ];
+  get categoryOptions(): UiSelectOption[] {
+    return this.admin.categories().map(c => ({ value: c.id, label: c.name }));
+  }
 
   readonly concentrationOptions: UiSelectOption[] = [
     { value: 'edc', label: 'EDC' },
@@ -89,6 +87,7 @@ export class AdminProductsComponent implements OnInit {
     this.admin.loadProducts();
     this.admin.loadBrands();
     this.admin.loadNotes();
+    this.admin.loadCategories();
   }
 
   onSearch(): void {
@@ -106,7 +105,7 @@ export class AdminProductsComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.form = { name: '', slug: '', description: '', gender: '', brandId: '', concentration: '' };
+    this.form = { name: '', slug: '', description: '', categoryId: '', brandId: '', concentration: '' };
     this.showForm.set(false);
     this.editingId.set(null);
     this.error.set('');
@@ -117,7 +116,7 @@ export class AdminProductsComponent implements OnInit {
       name: product.name,
       slug: product.slug,
       description: product.description || '',
-      gender: product.gender || '',
+      categoryId: product.categories[0]?.id || '',
       brandId: product.brand.id,
       concentration: product.concentration || '',
     };
@@ -132,6 +131,7 @@ export class AdminProductsComponent implements OnInit {
       return;
     }
 
+    const isNew = !this.editingId();
     this.error.set('');
     try {
       if (this.editingId()) {
@@ -139,22 +139,33 @@ export class AdminProductsComponent implements OnInit {
           name: this.form.name,
           slug: this.form.slug || undefined,
           description: this.form.description || undefined,
-          gender: this.form.gender || undefined,
           brandId: this.form.brandId,
           concentration: this.form.concentration || undefined,
+          categoryIds: this.form.categoryId ? [this.form.categoryId] : undefined,
         });
+        this.resetForm();
+        this.admin.loadProducts(this.admin.productsPage());
       } else {
+        const newName = this.form.name;
         await this.admin.createProduct({
-          name: this.form.name,
+          name: newName,
           slug: this.form.slug || undefined,
           description: this.form.description || undefined,
-          gender: this.form.gender || undefined,
           brandId: this.form.brandId,
           concentration: this.form.concentration || undefined,
+          categoryIds: this.form.categoryId ? [this.form.categoryId] : undefined,
         });
+        this.resetForm();
+        await this.admin.loadProducts(1, 20);
+        const created = this.admin.products().find(p => p.name === newName);
+        if (created) {
+          this.expandedId.set(created.id);
+          this.expandedSlug.set(created.slug);
+          await this.admin.loadProductDetail(created.slug);
+          this.admin.loadNotes();
+          this.openNotesEditor(this.admin.productDetail()!);
+        }
       }
-      this.resetForm();
-      this.admin.loadProducts(this.admin.productsPage());
     } catch (e: any) {
       this.error.set(e?.error?.message || this.translate.t('adminProducts.errorCreate'));
     }
@@ -271,6 +282,10 @@ export class AdminProductsComponent implements OnInit {
 
   totalStock(variants: ProductVariant[]): number {
     return variants.reduce((sum, v) => sum + v.stockQuantity, 0);
+  }
+
+  categoryNames(categories: { name: string }[]): string {
+    return categories.map(c => c.name).join(', ');
   }
 
   isSoldOut(variants: ProductVariant[]): boolean {

@@ -59,13 +59,13 @@
           </div>
 
           <div class="product-form__field">
-            <label>{{ translate.t('adminProducts.gender') }}</label>
+            <label>{{ translate.t('adminProducts.category') }} *</label>
             <app-ui-select
-              id="gender-select"
-              [options]="genderOptions"
+              id="category-select"
+              [options]="categoryOptions"
               ngModel
-              (ngModelChange)="form.gender = $event"
-              [placeholder]="translate.t('adminProducts.genderPlaceholder')"
+              (ngModelChange)="form.categoryId = $event"
+              [placeholder]="translate.t('adminProducts.categoryPlaceholder')"
             />
           </div>
 
@@ -113,7 +113,7 @@
                   <span class="product-row__name">{{ product.name }}</span>
                   <span class="product-row__code">{{ product.slug }}</span>
                   <span class="product-row__meta">
-                    {{ product.brand.name }} · {{ product.gender || '—' }} · {{ product.concentration || '—' }}
+                    {{ product.brand.name }} · @if (product.categories.length) { {{ categoryNames(product.categories) }} } @else { {{ product.gender || '—' }} } · {{ product.concentration || '—' }}
                   </span>
                 </div>
               </div>

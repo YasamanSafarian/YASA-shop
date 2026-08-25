@@ -57,13 +57,6 @@ const CATEGORIES: SeedCategory[] = [
   { name: 'زنانه', slug: 'women', sortOrder: 1 },
   { name: 'مردانه', slug: 'men', sortOrder: 2 },
   { name: 'یونیسکس', slug: 'unisex', sortOrder: 3 },
-  { name: 'گلفام', slug: 'women-floral', parentSlug: 'women', sortOrder: 1 },
-  { name: 'میوه‌ای', slug: 'women-fruity', parentSlug: 'women', sortOrder: 2 },
-  { name: 'گورماند', slug: 'women-gourmand', parentSlug: 'women', sortOrder: 3 },
-  { name: 'شرقی', slug: 'women-oriental', parentSlug: 'women', sortOrder: 4 },
-  { name: 'شرقی', slug: 'men-oriental', parentSlug: 'men', sortOrder: 1 },
-  { name: 'آروماتیک', slug: 'men-aromatic', parentSlug: 'men', sortOrder: 2 },
-  { name: 'چوبی', slug: 'men-woody', parentSlug: 'men', sortOrder: 3 },
 ];
 
 const FRAGRANCE_FAMILIES: SeedFamily[] = [
@@ -116,7 +109,7 @@ const PRODUCTS: SeedProduct[] = [
       'رایحه‌ای گرم و گلی؛ گوچی بلوم با گل‌های یاس، گل مریم و پیچ امین‌الدولهٔ رنگون، شاد و زنانه و ماندگار. (Gucci Bloom)',
     brandSlug: 'super-smart',
     gender: 'female',
-    categorySlugs: ['women-floral'],
+    categorySlugs: ['women'],
     familySlugs: ['floral'],
     notes: { top: ['jasmine'], middle: ['tuberose'], base: ['rangoon-creeper'] },
     variants: [
@@ -136,7 +129,7 @@ const PRODUCTS: SeedProduct[] = [
       'الهام‌گرفته از لانکوم لاویه اِست بِل (La Vie Est Belle)؛ رایحه‌ای گرم و شیرین با خانوادهٔ گلی - میوه‌ای - شیرین.',
     brandSlug: 'smart',
     gender: 'female',
-    categorySlugs: ['women-floral', 'women-fruity', 'women-gourmand'],
+    categorySlugs: ['women'],
     familySlugs: ['floral-fruity-gourmand'],
     notes: {
       top: ['blackcurrant', 'pear'],
@@ -160,7 +153,7 @@ const PRODUCTS: SeedProduct[] = [
       'پگاسوس از پارفوم دُ مارلی (Parfums de Marly)؛ رایحه‌ای گرم و شیرین، شرقی - آروماتیک با نت‌های بادام، وانیل و کهربا.',
     brandSlug: 'super-smart',
     gender: 'male',
-    categorySlugs: ['men-oriental', 'men-aromatic'],
+    categorySlugs: ['men'],
     familySlugs: ['oriental-aromatic'],
     notes: {
       top: ['bergamot', 'cumin', 'heliotrope'],
@@ -184,7 +177,7 @@ const PRODUCTS: SeedProduct[] = [
       'گود گرل از کارولینا هررا (Carolina Herrera)؛ رایحه‌ای گرم و شیرین، شرقی - گلی با نت‌های قهوه، گل مریم و وانیل.',
     brandSlug: 'smart',
     gender: 'female',
-    categorySlugs: ['women-oriental', 'women-floral'],
+    categorySlugs: ['women'],
     familySlugs: ['oriental-floral'],
     notes: {
       top: ['almond', 'coffee'],
@@ -208,7 +201,7 @@ const PRODUCTS: SeedProduct[] = [
       'کلود آریانا گرانده (Ariana Grande Cloud)؛ رایحه‌ای شیرین و ملایم با خانوادهٔ گلی - میوه‌ای - گورماند.',
     brandSlug: 'super-smart',
     gender: 'female',
-    categorySlugs: ['women-floral', 'women-fruity', 'women-gourmand'],
+    categorySlugs: ['women'],
     familySlugs: ['floral-fruity-gourmand'],
     notes: {
       top: ['bergamot', 'pear', 'lavender'],
@@ -232,7 +225,7 @@ const PRODUCTS: SeedProduct[] = [
       'الهام‌گرفته از پاکو رابان اینویکتوس (Paco Rabanne Invictus)؛ رایحه‌ای گرم، چوبی - آروماتیک.',
     brandSlug: 'smart',
     gender: 'male',
-    categorySlugs: ['men-woody', 'men-aromatic'],
+    categorySlugs: ['men'],
     familySlugs: ['woody-aromatic'],
     notes: {
       top: ['grapefruit', 'sea-notes', 'mandarin'],

@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { TranslateService } from '../../core/services/translate.service';
+import { CatalogService } from '../../core/services/catalog.service';
+import { Product } from '../../core/models/catalog';
 
 interface Slide {
   image: string;
@@ -19,9 +21,12 @@ interface Slide {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   readonly translate = inject(TranslateService);
+  private readonly catalog = inject(CatalogService);
 
   readonly current = signal(0);
   readonly animating = signal(false);
+  readonly featuredProducts = signal<Product[]>([]);
+  readonly featuredLoading = signal(false);
 
   readonly slides: Slide[] = [
     {
@@ -48,6 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.startAuto();
+    this.loadFeatured();
   }
 
   ngOnDestroy(): void {
@@ -68,6 +74,36 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   prev(): void {
     this.goTo((this.current() - 1 + this.slides.length) % this.slides.length);
+  }
+
+  scrollFeatured(direction: 'left' | 'right', el: HTMLElement): void {
+    const amount = el.clientWidth * 0.7;
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  }
+
+  getPrimaryImage(product: Product): string {
+    for (const v of product.variants) {
+      const primary = v.images.find(i => i.isPrimary);
+      if (primary) return primary.imageUrl;
+      if (v.images.length) return v.images[0].imageUrl;
+    }
+    return '';
+  }
+
+  getMinPrice(product: Product): number {
+    const prices = product.variants.map(v => v.price).filter(p => p > 0);
+    return prices.length ? Math.min(...prices) : 0;
+  }
+
+  private loadFeatured(): void {
+    this.featuredLoading.set(true);
+    this.catalog.listProducts({ limit: 8, sort: 'newest' }).subscribe({
+      next: res => {
+        this.featuredProducts.set(res.data);
+        this.featuredLoading.set(false);
+      },
+      error: () => this.featuredLoading.set(false),
+    });
   }
 
   private startAuto(): void {
