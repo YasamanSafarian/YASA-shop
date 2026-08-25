@@ -61,10 +61,11 @@ const CATEGORIES: SeedCategory[] = [
 
 const FRAGRANCE_FAMILIES: SeedFamily[] = [
   { name: 'گلفام', slug: 'floral' },
-  { name: 'گلی - میوه‌ای - شیرین', slug: 'floral-fruity-gourmand' },
-  { name: 'شرقی، آروماتیک', slug: 'oriental-aromatic' },
-  { name: 'شرقی - گلی', slug: 'oriental-floral' },
-  { name: 'چوبی - آروماتیک', slug: 'woody-aromatic' },
+  { name: 'میوه‌ای', slug: 'fruity' },
+  { name: 'شیرین', slug: 'gourmand' },
+  { name: 'شرقی', slug: 'oriental' },
+  { name: 'چوبی', slug: 'woody' },
+  { name: 'آروماتیک', slug: 'aromatic' },
 ];
 
 const NOTES: SeedNote[] = [
@@ -130,7 +131,7 @@ const PRODUCTS: SeedProduct[] = [
     brandSlug: 'smart',
     gender: 'female',
     categorySlugs: ['women'],
-    familySlugs: ['floral-fruity-gourmand'],
+    familySlugs: ['floral', 'fruity', 'gourmand'],
     notes: {
       top: ['blackcurrant', 'pear'],
       middle: ['iris', 'jasmine', 'orange-blossom'],
@@ -154,7 +155,7 @@ const PRODUCTS: SeedProduct[] = [
     brandSlug: 'super-smart',
     gender: 'male',
     categorySlugs: ['men'],
-    familySlugs: ['oriental-aromatic'],
+    familySlugs: ['oriental', 'aromatic'],
     notes: {
       top: ['bergamot', 'cumin', 'heliotrope'],
       middle: ['lavender', 'jasmine'],
@@ -178,7 +179,7 @@ const PRODUCTS: SeedProduct[] = [
     brandSlug: 'smart',
     gender: 'female',
     categorySlugs: ['women'],
-    familySlugs: ['oriental-floral'],
+    familySlugs: ['oriental', 'floral'],
     notes: {
       top: ['almond', 'coffee'],
       middle: ['jasmine-sambac', 'tuberose'],
@@ -202,7 +203,7 @@ const PRODUCTS: SeedProduct[] = [
     brandSlug: 'super-smart',
     gender: 'female',
     categorySlugs: ['women'],
-    familySlugs: ['floral-fruity-gourmand'],
+    familySlugs: ['floral', 'fruity', 'gourmand'],
     notes: {
       top: ['bergamot', 'pear', 'lavender'],
       middle: ['coconut-cream', 'praline', 'vanilla-orchid'],
@@ -226,7 +227,7 @@ const PRODUCTS: SeedProduct[] = [
     brandSlug: 'smart',
     gender: 'male',
     categorySlugs: ['men'],
-    familySlugs: ['woody-aromatic'],
+    familySlugs: ['woody', 'aromatic'],
     notes: {
       top: ['grapefruit', 'sea-notes', 'mandarin'],
       middle: ['bay-leaf', 'jasmine'],

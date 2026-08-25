@@ -1,0 +1,68 @@
+.social-banner {
+  background: var(--color-gold);
+  color: #fff;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.social-banner__track {
+  display: flex;
+  width: max-content;
+  animation: marquee 15s linear infinite;
+}
+
+.social-banner__group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.5rem 0.75rem;
+  flex-shrink: 0;
+}
+
+.social-banner__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.2);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.social-banner__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.social-banner__handle {
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (min-width: 768px) {
+  .social-banner__item {
+    font-size: 0.85rem;
+    gap: 0.5rem;
+    padding: 0.35rem 1rem;
+  }
+
+  .social-banner__icon {
+    width: 15px;
+    height: 15px;
+  }
+}

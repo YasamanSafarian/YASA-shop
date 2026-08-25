@@ -186,6 +186,13 @@ let ProductsService = class ProductsService {
         if (query.gender) {
             where.gender = query.gender;
         }
+        if (query.fragranceFamily) {
+            where.product_fragrance_families = {
+                some: {
+                    fragrance_families: { slug: query.fragranceFamily },
+                },
+            };
+        }
         const variantWhere = {
             is_active: true,
             deleted_at: null,

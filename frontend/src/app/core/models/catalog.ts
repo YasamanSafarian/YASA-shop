@@ -106,6 +106,7 @@ export interface ListProductsParams {
   brand?: string;
   category?: string;
   gender?: 'male' | 'female' | 'unisex';
+  fragranceFamily?: string;
   minPrice?: number;
   maxPrice?: number;
   availability?: 'in_stock';

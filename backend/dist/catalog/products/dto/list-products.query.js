@@ -18,6 +18,7 @@ class ListProductsQueryDto {
     brand;
     category;
     gender;
+    fragranceFamily;
     minPrice;
     maxPrice;
     availability;
@@ -49,6 +50,12 @@ __decorate([
     (0, class_validator_1.IsEnum)(client_1.gender_enum),
     __metadata("design:type", String)
 ], ListProductsQueryDto.prototype, "gender", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(120),
+    __metadata("design:type", String)
+], ListProductsQueryDto.prototype, "fragranceFamily", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => Number),

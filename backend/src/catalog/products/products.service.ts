@@ -271,6 +271,14 @@ export class ProductsService {
       where.gender = query.gender;
     }
 
+    if (query.fragranceFamily) {
+      where.product_fragrance_families = {
+        some: {
+          fragrance_families: { slug: query.fragranceFamily },
+        },
+      };
+    }
+
     const variantWhere: Prisma.product_variantsWhereInput = {
       is_active: true,
       deleted_at: null,

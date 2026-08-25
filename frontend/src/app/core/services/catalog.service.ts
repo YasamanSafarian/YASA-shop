@@ -5,6 +5,7 @@ import {
   Brand,
   BrandDetail,
   CategoryNode,
+  FragranceFamily,
   ListProductsParams,
   PaginatedProducts,
   Product,
@@ -32,5 +33,9 @@ export class CatalogService {
 
   getCategoryTree(): Observable<CategoryNode[]> {
     return this.api.get<CategoryNode[]>('/categories');
+  }
+
+  listFragranceFamilies(): Observable<FragranceFamily[]> {
+    return this.api.get<FragranceFamily[]>('/fragrance-families');
   }
 }

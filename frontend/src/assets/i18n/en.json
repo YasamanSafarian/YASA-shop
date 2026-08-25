@@ -68,6 +68,8 @@
   "products.allBrands": "All brands",
   "products.category": "Category",
   "products.allCategories": "All categories",
+  "products.fragranceFamily": "Fragrance Family",
+  "products.allFragranceFamilies": "All families",
   "products.gender": "Gender",
   "products.allGenders": "All genders",
   "products.genderMale": "Male",
@@ -329,5 +331,8 @@
   "adminProducts.stockQuantity": "Stock",
   "adminProducts.confirmDeleteVariant": "Are you sure you want to delete this variant?",
   "adminProducts.variantErrorSku": "SKU is required.",
-  "adminProducts.families": "Fragrance Families"
+  "adminProducts.families": "Fragrance Families",
+  "social.instagram": "Instagram",
+  "social.telegram": "Telegram",
+  "social.followUs": "Follow us"
 }

@@ -36,6 +36,11 @@ export class ListProductsQueryDto {
   gender?: gender_enum;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  fragranceFamily?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(0)

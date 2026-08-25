@@ -22,8 +22,8 @@
   "footer.myProfile": "پروفایل من",
   "footer.signIn": "ورود",
   "footer.createAccount": "ساخت حساب",
-  "footer.contact": "تماس",
-  "footer.contactSupport": "پشتیبانی هفت روز هفته",
+  "footer.contact": "ارتباط با ما",
+  "footer.contactSupport": "پشتیبانی همه روزه  ",
   "footer.copyright": "© ۲۰۲۶ فروشگاه یاسا. تمامی حقوق محفوظ است.",
   "home.hero.eyebrow": "",
   "home.hero.title": "ظرافتی که با شما می‌ماند",
@@ -68,6 +68,8 @@
   "products.allBrands": "همه برندها",
   "products.category": "دسته",
   "products.allCategories": "همه دسته‌ها",
+  "products.fragranceFamily": "خانواده عطر",
+  "products.allFragranceFamilies": "همه خانواده‌ها",
   "products.gender": "مناسب برای",
   "products.allGenders": "همه",
   "products.genderMale": "مردانه",
@@ -329,5 +331,8 @@
   "adminProducts.stockQuantity": "موجودی",
   "adminProducts.confirmDeleteVariant": "آیا از حذف این اندازه مطمئن هستید؟",
   "adminProducts.variantErrorSku": "کد محصول الزامی است.",
-  "adminProducts.families": "خانواده‌های عطر"
+  "adminProducts.families": "خانواده‌های عطر",
+  "social.instagram": "اینستاگرام",
+  "social.telegram": "تلگرام",
+  "social.followUs": "ما را دنبال کنید"
 }
