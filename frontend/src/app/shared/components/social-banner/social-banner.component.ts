@@ -13,5 +13,7 @@ export class SocialBannerComponent {
   readonly items = [
     { icon: 'instagram', label: 'Instagram:', handle: 'theyasa.store' },
     { icon: 'telegram', label: 'Telegram:', handle: 'the_yasa' },
+
+
   ];
 }

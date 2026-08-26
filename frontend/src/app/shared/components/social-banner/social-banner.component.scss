@@ -8,7 +8,7 @@
 .social-banner__track {
   display: flex;
   width: max-content;
-  animation: marquee 15s linear infinite;
+  animation: marquee 25s linear infinite;
 }
 
 .social-banner__group {
@@ -47,10 +47,27 @@
 
 @keyframes marquee {
   from {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 460px) {
+  .social-banner__group {
+    gap: 1rem;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .social-banner__item {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .social-banner__icon {
+    width: 12px;
+    height: 12px;
   }
 }
 

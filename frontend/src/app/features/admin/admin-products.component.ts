@@ -161,9 +161,10 @@ export class AdminProductsComponent implements OnInit {
         if (created) {
           this.expandedId.set(created.id);
           this.expandedSlug.set(created.slug);
+          await this.admin.loadNotes();
           await this.admin.loadProductDetail(created.slug);
-          this.admin.loadNotes();
-          this.openNotesEditor(this.admin.productDetail()!);
+          const pd = this.admin.productDetail();
+          if (pd) this.openNotesEditor(pd);
         }
       }
     } catch (e: any) {

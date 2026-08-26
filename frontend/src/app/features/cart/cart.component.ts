@@ -132,7 +132,7 @@ export class CartComponent implements OnInit {
       );
 
       const order = await firstValueFrom(
-        this.api.post<{ id: string; orderNumber: string }>(
+        this.api.post<{ id: string; orderNumber: string; total: number; createdAt: string }>(
           '/orders',
           { addressId: addr.id },
         ),
@@ -140,8 +140,9 @@ export class CartComponent implements OnInit {
 
       this.router.navigate(['/order-confirmation'], {
         state: {
-          cartNumber: order.orderNumber,
-          name,
+          orderNumber: order.orderNumber,
+          total: order.total,
+          createdAt: order.createdAt,
         },
       });
     } catch (e: any) {

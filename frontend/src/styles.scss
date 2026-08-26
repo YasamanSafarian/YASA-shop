@@ -135,6 +135,12 @@ textarea {
   padding: 0.5rem 2rem;
 }
 
+@media (max-width: 460px) {
+  .container {
+    padding: 0.4rem 1rem;
+  }
+}
+
 .section {
   padding-block: var(--space-section);
 }
@@ -237,6 +243,23 @@ textarea {
 .btn--sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
 .btn--lg { padding: 0.9rem 2rem; font-size: 1rem; }
 .btn--block { width: 100%; }
+
+@media (max-width: 460px) {
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .btn--sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .btn--lg {
+    padding: 0.55rem 1.2rem;
+    font-size: 0.88rem;
+  }
+}
 
 .btn:disabled {
   opacity: 0.6;

@@ -173,6 +173,41 @@
   white-space: nowrap;
 }
 
+/* Small screens */
+@media (max-width: 460px) {
+  .header__inner {
+    gap: 0.5rem;
+  }
+
+  .header__toggle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .header__toggle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logo__text {
+    font-size: 1.1rem;
+  }
+
+  .header__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .header__link,
+  .header__icon-btn {
+    padding: 0.35rem 0.4rem;
+  }
+
+  .header__actions {
+    gap: 0;
+  }
+}
+
 /* Desktop */
 @media (min-width: 920px) {
   .header__inner {
