@@ -11,7 +11,7 @@ export class SocialBannerComponent {
   readonly translate = inject(TranslateService);
 
   readonly items = [
-    { icon: 'instagram', label: 'Instagram:', handle: 'theyasa.store' },
+    { icon: 'instagram', label: 'Instagram:', handle: 'the_yasa.store' },
     { icon: 'telegram', label: 'Telegram:', handle: 'the_yasa' },
 
 

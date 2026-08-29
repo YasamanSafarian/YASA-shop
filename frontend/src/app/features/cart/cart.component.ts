@@ -45,16 +45,10 @@ export class CartComponent implements OnInit {
     return this.cartService.cart();
   }
 
-  readonly shippingCost = computed(() => {
-    const count = this.cart?.totals.itemCount ?? 0;
-    if (count <= 2) return 125000;
-    if (count <= 5) return 140000;
-    return 170000;
-  });
+  readonly shippingCost = computed(() => this.cart?.totals.shippingFee ?? 0);
 
   readonly grandTotal = computed(() => {
-    const sub = this.cart?.totals.subtotal ?? 0;
-    return sub + this.shippingCost();
+    return this.cart?.totals.grandTotal ?? this.cart?.totals.subtotal ?? 0;
   });
 
   ngOnInit(): void {

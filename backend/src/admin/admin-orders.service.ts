@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, payments } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
+import { canCancelOrder } from '../common/utils/order-state';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { ListAdminOrdersQueryDto } from './dto/list-admin-orders.query';
 import { AdminUpdatePaymentStatusDto } from './dto/update-payment-status.dto';
@@ -133,6 +134,16 @@ export class AdminOrdersService {
 
     if (!dto.orderStatus && !dto.paymentStatus && !dto.shipmentStatus) {
       throw new BadRequestException('nothing to update');
+    }
+
+    if (
+      dto.orderStatus === 'cancelled' &&
+      existing.order_status !== 'cancelled' &&
+      !canCancelOrder(existing)
+    ) {
+      throw new BadRequestException(
+        'order cannot be cancelled once it has been shipped or is past the cancellable state',
+      );
     }
 
     const order = await this.prisma.$transaction(async (tx) => {

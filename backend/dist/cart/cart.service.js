@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../database/prisma.service");
+const shipping_1 = require("../common/constants/shipping");
 const cartInclude = {
     cart_items: {
         where: { deleted_at: null },
@@ -161,13 +162,18 @@ let CartService = class CartService {
                 },
             };
         });
+        const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
+        const shippingFee = (0, shipping_1.shippingFeeForItemCount)(itemCount);
         return {
             id: cart.id,
             items,
             totals: {
                 distinctItems: items.length,
-                itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-                subtotal: items.reduce((sum, item) => sum + item.lineTotal, 0),
+                itemCount,
+                subtotal,
+                shippingFee,
+                grandTotal: subtotal + shippingFee,
             },
             createdAt: cart.created_at.toISOString(),
             updatedAt: cart.updated_at.toISOString(),

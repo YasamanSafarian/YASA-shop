@@ -13,6 +13,8 @@ exports.OrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../database/prisma.service");
+const shipping_1 = require("../common/constants/shipping");
+const order_state_1 = require("../common/utils/order-state");
 const orderInclude = {
     order_items: { orderBy: { created_at: 'asc' } },
     payments: { orderBy: { created_at: 'asc' } },
@@ -53,7 +55,7 @@ let OrdersService = class OrdersService {
                         subtotal += Number(variant.price) * item.quantity;
                     }
                     const discountAmount = 0;
-                    const shippingFee = itemCount <= 2 ? 125 : itemCount <= 5 ? 140 : 170;
+                    const shippingFee = (0, shipping_1.shippingFeeForItemCount)(itemCount);
                     const total = subtotal + shippingFee - discountAmount;
                     for (const item of cart.cart_items) {
                         const result = await tx.product_variants.updateMany({
@@ -167,9 +169,16 @@ let OrdersService = class OrdersService {
         if (!existing) {
             throw new common_1.NotFoundException('order not found');
         }
+        if (!(0, order_state_1.canCancelOrder)(existing)) {
+            throw new common_1.BadRequestException('order cannot be cancelled once it has been paid and prepared for shipment');
+        }
         const order = await this.prisma.$transaction(async (tx) => {
             const result = await tx.orders.updateMany({
-                where: { id: orderId, order_status: { in: ['pending', 'paid'] } },
+                where: {
+                    id: orderId,
+                    order_status: { in: [...order_state_1.CANCELLABLE_ORDER_STATUSES] },
+                    shipment_status: { in: [...order_state_1.CANCELLABLE_SHIPMENT_STATUSES] },
+                },
                 data: { order_status: 'cancelled', updated_at: new Date() },
             });
             if (result.count === 0) {

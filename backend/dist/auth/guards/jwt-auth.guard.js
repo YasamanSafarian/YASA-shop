@@ -13,12 +13,17 @@ exports.JwtAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
+const prisma_service_1 = require("../../database/prisma.service");
 let JwtAuthGuard = class JwtAuthGuard {
     jwtService;
     configService;
-    constructor(jwtService, configService) {
+    prisma;
+    cacheTtlMs = 30_000;
+    cache = new Map();
+    constructor(jwtService, configService, prisma) {
         this.jwtService = jwtService;
         this.configService = configService;
+        this.prisma = prisma;
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
@@ -26,16 +31,41 @@ let JwtAuthGuard = class JwtAuthGuard {
         if (!token) {
             throw new common_1.UnauthorizedException('missing access token');
         }
+        let payload;
         try {
-            const payload = await this.jwtService.verifyAsync(token, {
+            payload = await this.jwtService.verifyAsync(token, {
                 secret: this.configService.getOrThrow('jwt.accessSecret'),
             });
-            request.user = payload;
-            return true;
         }
         catch {
             throw new common_1.UnauthorizedException('invalid or expired access token');
         }
+        const status = await this.loadUserStatus(payload.sub);
+        if (!status.isActive) {
+            throw new common_1.UnauthorizedException('account is disabled');
+        }
+        request.user = {
+            ...payload,
+            role: status.role,
+        };
+        return true;
+    }
+    async loadUserStatus(userId) {
+        const cached = this.cache.get(userId);
+        if (cached && cached.expiresAt > Date.now()) {
+            return cached;
+        }
+        const user = await this.prisma.users.findFirst({
+            where: { id: userId, deleted_at: null },
+            include: { roles: true },
+        });
+        const status = {
+            role: user?.roles?.name ?? '',
+            isActive: user?.is_active ?? false,
+            expiresAt: Date.now() + this.cacheTtlMs,
+        };
+        this.cache.set(userId, status);
+        return status;
     }
     extractTokenFromHeader(request) {
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
@@ -46,6 +76,7 @@ exports.JwtAuthGuard = JwtAuthGuard;
 exports.JwtAuthGuard = JwtAuthGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [jwt_1.JwtService,
-        config_1.ConfigService])
+        config_1.ConfigService,
+        prisma_service_1.PrismaService])
 ], JwtAuthGuard);
 //# sourceMappingURL=jwt-auth.guard.js.map

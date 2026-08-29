@@ -5,6 +5,12 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
+import { shippingFeeForItemCount } from '../common/constants/shipping';
+import {
+  canCancelOrder,
+  CANCELLABLE_ORDER_STATUSES,
+  CANCELLABLE_SHIPMENT_STATUSES,
+} from '../common/utils/order-state';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ListOrdersQueryDto } from './dto/list-orders.query';
 
@@ -120,8 +126,7 @@ export class OrdersService {
           }
 
           const discountAmount = 0;
-          const shippingFee =
-            itemCount <= 2 ? 125 : itemCount <= 5 ? 140 : 170;
+          const shippingFee = shippingFeeForItemCount(itemCount);
           const total = subtotal + shippingFee - discountAmount;
 
           for (const item of cart.cart_items) {
@@ -257,9 +262,19 @@ export class OrdersService {
       throw new NotFoundException('order not found');
     }
 
+    if (!canCancelOrder(existing)) {
+      throw new BadRequestException(
+        'order cannot be cancelled once it has been paid and prepared for shipment',
+      );
+    }
+
     const order = await this.prisma.$transaction(async (tx) => {
       const result = await tx.orders.updateMany({
-        where: { id: orderId, order_status: { in: ['pending', 'paid'] } },
+        where: {
+          id: orderId,
+          order_status: { in: [...CANCELLABLE_ORDER_STATUSES] },
+          shipment_status: { in: [...CANCELLABLE_SHIPMENT_STATUSES] },
+        },
         data: { order_status: 'cancelled', updated_at: new Date() },
       });
 
