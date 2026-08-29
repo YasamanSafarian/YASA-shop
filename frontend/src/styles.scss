@@ -3,6 +3,9 @@
    Design: Navy primary · Rose Gold accent · Gold sparingly
    ============================================================ */
 
+/* Self-hosted fonts (see scripts/download-fonts.py) */
+@use './styles/Fonts';
+
 :root {
   /* Brand colors */
   --color-navy: #12223f;
