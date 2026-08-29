@@ -5,6 +5,10 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import {
+  CreateFragranceFamilyDto,
+  CreateNoteDto,
+} from './dto/extras.dto';
 
 @Injectable()
 export class AdminCatalogService {
@@ -104,6 +108,32 @@ export class AdminCatalogService {
     });
 
     return { message: 'category deleted' };
+  }
+
+  async listNotes() {
+    return this.prisma.notes.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, slug: true },
+    });
+  }
+
+  async createNote(dto: CreateNoteDto) {
+    return this.prisma.notes.create({
+      data: {
+        name: dto.name,
+        slug: dto.slug ?? slugify(dto.name),
+      },
+      select: { id: true, name: true, slug: true },
+    });
+  }
+
+  async createFragranceFamily(dto: CreateFragranceFamilyDto) {
+    return this.prisma.fragrance_families.create({
+      data: {
+        name: dto.name,
+        slug: dto.slug ?? slugify(dto.name),
+      },
+    });
   }
 
   private async findBrand(id: string) {

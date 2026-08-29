@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -18,12 +19,33 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import {
+  CreateFragranceFamilyDto,
+  CreateNoteDto,
+} from './dto/extras.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('admin')
 export class AdminCatalogController {
   constructor(private readonly adminCatalogService: AdminCatalogService) {}
+
+  @Get('notes')
+  listNotes() {
+    return this.adminCatalogService.listNotes();
+  }
+
+  @Post('notes')
+  @HttpCode(HttpStatus.CREATED)
+  createNote(@Body() dto: CreateNoteDto) {
+    return this.adminCatalogService.createNote(dto);
+  }
+
+  @Post('fragrance-families')
+  @HttpCode(HttpStatus.CREATED)
+  createFragranceFamily(@Body() dto: CreateFragranceFamilyDto) {
+    return this.adminCatalogService.createFragranceFamily(dto);
+  }
 
   @Post('brands')
   @HttpCode(HttpStatus.CREATED)

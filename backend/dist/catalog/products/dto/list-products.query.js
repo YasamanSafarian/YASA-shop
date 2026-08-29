@@ -18,9 +18,11 @@ class ListProductsQueryDto {
     brand;
     category;
     gender;
+    fragranceFamily;
     minPrice;
     maxPrice;
     availability;
+    discounted;
     sort;
     page;
     limit;
@@ -51,6 +53,12 @@ __decorate([
 ], ListProductsQueryDto.prototype, "gender", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(120),
+    __metadata("design:type", String)
+], ListProductsQueryDto.prototype, "fragranceFamily", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => Number),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(0),
@@ -68,6 +76,12 @@ __decorate([
     (0, class_validator_1.IsIn)(['in_stock']),
     __metadata("design:type", String)
 ], ListProductsQueryDto.prototype, "availability", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Transform)(({ value }) => value === true || value === 'true'),
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], ListProductsQueryDto.prototype, "discounted", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsIn)(['newest', 'price_asc', 'price_desc', 'name_asc', 'name_desc']),

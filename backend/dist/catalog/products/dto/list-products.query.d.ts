@@ -6,9 +6,11 @@ export declare class ListProductsQueryDto {
     brand?: string;
     category?: string;
     gender?: gender_enum;
+    fragranceFamily?: string;
     minPrice?: number;
     maxPrice?: number;
     availability?: AvailabilityOption;
+    discounted?: boolean;
     sort?: SortOption;
     page?: number;
     limit?: number;

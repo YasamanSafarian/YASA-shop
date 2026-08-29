@@ -11,6 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminProductsService = void 0;
 const common_1 = require("@nestjs/common");
+const fs_1 = require("fs");
+const path_1 = require("path");
 const prisma_service_1 = require("../database/prisma.service");
 const products_service_1 = require("../catalog/products/products.service");
 const slugify_1 = require("../common/utils/slugify");
@@ -35,6 +37,7 @@ let AdminProductsService = class AdminProductsService {
                 where,
                 include: {
                     brands: true,
+                    product_categories: { include: { categories: true } },
                     _count: { select: { product_variants: true } },
                 },
                 orderBy: { created_at: 'desc' },
@@ -50,6 +53,11 @@ let AdminProductsService = class AdminProductsService {
                 brand: { id: product.brands.id, name: product.brands.name },
                 gender: product.gender,
                 concentration: product.concentration,
+                categories: product.product_categories.map((pc) => ({
+                    id: pc.categories.id,
+                    name: pc.categories.name,
+                    slug: pc.categories.slug,
+                })),
                 isActive: product.is_active,
                 variantCount: product._count.product_variants,
                 createdAt: product.created_at.toISOString(),
@@ -102,7 +110,10 @@ let AdminProductsService = class AdminProductsService {
                 throw new common_1.NotFoundException('brand not found');
             }
         }
-        const product = await this.prisma.products.update({
+        if (dto.categoryIds) {
+            await this.validateCategories(dto.categoryIds);
+        }
+        await this.prisma.products.update({
             where: { id },
             data: {
                 ...(dto.brandId !== undefined && { brand_id: dto.brandId }),
@@ -124,9 +135,24 @@ let AdminProductsService = class AdminProductsService {
                 ...(dto.occasions !== undefined && { occasions: dto.occasions }),
                 ...(dto.isActive !== undefined && { is_active: dto.isActive }),
             },
+        });
+        if (dto.categoryIds) {
+            await this.prisma.product_categories.deleteMany({
+                where: { product_id: id },
+            });
+            if (dto.categoryIds.length) {
+                await this.prisma.product_categories.createMany({
+                    data: dto.categoryIds.map((categoryId) => ({
+                        product_id: id,
+                        category_id: categoryId,
+                    })),
+                });
+            }
+        }
+        return this.prisma.products.findUnique({
+            where: { id },
             include: products_service_1.productInclude,
         });
-        return product;
     }
     async remove(id) {
         await this.findProduct(id);
@@ -192,6 +218,117 @@ let AdminProductsService = class AdminProductsService {
             sku: variant.sku,
             stockQuantity: variant.stock_quantity,
         };
+    }
+    async addImage(variantId, file) {
+        await this.findVariant(variantId);
+        const imageUrl = `/uploads/products/${file.filename}`;
+        const existingCount = await this.prisma.product_images.count({
+            where: { variant_id: variantId },
+        });
+        const image = await this.prisma.product_images.create({
+            data: {
+                variant_id: variantId,
+                image_url: imageUrl,
+                alt_text: file.originalname,
+                sort_order: existingCount,
+                is_primary: existingCount === 0,
+            },
+        });
+        return image;
+    }
+    async updateImage(imageId, dto) {
+        const image = await this.prisma.product_images.findUnique({
+            where: { id: imageId },
+        });
+        if (!image) {
+            throw new common_1.NotFoundException('image not found');
+        }
+        if (dto.isPrimary) {
+            await this.prisma.product_images.updateMany({
+                where: { variant_id: image.variant_id },
+                data: { is_primary: false },
+            });
+        }
+        return this.prisma.product_images.update({
+            where: { id: imageId },
+            data: {
+                ...(dto.isPrimary !== undefined && { is_primary: dto.isPrimary }),
+                ...(dto.altText !== undefined && { alt_text: dto.altText }),
+            },
+        });
+    }
+    async removeImage(imageId) {
+        const image = await this.prisma.product_images.findUnique({
+            where: { id: imageId },
+        });
+        if (!image) {
+            throw new common_1.NotFoundException('image not found');
+        }
+        const filePath = (0, path_1.join)(process.cwd(), image.image_url);
+        if ((0, fs_1.existsSync)(filePath)) {
+            (0, fs_1.unlinkSync)(filePath);
+        }
+        await this.prisma.product_images.delete({ where: { id: imageId } });
+        if (image.is_primary) {
+            const next = await this.prisma.product_images.findFirst({
+                where: { variant_id: image.variant_id },
+                orderBy: { sort_order: 'asc' },
+            });
+            if (next) {
+                await this.prisma.product_images.update({
+                    where: { id: next.id },
+                    data: { is_primary: true },
+                });
+            }
+        }
+        return { message: 'image deleted' };
+    }
+    async updateNotes(productId, dto) {
+        await this.findProduct(productId);
+        await this.prisma.$transaction(async (tx) => {
+            await tx.product_notes.deleteMany({
+                where: { product_id: productId },
+            });
+            const entries = [];
+            for (const noteId of dto.topNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'top' });
+            }
+            for (const noteId of dto.middleNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'middle' });
+            }
+            for (const noteId of dto.baseNoteIds) {
+                entries.push({ product_id: productId, note_id: noteId, note_type: 'base' });
+            }
+            if (entries.length) {
+                await tx.product_notes.createMany({ data: entries });
+            }
+        });
+        return { message: 'notes updated' };
+    }
+    async updateFragranceFamilies(productId, dto) {
+        await this.findProduct(productId);
+        if (dto.fragranceFamilyIds.length) {
+            const count = await this.prisma.fragrance_families.count({
+                where: { id: { in: dto.fragranceFamilyIds } },
+            });
+            if (count !== dto.fragranceFamilyIds.length) {
+                throw new common_1.BadRequestException('one or more fragrance families not found');
+            }
+        }
+        await this.prisma.$transaction(async (tx) => {
+            await tx.product_fragrance_families.deleteMany({
+                where: { product_id: productId },
+            });
+            if (dto.fragranceFamilyIds.length) {
+                await tx.product_fragrance_families.createMany({
+                    data: dto.fragranceFamilyIds.map((fragranceFamilyId) => ({
+                        product_id: productId,
+                        fragrance_family_id: fragranceFamilyId,
+                    })),
+                });
+            }
+        });
+        return { message: 'fragrance families updated' };
     }
     async findProduct(id) {
         const product = await this.prisma.products.findFirst({

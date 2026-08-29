@@ -40,8 +40,10 @@ let OrdersService = class OrdersService {
                         throw new common_1.BadRequestException('cart is empty');
                     }
                     let subtotal = 0;
+                    let itemCount = 0;
                     for (const item of cart.cart_items) {
                         const variant = item.product_variants;
+                        itemCount += item.quantity;
                         if (variant.deleted_at !== null || !variant.is_active) {
                             throw new common_1.BadRequestException(`${variant.sku} is no longer available`);
                         }
@@ -51,7 +53,7 @@ let OrdersService = class OrdersService {
                         subtotal += Number(variant.price) * item.quantity;
                     }
                     const discountAmount = 0;
-                    const shippingFee = 0;
+                    const shippingFee = itemCount <= 2 ? 125 : itemCount <= 5 ? 140 : 170;
                     const total = subtotal + shippingFee - discountAmount;
                     for (const item of cart.cart_items) {
                         const result = await tx.product_variants.updateMany({

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const schedule_1 = require("@nestjs/schedule");
 const configuration_1 = __importDefault(require("./config/configuration"));
 const validation_1 = require("./config/validation");
 const database_module_1 = require("./database/database.module");
@@ -37,6 +38,7 @@ exports.AppModule = AppModule = __decorate([
                 load: [configuration_1.default],
                 validationSchema: validation_1.validationSchema,
             }),
+            schedule_1.ScheduleModule.forRoot(),
             database_module_1.DatabaseModule,
             health_module_1.HealthModule,
             auth_module_1.AuthModule,

@@ -33,6 +33,8 @@
               [src]="slide.image"
               [alt]="translate.t(slide.titleKey)"
               class="hero__product-img"
+              loading="eager"
+              fetchpriority="high"
             />
           </div>
         </div>
@@ -114,6 +116,113 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">{{ translate.t('home.featured.eyebrow') }}</p>
+        <h2>{{ translate.t('home.featured.title') }}</h2>
+      </div>
+      <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
+    </div>
+
+    @if (featuredLoading()) {
+      <p class="featured__loading">{{ translate.t('home.featured.loading') }}</p>
+    } @else if (featuredProducts().length) {
+      <div class="featured__slider-wrap">
+        <button type="button" class="featured__arrow featured__arrow--left" (click)="scrollFeatured('left', featuredSlider)" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <div class="featured__slider" #featuredSlider>
+          @for (product of featuredProducts(); track product.id) {
+            <a [routerLink]="['/products', product.slug]" class="featured__card">
+              <div class="featured__card-img">
+                @if (getPrimaryImage(product)) {
+                  <img [src]="getPrimaryImage(product)" [alt]="product.name" loading="lazy" />
+                } @else {
+                  <div class="featured__card-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  </div>
+                }
+              </div>
+              <div class="featured__card-body">
+                <span class="featured__card-brand">{{ product.brand.name }}</span>
+                <span class="featured__card-name">{{ product.name }}</span>
+                <span class="featured__card-meta">
+                  {{ product.gender || '' }} · {{ product.concentration || '' }}
+                </span>
+                <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
+              </div>
+            </a>
+          }
+        </div>
+
+        <button type="button" class="featured__arrow featured__arrow--right" (click)="scrollFeatured('right', featuredSlider)" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="section section--discount">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">{{ translate.t('home.discounted.eyebrow') }}</p>
+        <h2>{{ translate.t('home.discounted.title') }}</h2>
+      </div>
+      <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
+    </div>
+
+    @if (discountedLoading()) {
+      <p class="featured__loading">{{ translate.t('home.featured.loading') }}</p>
+    } @else if (discountedProducts().length) {
+      <div class="featured__slider-wrap">
+        <button type="button" class="featured__arrow featured__arrow--left" (click)="scrollDiscounted('left', discountedSlider)" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <div class="featured__slider" #discountedSlider>
+          @for (product of discountedProducts(); track product.id) {
+            <a [routerLink]="['/products', product.slug]" class="featured__card">
+              <div class="featured__card-img">
+                @if (getPrimaryImage(product)) {
+                  <img [src]="getPrimaryImage(product)" [alt]="product.name" loading="lazy" />
+                } @else {
+                  <div class="featured__card-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  </div>
+                }
+              </div>
+              <div class="featured__card-body">
+                <span class="featured__card-brand">{{ product.brand.name }}</span>
+                <span class="featured__card-name">{{ product.name }}</span>
+                <span class="featured__card-meta">
+                  {{ product.gender || '' }} · {{ product.concentration || '' }}
+                </span>
+                @if (getCompareAt(product); as compare) {
+                  <span class="featured__card-price featured__card-price--discount">
+                    <span class="featured__card-compare">{{ getMinPrice(product).toLocaleString('en-US') }}</span>
+                    {{ compare.toLocaleString('en-US') }}
+                  </span>
+                } @else {
+                  <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
+                }
+              </div>
+            </a>
+          }
+        </div>
+
+        <button type="button" class="featured__arrow featured__arrow--right" (click)="scrollDiscounted('right', discountedSlider)" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    }
   </div>
 </section>
 

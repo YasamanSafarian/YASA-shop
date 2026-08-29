@@ -32,3 +32,15 @@
   background: var(--color-rose-gold);
   color: #fff;
 }
+
+@media (max-width: 460px) {
+  .lang-switch {
+    padding: 2px;
+    margin-inline: 0.2rem;
+  }
+
+  .lang-switch__btn {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.7rem;
+  }
+}

@@ -47,9 +47,9 @@ export class CartComponent implements OnInit {
 
   readonly shippingCost = computed(() => {
     const count = this.cart?.totals.itemCount ?? 0;
-    if (count <= 2) return 120;
-    if (count <= 4) return 140;
-    return 160;
+    if (count <= 2) return 125000;
+    if (count <= 5) return 140000;
+    return 170000;
   });
 
   readonly grandTotal = computed(() => {
@@ -132,7 +132,7 @@ export class CartComponent implements OnInit {
       );
 
       const order = await firstValueFrom(
-        this.api.post<{ id: string; orderNumber: string }>(
+        this.api.post<{ id: string; orderNumber: string; subtotal: number; shippingFee: number; total: number; createdAt: string }>(
           '/orders',
           { addressId: addr.id },
         ),
@@ -140,8 +140,11 @@ export class CartComponent implements OnInit {
 
       this.router.navigate(['/order-confirmation'], {
         state: {
-          cartNumber: order.orderNumber,
-          name,
+          orderNumber: order.orderNumber,
+          subtotal: order.subtotal,
+          shippingFee: order.shippingFee,
+          total: order.total,
+          createdAt: order.createdAt,
         },
       });
     } catch (e: any) {

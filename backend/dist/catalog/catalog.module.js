@@ -11,12 +11,14 @@ const common_1 = require("@nestjs/common");
 const products_module_1 = require("./products/products.module");
 const brands_module_1 = require("./brands/brands.module");
 const categories_module_1 = require("./categories/categories.module");
+const fragrance_families_controller_1 = require("./fragrance-families.controller");
 let CatalogModule = class CatalogModule {
 };
 exports.CatalogModule = CatalogModule;
 exports.CatalogModule = CatalogModule = __decorate([
     (0, common_1.Module)({
         imports: [products_module_1.ProductsModule, brands_module_1.BrandsModule, categories_module_1.CategoriesModule],
+        controllers: [fragrance_families_controller_1.FragranceFamiliesController],
     })
 ], CatalogModule);
 //# sourceMappingURL=catalog.module.js.map

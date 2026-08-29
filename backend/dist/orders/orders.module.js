@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const auth_module_1 = require("../auth/auth.module");
 const orders_controller_1 = require("./orders.controller");
 const orders_service_1 = require("./orders.service");
+const order_expiry_service_1 = require("./order-expiry.service");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
@@ -18,7 +19,7 @@ exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
         imports: [auth_module_1.AuthModule],
         controllers: [orders_controller_1.OrdersController],
-        providers: [orders_service_1.OrdersService],
+        providers: [orders_service_1.OrdersService, order_expiry_service_1.OrderExpiryService],
     })
 ], OrdersModule);
 //# sourceMappingURL=orders.module.js.map

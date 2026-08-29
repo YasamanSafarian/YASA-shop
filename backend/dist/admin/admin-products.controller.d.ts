@@ -5,6 +5,8 @@ import { CreateVariantDto } from './dto/create-product.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
+import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
+import { UpdateProductFamiliesDto } from './dto/extras.dto';
 export declare class AdminProductsController {
     private readonly adminProductsService;
     constructor(adminProductsService: AdminProductsService);
@@ -19,6 +21,11 @@ export declare class AdminProductsController {
             };
             gender: import("@prisma/client").$Enums.gender_enum | null;
             concentration: import("@prisma/client").$Enums.concentration_enum | null;
+            categories: {
+                id: string;
+                name: string;
+                slug: string;
+            }[];
             isActive: boolean;
             variantCount: number;
             createdAt: string;
@@ -122,7 +129,7 @@ export declare class AdminProductsController {
         seasons: string[];
         occasions: string[];
     }>;
-    update(id: string, dto: UpdateProductDto): Promise<{
+    update(id: string, dto: UpdateProductDto): Promise<({
         brands: {
             name: string;
             id: string;
@@ -213,7 +220,7 @@ export declare class AdminProductsController {
         release_year: number | null;
         seasons: string[];
         occasions: string[];
-    }>;
+    }) | null>;
     remove(id: string): Promise<{
         message: string;
     }>;
@@ -257,6 +264,33 @@ export declare class AdminProductsController {
         weight: number | null;
     }>;
     removeVariant(variantId: string): Promise<{
+        message: string;
+    }>;
+    addImage(variantId: string, file: any): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    updateImage(imageId: string, dto: UpdateImageDto): Promise<{
+        id: string;
+        created_at: Date;
+        image_url: string;
+        sort_order: number;
+        variant_id: string;
+        alt_text: string | null;
+        is_primary: boolean;
+    }>;
+    removeImage(imageId: string): Promise<{
+        message: string;
+    }>;
+    updateNotes(id: string, dto: UpdateProductNotesDto): Promise<{
+        message: string;
+    }>;
+    updateFragranceFamilies(id: string, dto: UpdateProductFamiliesDto): Promise<{
         message: string;
     }>;
 }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const config_1 = require("@nestjs/config");
 const common_1 = require("@nestjs/common");
+const path_1 = require("path");
 const app_module_1 = require("./app.module");
 const prisma_exception_filter_1 = require("./common/filters/prisma-exception.filter");
 async function bootstrap() {
@@ -17,6 +18,7 @@ async function bootstrap() {
     }));
     app.enableCors();
     app.enableShutdownHooks();
+    app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads' });
     await app.listen(port);
     common_1.Logger.log(`Backend is running on http://localhost:${port}`, 'Bootstrap');
 }

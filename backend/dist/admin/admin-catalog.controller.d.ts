@@ -3,9 +3,25 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateFragranceFamilyDto, CreateNoteDto } from './dto/extras.dto';
 export declare class AdminCatalogController {
     private readonly adminCatalogService;
     constructor(adminCatalogService: AdminCatalogService);
+    listNotes(): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }[]>;
+    createNote(dto: CreateNoteDto): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }>;
+    createFragranceFamily(dto: CreateFragranceFamilyDto): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }>;
     createBrand(dto: CreateBrandDto): Promise<{
         name: string;
         id: string;

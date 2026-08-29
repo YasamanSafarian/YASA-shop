@@ -10,4 +10,5 @@ export declare class UpdateProductDto {
     seasons?: string[];
     occasions?: string[];
     isActive?: boolean;
+    categoryIds?: string[];
 }

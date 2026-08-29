@@ -21,7 +21,7 @@ import { TranslateService } from '../../core/services/translate.service';
 import { getErrorMessage } from '../../shared/utils/errors';
 import {
   Brand,
-  CategoryNode,
+  FragranceFamily,
   Product,
   ProductSort,
 } from '../../core/models/catalog';
@@ -49,7 +49,7 @@ export class ProductsComponent implements OnInit {
 
   readonly products = signal<Product[]>([]);
   readonly brands = signal<Brand[]>([]);
-  readonly categories = signal<CategoryNode[]>([]);
+  readonly fragranceFamilies = signal<FragranceFamily[]>([]);
   readonly page = signal(1);
   readonly totalPages = signal(1);
   readonly total = signal(0);
@@ -60,7 +60,7 @@ export class ProductsComponent implements OnInit {
   readonly filterForm = this.fb.group({
     search: [''],
     brand: [''],
-    category: [''],
+    fragranceFamily: [''],
     gender: [''],
     sort: ['newest' as ProductSort],
   });
@@ -69,10 +69,10 @@ export class ProductsComponent implements OnInit {
     this.brands().map((brand) => ({ value: brand.slug, label: brand.name })),
   );
 
-  readonly categoryOptions = computed<UiSelectOption[]>(() =>
-    this.categories().map((category) => ({
-      value: category.slug,
-      label: category.name,
+  readonly fragranceFamilyOptions = computed<UiSelectOption[]>(() =>
+    this.fragranceFamilies().map((ff) => ({
+      value: ff.slug,
+      label: ff.name,
     })),
   );
 
@@ -94,7 +94,7 @@ export class ProductsComponent implements OnInit {
     () =>
       (this.filterForm.value.search ? 1 : 0) +
       (this.filterForm.value.brand ? 1 : 0) +
-      (this.filterForm.value.category ? 1 : 0) +
+      (this.filterForm.value.fragranceFamily ? 1 : 0) +
       (this.filterForm.value.gender ? 1 : 0),
   );
 
@@ -122,7 +122,7 @@ export class ProductsComponent implements OnInit {
         limit: PAGE_SIZE,
         search: form.search || undefined,
         brand: form.brand || undefined,
-        category: form.category || undefined,
+        fragranceFamily: form.fragranceFamily || undefined,
         gender:
           form.gender === 'male' ||
           form.gender === 'female' ||
@@ -159,7 +159,7 @@ export class ProductsComponent implements OnInit {
     this.filterForm.setValue({
       search: '',
       brand: '',
-      category: '',
+      fragranceFamily: '',
       gender: '',
       sort: 'newest',
     });
@@ -177,16 +177,9 @@ export class ProductsComponent implements OnInit {
       next: (brands) => this.brands.set(brands),
       error: () => this.brands.set([]),
     });
-    this.catalog.getCategoryTree().subscribe({
-      next: (tree) => this.categories.set(this.flattenCategories(tree)),
-      error: () => this.categories.set([]),
+    this.catalog.listFragranceFamilies().subscribe({
+      next: (families) => this.fragranceFamilies.set(families),
+      error: () => this.fragranceFamilies.set([]),
     });
-  }
-
-  private flattenCategories(nodes: CategoryNode[]): CategoryNode[] {
-    return nodes.flatMap((node) => [
-      node,
-      ...this.flattenCategories(node.children),
-    ]);
   }
 }
