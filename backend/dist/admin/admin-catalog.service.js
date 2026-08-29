@@ -106,6 +106,23 @@ let AdminCatalogService = class AdminCatalogService {
             select: { id: true, name: true, slug: true },
         });
     }
+    async createNote(dto) {
+        return this.prisma.notes.create({
+            data: {
+                name: dto.name,
+                slug: dto.slug ?? (0, slugify_1.slugify)(dto.name),
+            },
+            select: { id: true, name: true, slug: true },
+        });
+    }
+    async createFragranceFamily(dto) {
+        return this.prisma.fragrance_families.create({
+            data: {
+                name: dto.name,
+                slug: dto.slug ?? (0, slugify_1.slugify)(dto.name),
+            },
+        });
+    }
     async findBrand(id) {
         const brand = await this.prisma.brands.findFirst({
             where: { id, deleted_at: null },

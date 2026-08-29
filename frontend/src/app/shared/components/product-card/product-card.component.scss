@@ -23,6 +23,19 @@
   background: #f2efe9;
 }
 
+.product-card__badge {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-start: 0.5rem;
+  z-index: 1;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-accent, #b76e79);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .product-card__media img {
   width: 100%;
   height: 100%;
@@ -72,6 +85,14 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-navy);
+}
+
+.product-card__compare {
+  margin-inline-end: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text-muted, #8a8a8a);
+  text-decoration: line-through;
 }
 
 @media (min-width: 900px) {

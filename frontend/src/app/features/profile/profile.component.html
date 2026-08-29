@@ -151,6 +151,49 @@
                     <span class="order-card__address-phone">{{ order.address.receiverPhone }}</span>
                   </div>
 
+                  @if (isPending(order)) {
+                    <div class="order-card__payment">
+                      <div class="order-card__payment-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <span>{{ translate.t('orderConfirm.paymentInstructions') }}</span>
+                      </div>
+                      <div class="order-card__payment-card">
+                        <div class="order-card__payment-row">
+                          <span class="order-card__payment-label">{{ translate.t('orderConfirm.cardNumber') }}</span>
+                          <div class="order-card__payment-num-wrap">
+                            <span class="order-card__payment-num">{{ cardNumber }}</span>
+                            <button type="button" class="order-card__copy" (click)="copyCard(order.id); $event.stopPropagation()">
+                              @if (copiedId() !== order.id) {
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                              } @else {
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                              }
+                            </button>
+                          </div>
+                        </div>
+                        <div class="order-card__payment-row">
+                          <span class="order-card__payment-label">{{ translate.t('orderConfirm.cardHolder') }}</span>
+                          <span class="order-card__payment-value">{{ cardHolder }}</span>
+                        </div>
+                        <div class="order-card__payment-row">
+                          <span class="order-card__payment-label">{{ translate.t('orders.total') }}</span>
+                          <span class="order-card__payment-total">{{ formatPrice(order.total) }} {{ translate.t('common.toman') }}</span>
+                        </div>
+                      </div>
+                      <p class="order-card__payment-hint">{{ translate.t('orderConfirm.sendFactor') }}</p>
+                      <div class="order-card__payment-actions">
+                        <a class="order-card__payment-btn order-card__payment-btn--tg" href="https://t.me/the_yasa" target="_blank" rel="noopener" (click)="$event.stopPropagation()">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+                          <span>{{ translate.t('orderConfirm.telegram') }}</span>
+                        </a>
+                        <a class="order-card__payment-btn order-card__payment-btn--sms" [href]="'sms:' + order.address.receiverPhone" (click)="$event.stopPropagation()">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                          <span>{{ translate.t('orderConfirm.sms') }}</span>
+                        </a>
+                      </div>
+                    </div>
+                  }
+
                   @if (order.statuses.order === 'pending' || order.statuses.order === 'paid') {
                     <div class="order-card__actions">
                       <app-ui-button

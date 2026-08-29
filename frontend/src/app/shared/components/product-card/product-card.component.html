@@ -1,5 +1,8 @@
 <a class="product-card" [routerLink]="['/products', product().slug]">
   <div class="product-card__media">
+    @if (discountPercent(); as discount) {
+      <span class="product-card__badge">-{{ discount }}%</span>
+    }
     @if (image(); as image) {
       <img [src]="image" [alt]="product().name" loading="lazy" />
     } @else {
@@ -11,6 +14,9 @@
     <h3 class="product-card__name">{{ product().name }}</h3>
     @if (minPrice(); as price) {
       <p class="product-card__price">
+        @if (compareAtPrice(); as compare) {
+          <span class="product-card__compare">{{ formatPrice(compare) }}</span>
+        }
         {{ translate.t('products.from') }} {{ formatPrice(price) }}
       </p>
     }

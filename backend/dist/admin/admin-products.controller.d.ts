@@ -6,6 +6,7 @@ import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
 import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
+import { UpdateProductFamiliesDto } from './dto/extras.dto';
 export declare class AdminProductsController {
     private readonly adminProductsService;
     constructor(adminProductsService: AdminProductsService);
@@ -287,6 +288,9 @@ export declare class AdminProductsController {
         message: string;
     }>;
     updateNotes(id: string, dto: UpdateProductNotesDto): Promise<{
+        message: string;
+    }>;
+    updateFragranceFamilies(id: string, dto: UpdateProductFamiliesDto): Promise<{
         message: string;
     }>;
 }

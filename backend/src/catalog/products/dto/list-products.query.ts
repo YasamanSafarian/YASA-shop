@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsIn,
   IsInt,
@@ -8,7 +9,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { gender_enum } from '@prisma/client';
 
 export type SortOption =
@@ -55,6 +56,11 @@ export class ListProductsQueryDto {
   @IsOptional()
   @IsIn(['in_stock'])
   availability?: AvailabilityOption;
+
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  discounted?: boolean;
 
   @IsOptional()
   @IsIn(['newest', 'price_asc', 'price_desc', 'name_asc', 'name_desc'])

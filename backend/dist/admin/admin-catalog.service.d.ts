@@ -3,6 +3,7 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateFragranceFamilyDto, CreateNoteDto } from './dto/extras.dto';
 export declare class AdminCatalogService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -61,6 +62,16 @@ export declare class AdminCatalogService {
         id: string;
         slug: string;
     }[]>;
+    createNote(dto: CreateNoteDto): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }>;
+    createFragranceFamily(dto: CreateFragranceFamilyDto): Promise<{
+        name: string;
+        id: string;
+        slug: string;
+    }>;
     private findBrand;
     private findCategory;
 }

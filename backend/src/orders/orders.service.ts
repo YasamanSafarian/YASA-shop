@@ -99,8 +99,10 @@ export class OrdersService {
           }
 
           let subtotal = 0;
+          let itemCount = 0;
           for (const item of cart.cart_items) {
             const variant = item.product_variants;
+            itemCount += item.quantity;
 
             if (variant.deleted_at !== null || !variant.is_active) {
               throw new BadRequestException(
@@ -118,7 +120,8 @@ export class OrdersService {
           }
 
           const discountAmount = 0;
-          const shippingFee = 0;
+          const shippingFee =
+            itemCount <= 2 ? 125 : itemCount <= 5 ? 140 : 170;
           const total = subtotal + shippingFee - discountAmount;
 
           for (const item of cart.cart_items) {

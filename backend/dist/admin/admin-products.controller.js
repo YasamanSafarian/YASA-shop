@@ -29,6 +29,7 @@ const update_variant_dto_1 = require("./dto/update-variant.dto");
 const update_stock_dto_1 = require("./dto/update-stock.dto");
 const list_admin_products_query_1 = require("./dto/list-admin-products.query");
 const product_extras_dto_1 = require("./dto/product-extras.dto");
+const extras_dto_1 = require("./dto/extras.dto");
 let AdminProductsController = class AdminProductsController {
     adminProductsService;
     constructor(adminProductsService) {
@@ -69,6 +70,9 @@ let AdminProductsController = class AdminProductsController {
     }
     updateNotes(id, dto) {
         return this.adminProductsService.updateNotes(id, dto);
+    }
+    updateFragranceFamilies(id, dto) {
+        return this.adminProductsService.updateFragranceFamilies(id, dto);
     }
 };
 exports.AdminProductsController = AdminProductsController;
@@ -185,6 +189,14 @@ __decorate([
     __metadata("design:paramtypes", [String, product_extras_dto_1.UpdateProductNotesDto]),
     __metadata("design:returntype", void 0)
 ], AdminProductsController.prototype, "updateNotes", null);
+__decorate([
+    (0, common_1.Patch)(':id/fragrance-families'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, extras_dto_1.UpdateProductFamiliesDto]),
+    __metadata("design:returntype", void 0)
+], AdminProductsController.prototype, "updateFragranceFamilies", null);
 exports.AdminProductsController = AdminProductsController = __decorate([
     (0, common_1.Controller)('admin/products'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),

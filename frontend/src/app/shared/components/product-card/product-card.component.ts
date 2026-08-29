@@ -34,6 +34,30 @@ export class ProductCardComponent {
     return Math.min(...this.product().variants.map((v) => v.price));
   });
 
+  readonly compareAtPrice = computed<number | null>(() => {
+    const variants = this.product().variants;
+    if (variants.length === 0) {
+      return null;
+    }
+    const cheapest = variants.reduce((a, b) => (a.price <= b.price ? a : b));
+    if (
+      cheapest.compareAtPrice != null &&
+      cheapest.compareAtPrice > cheapest.price
+    ) {
+      return cheapest.compareAtPrice;
+    }
+    return null;
+  });
+
+  readonly discountPercent = computed<number | null>(() => {
+    const compare = this.compareAtPrice();
+    const min = this.minPrice();
+    if (compare == null || min == null || min <= 0) {
+      return null;
+    }
+    return Math.round(((compare - min) / compare) * 100);
+  });
+
   formatPrice(price: number): string {
     return price.toLocaleString('en-US');
   }

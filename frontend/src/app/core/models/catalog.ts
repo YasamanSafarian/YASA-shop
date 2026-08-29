@@ -110,6 +110,7 @@ export interface ListProductsParams {
   minPrice?: number;
   maxPrice?: number;
   availability?: 'in_stock';
+  discounted?: boolean;
   sort?: ProductSort;
   page?: number;
   limit?: number;

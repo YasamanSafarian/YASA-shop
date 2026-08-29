@@ -209,9 +209,16 @@ let ProductsService = class ProductsService {
         if (query.availability === 'in_stock') {
             variantWhere.stock_quantity = { gt: 0 };
         }
+        if (query.discounted) {
+            variantWhere.AND = [
+                { compare_at_price: { not: null } },
+                { compare_at_price: { gt: this.prisma.product_variants.fields.price } },
+            ];
+        }
         if (query.minPrice !== undefined ||
             query.maxPrice !== undefined ||
-            query.availability === 'in_stock') {
+            query.availability === 'in_stock' ||
+            query.discounted) {
             where.product_variants = { some: variantWhere };
         }
         return where;

@@ -412,6 +412,68 @@
   color: var(--color-rose-gold);
 }
 
+.featured__card-compare {
+  margin-inline-end: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+/* ── Discount section (different background) ── */
+.section--discount {
+  background:
+    radial-gradient(circle at 90% 10%, rgb(197 160 89 / 0.14), transparent 45%),
+    linear-gradient(160deg, var(--color-navy) 0%, var(--color-navy-700, #233047) 100%);
+}
+
+.section--discount .section__head h2,
+.section--discount .section__head .eyebrow {
+  color: #fff;
+}
+
+.section--discount .featured__card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgb(255 255 255 / 0.18);
+}
+
+.section--discount .featured__card-name {
+  color: #fff;
+}
+
+.section--discount .featured__card-brand,
+.section--discount .featured__card-meta {
+  color: rgb(255 255 255 / 0.6);
+}
+
+.section--discount .featured__card-price {
+  color: var(--color-gold);
+}
+
+.section--discount .featured__card-compare {
+  color: rgb(255 255 255 / 0.5);
+}
+
+.section--discount .featured__arrow {
+  background: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.3);
+  color: #fff;
+}
+
+.section--discount .featured__arrow:hover {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-navy);
+}
+
+.section--discount .link {
+  color: var(--color-gold);
+}
+
+.section--discount .featured__loading {
+  color: rgb(255 255 255 / 0.7);
+}
+
 .featured__arrow {
   position: absolute;
   top: 50%;

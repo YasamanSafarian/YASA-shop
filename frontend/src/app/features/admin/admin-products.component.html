@@ -139,14 +139,59 @@
                     <p class="product-detail__desc">{{ pd.description }}</p>
                   }
 
-                  @if (pd.fragranceFamilies.length) {
+                  @if (pd.fragranceFamilies.length || familiesEditMode()) {
                     <div class="product-detail__families">
-                      <h4>{{ translate.t('adminProducts.families') }}</h4>
-                      <div class="product-detail__families-list">
-                        @for (fam of pd.fragranceFamilies; track fam.id) {
-                          <span class="product-detail__family-chip">{{ fam.name }}</span>
+                      <div class="product-detail__families-header">
+                        <h4>{{ translate.t('adminProducts.families') }}</h4>
+                        @if (!familiesEditMode()) {
+                          <button type="button" class="product-detail__notes-edit-btn" (click)="openFamiliesEditor(pd)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                          </button>
                         }
                       </div>
+
+                      @if (familiesEditMode()) {
+                        <div class="product-detail__notes-editor">
+                          @if (familiesError()) {
+                            <div class="product-form__error">{{ familiesError() }}</div>
+                          }
+                          <div class="notes-editor__section">
+                            <span class="notes-editor__label">{{ translate.t('adminProducts.families') }}</span>
+                            <div class="notes-editor__chips">
+                              @for (family of admin.allFamilies(); track family.id) {
+                                <button type="button" class="notes-editor__chip" [class.is-selected]="isFamilySelected(family.id)" (click)="toggleFamily(family.id)">{{ family.name }}</button>
+                              }
+                            </div>
+                          </div>
+                          <div class="notes-editor__add">
+                            <input
+                              type="text"
+                              class="notes-editor__add-input"
+                              [value]="newFamilyName()"
+                              (input)="newFamilyName.set($any($event.target).value)"
+                              (keydown.enter)="addNewFamily()"
+                              [placeholder]="translate.t('adminProducts.newFamilyPlaceholder')"
+                            />
+                            <app-ui-button variant="outline" size="sm" (click)="addNewFamily()">
+                              {{ translate.t('adminProducts.add') }}
+                            </app-ui-button>
+                          </div>
+                          <div class="product-form__actions">
+                            <app-ui-button variant="primary" size="sm" [disabled]="familiesSaving()" (click)="saveFamilies(pd.id)">
+                              {{ familiesSaving() ? '…' : translate.t('adminProducts.save') }}
+                            </app-ui-button>
+                            <app-ui-button variant="ghost" size="sm" (click)="cancelFamiliesEdit()">
+                              {{ translate.t('adminProducts.cancel') }}
+                            </app-ui-button>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="product-detail__families-list">
+                          @for (fam of pd.fragranceFamilies; track fam.id) {
+                            <span class="product-detail__family-chip">{{ fam.name }}</span>
+                          }
+                        </div>
+                      }
                     </div>
                   }
 
@@ -188,6 +233,29 @@
                               @for (note of admin.allNotes(); track note.id) {
                                 <button type="button" class="notes-editor__chip" [class.is-selected]="isNoteSelected('baseIds', note.id)" (click)="toggleNote('baseIds', note.id)">{{ note.name }}</button>
                               }
+                            </div>
+                          </div>
+                          <div class="notes-editor__add">
+                            <span class="notes-editor__add-label">{{ translate.t('adminProducts.newNote') }}</span>
+                            <div class="notes-editor__add-row">
+                              <div class="notes-editor__add-types">
+                                <button type="button" class="notes-editor__type-btn" [class.is-active]="newNoteType() === 'top'" (click)="setNewNoteType('top')">{{ translate.t('adminProducts.notesTop') }}</button>
+                                <button type="button" class="notes-editor__type-btn" [class.is-active]="newNoteType() === 'middle'" (click)="setNewNoteType('middle')">{{ translate.t('adminProducts.notesMiddle') }}</button>
+                                <button type="button" class="notes-editor__type-btn" [class.is-active]="newNoteType() === 'base'" (click)="setNewNoteType('base')">{{ translate.t('adminProducts.notesBase') }}</button>
+                              </div>
+                              <div class="notes-editor__add-field">
+                                <input
+                                  type="text"
+                                  class="notes-editor__add-input"
+                                  [value]="newNoteName()"
+                                  (input)="newNoteName.set($any($event.target).value)"
+                                  (keydown.enter)="addNewNote()"
+                                  [placeholder]="translate.t('adminProducts.newNotePlaceholder')"
+                                />
+                                <app-ui-button variant="outline" size="sm" (click)="addNewNote()">
+                                  {{ translate.t('adminProducts.add') }}
+                                </app-ui-button>
+                              </div>
                             </div>
                           </div>
                           <div class="product-form__actions">
@@ -353,6 +421,10 @@
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.price') }}</label>
               <input type="number" [(ngModel)]="variantForm.price" min="0" />
+            </div>
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.compareAtPrice') }}</label>
+              <input type="number" [(ngModel)]="variantForm.compareAtPrice" min="0" placeholder="0" />
             </div>
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.stockQuantity') }}</label>

@@ -29,6 +29,7 @@ import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
 import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
+import { UpdateProductFamiliesDto } from './dto/extras.dto';
 
 @Controller('admin/products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -143,5 +144,15 @@ export class AdminProductsController {
     @Body() dto: UpdateProductNotesDto,
   ) {
     return this.adminProductsService.updateNotes(id, dto);
+  }
+
+  /* ── Fragrance families ── */
+
+  @Patch(':id/fragrance-families')
+  updateFragranceFamilies(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateProductFamiliesDto,
+  ) {
+    return this.adminProductsService.updateFragranceFamilies(id, dto);
   }
 }

@@ -22,6 +22,7 @@ const create_brand_dto_1 = require("./dto/create-brand.dto");
 const update_brand_dto_1 = require("./dto/update-brand.dto");
 const create_category_dto_1 = require("./dto/create-category.dto");
 const update_category_dto_1 = require("./dto/update-category.dto");
+const extras_dto_1 = require("./dto/extras.dto");
 let AdminCatalogController = class AdminCatalogController {
     adminCatalogService;
     constructor(adminCatalogService) {
@@ -29,6 +30,12 @@ let AdminCatalogController = class AdminCatalogController {
     }
     listNotes() {
         return this.adminCatalogService.listNotes();
+    }
+    createNote(dto) {
+        return this.adminCatalogService.createNote(dto);
+    }
+    createFragranceFamily(dto) {
+        return this.adminCatalogService.createFragranceFamily(dto);
     }
     createBrand(dto) {
         return this.adminCatalogService.createBrand(dto);
@@ -56,6 +63,22 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AdminCatalogController.prototype, "listNotes", null);
+__decorate([
+    (0, common_1.Post)('notes'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [extras_dto_1.CreateNoteDto]),
+    __metadata("design:returntype", void 0)
+], AdminCatalogController.prototype, "createNote", null);
+__decorate([
+    (0, common_1.Post)('fragrance-families'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [extras_dto_1.CreateFragranceFamilyDto]),
+    __metadata("design:returntype", void 0)
+], AdminCatalogController.prototype, "createFragranceFamily", null);
 __decorate([
     (0, common_1.Post)('brands'),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),

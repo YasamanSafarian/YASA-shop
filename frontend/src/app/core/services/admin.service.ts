@@ -39,6 +39,12 @@ export interface Category {
   slug: string;
 }
 
+export interface FragranceFamily {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface ProductVariant {
   id: string;
   sku: string;
@@ -119,6 +125,9 @@ export class AdminService {
   readonly allNotes = signal<Note[]>([]);
   readonly notesLoading = signal(false);
 
+  /* ── Fragrance families (shared) ── */
+  readonly allFamilies = signal<FragranceFamily[]>([]);
+
   /* ── Categories (shared) ── */
   readonly categories = signal<Category[]>([]);
 
@@ -196,6 +205,7 @@ export class AdminService {
     format: string;
     volumeMl: number;
     price: number;
+    compareAtPrice?: number | null;
     stockQuantity?: number;
     isDefault?: boolean;
   }): Promise<void> {
@@ -207,7 +217,7 @@ export class AdminService {
     format: string;
     volumeMl: number;
     price: number;
-    compareAtPrice: number;
+    compareAtPrice?: number | null;
     stockQuantity: number;
     isDefault: boolean;
     isActive: boolean;
@@ -250,8 +260,36 @@ export class AdminService {
     }
   }
 
+  async createNote(name: string, slug?: string): Promise<Note> {
+    const note = await firstValueFrom(
+      this.api.post<Note>('/admin/notes', { name, slug }),
+    );
+    this.allNotes.update(list => [...list, note]);
+    return note;
+  }
+
+  async loadFragranceFamilies(): Promise<void> {
+    if (this.allFamilies().length) return;
+    const res = await firstValueFrom(
+      this.api.get<FragranceFamily[]>('/fragrance-families'),
+    );
+    this.allFamilies.set(res);
+  }
+
+  async createFragranceFamily(name: string, slug?: string): Promise<FragranceFamily> {
+    const family = await firstValueFrom(
+      this.api.post<FragranceFamily>('/admin/fragrance-families', { name, slug }),
+    );
+    this.allFamilies.update(list => [...list, family]);
+    return family;
+  }
+
   async updateProductNotes(productId: string, topNoteIds: string[], middleNoteIds: string[], baseNoteIds: string[]): Promise<void> {
     await firstValueFrom(this.api.patch(`/admin/products/${productId}/notes`, { topNoteIds, middleNoteIds, baseNoteIds }));
+  }
+
+  async updateProductFamilies(productId: string, fragranceFamilyIds: string[]): Promise<void> {
+    await firstValueFrom(this.api.patch(`/admin/products/${productId}/fragrance-families`, { fragranceFamilyIds }));
   }
 
   /* ── Images ── */

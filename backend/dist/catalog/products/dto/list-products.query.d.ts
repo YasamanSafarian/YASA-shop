@@ -10,6 +10,7 @@ export declare class ListProductsQueryDto {
     minPrice?: number;
     maxPrice?: number;
     availability?: AvailabilityOption;
+    discounted?: boolean;
     sort?: SortOption;
     page?: number;
     limit?: number;

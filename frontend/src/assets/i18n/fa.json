@@ -58,6 +58,8 @@
   "home.featured.title": "پرفروش‌ترین عطرها",
   "home.featured.loading": "در حال بارگذاری…",
   "home.featured.toman": "تومان",
+  "home.discounted.eyebrow": "پیشنهاد ویژه",
+  "home.discounted.title": "شگفت‌انگیزها و تخفیف‌ها",
   "products.eyebrow": "",
   "products.title": "محصولات",
   "products.subtitle": " ",
@@ -336,12 +338,16 @@
   "adminProducts.format": "فرمت",
   "adminProducts.volumeMl": "حجم (ml)",
   "adminProducts.price": "قیمت",
+  "adminProducts.compareAtPrice": "قیمت اصلی (تخفیف‌خورده)",
   "adminProducts.stockQuantity": "موجودی",
   "adminProducts.confirmDeleteVariant": "آیا از حذف این اندازه مطمئن هستید؟",
   "adminProducts.variantErrorSku": "کد محصول الزامی است.",
   "adminProducts.families": "خانواده‌های عطر",
+  "adminProducts.newNote": "افزودن نت جدید",
+  "adminProducts.newNotePlaceholder": "نام نت جدید…",
+  "adminProducts.newFamilyPlaceholder": "نام خانواده جدید…",
+  "adminProducts.add": "افزودن",
   "social.instagram": "اینستاگرام",
   "social.telegram": "تلگرام",
   "social.followUs": "ما را دنبال کنید"
-
 }

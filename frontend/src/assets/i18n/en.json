@@ -58,6 +58,8 @@
   "home.featured.title": "Most Popular Perfumes",
   "home.featured.loading": "Loading…",
   "home.featured.toman": "Toman",
+  "home.discounted.eyebrow": "Special Offers",
+  "home.discounted.title": "Deals & Discounts",
   "products.eyebrow": "Collection",
   "products.title": "Perfumes",
   "products.subtitle": "Original fragrances from world-renowned houses and YASA's own handcrafted compositions.",
@@ -336,12 +338,16 @@
   "adminProducts.format": "Format",
   "adminProducts.volumeMl": "Volume (ml)",
   "adminProducts.price": "Price",
+  "adminProducts.compareAtPrice": "Original price (before discount)",
   "adminProducts.stockQuantity": "Stock",
   "adminProducts.confirmDeleteVariant": "Are you sure you want to delete this variant?",
   "adminProducts.variantErrorSku": "SKU is required.",
   "adminProducts.families": "Fragrance Families",
+  "adminProducts.newNote": "Add New Note",
+  "adminProducts.newNotePlaceholder": "New note name…",
+  "adminProducts.newFamilyPlaceholder": "New family name…",
+  "adminProducts.add": "Add",
   "social.instagram": "Instagram",
   "social.telegram": "Telegram",
   "social.followUs": "Follow us"
-
 }

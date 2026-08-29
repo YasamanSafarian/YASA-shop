@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AdminService, Brand, Note, ProductDetail, ProductVariant } from '../../core/services/admin.service';
+import { AdminService, Brand, FragranceFamily, Note, ProductDetail, ProductVariant } from '../../core/services/admin.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { UiSelectComponent, UiSelectOption } from '../../shared/components/ui/ui-select/ui-select.component';
@@ -36,7 +36,16 @@ export class AdminProductsComponent implements OnInit {
   readonly notesEditMode = signal(false);
   readonly notesSaving = signal(false);
   readonly notesError = signal('');
+  readonly newNoteName = signal('');
+  readonly newNoteType = signal<'top' | 'middle' | 'base'>('top');
   notesDraft = { topIds: [] as string[], middleIds: [] as string[], baseIds: [] as string[] };
+
+  /* ── Fragrance family editing ── */
+  readonly familiesEditMode = signal(false);
+  readonly familiesSaving = signal(false);
+  readonly familiesError = signal('');
+  readonly newFamilyName = signal('');
+  familiesDraft: string[] = [];
 
   /* ── Image upload ── */
   readonly uploadingImage = signal(false);
@@ -56,6 +65,7 @@ export class AdminProductsComponent implements OnInit {
     format: 'original',
     volumeMl: 25,
     price: 0,
+    compareAtPrice: 0,
     stockQuantity: 0,
     isDefault: false,
   };
@@ -88,6 +98,7 @@ export class AdminProductsComponent implements OnInit {
     this.admin.loadBrands();
     this.admin.loadNotes();
     this.admin.loadCategories();
+    this.admin.loadFragranceFamilies();
   }
 
   onSearch(): void {
@@ -201,7 +212,7 @@ export class AdminProductsComponent implements OnInit {
   openAddVariant(productId: string): void {
     this.variantProductId.set(productId);
     this.editingVariantId.set(null);
-    this.variantForm = { sku: '', format: 'original', volumeMl: 25, price: 0, stockQuantity: 0, isDefault: false };
+    this.variantForm = { sku: '', format: 'original', volumeMl: 25, price: 0, compareAtPrice: 0, stockQuantity: 0, isDefault: false };
     this.variantError.set('');
     this.showVariantForm.set(true);
   }
@@ -214,6 +225,7 @@ export class AdminProductsComponent implements OnInit {
       format: variant.format,
       volumeMl: variant.volumeMl,
       price: variant.price,
+      compareAtPrice: variant.compareAtPrice ?? 0,
       stockQuantity: variant.stockQuantity,
       isDefault: variant.isDefault,
     };
@@ -241,6 +253,7 @@ export class AdminProductsComponent implements OnInit {
           format: this.variantForm.format,
           volumeMl: this.variantForm.volumeMl,
           price: this.variantForm.price,
+          compareAtPrice: this.variantForm.compareAtPrice || null,
           stockQuantity: this.variantForm.stockQuantity,
           isDefault: this.variantForm.isDefault,
         });
@@ -250,6 +263,7 @@ export class AdminProductsComponent implements OnInit {
           format: this.variantForm.format,
           volumeMl: this.variantForm.volumeMl,
           price: this.variantForm.price,
+          compareAtPrice: this.variantForm.compareAtPrice || null,
           stockQuantity: this.variantForm.stockQuantity,
           isDefault: this.variantForm.isDefault,
         });
@@ -318,6 +332,7 @@ export class AdminProductsComponent implements OnInit {
       middleIds: pd.notes.middle.map(name => this.admin.allNotes().find(n => n.name === name)?.id).filter(Boolean) as string[],
       baseIds: pd.notes.base.map(name => this.admin.allNotes().find(n => n.name === name)?.id).filter(Boolean) as string[],
     };
+    this.newNoteName.set('');
     this.notesError.set('');
     this.notesEditMode.set(true);
   }
@@ -325,6 +340,7 @@ export class AdminProductsComponent implements OnInit {
   cancelNotesEdit(): void {
     this.notesEditMode.set(false);
     this.notesError.set('');
+    this.newNoteName.set('');
   }
 
   toggleNote(type: 'topIds' | 'middleIds' | 'baseIds', noteId: string): void {
@@ -341,6 +357,23 @@ export class AdminProductsComponent implements OnInit {
     return this.notesDraft[type].includes(noteId);
   }
 
+  setNewNoteType(type: 'top' | 'middle' | 'base'): void {
+    this.newNoteType.set(type);
+  }
+
+  async addNewNote(): Promise<void> {
+    const name = this.newNoteName().trim();
+    if (!name) return;
+    try {
+      const note = await this.admin.createNote(name);
+      const typeKey = `${this.newNoteType()}Ids` as 'topIds' | 'middleIds' | 'baseIds';
+      this.notesDraft[typeKey].push(note.id);
+      this.newNoteName.set('');
+    } catch (e: any) {
+      this.notesError.set(e?.error?.message || 'Failed to create note');
+    }
+  }
+
   async saveNotes(productId: string): Promise<void> {
     this.notesSaving.set(true);
     this.notesError.set('');
@@ -354,6 +387,62 @@ export class AdminProductsComponent implements OnInit {
       this.notesError.set(e?.error?.message || 'Failed to update notes');
     } finally {
       this.notesSaving.set(false);
+    }
+  }
+
+  /* ── Fragrance family editing ── */
+  openFamiliesEditor(pd: ProductDetail): void {
+    this.admin.loadFragranceFamilies();
+    this.familiesDraft = pd.fragranceFamilies.map(f => f.id);
+    this.newFamilyName.set('');
+    this.familiesError.set('');
+    this.familiesEditMode.set(true);
+  }
+
+  cancelFamiliesEdit(): void {
+    this.familiesEditMode.set(false);
+    this.familiesError.set('');
+    this.newFamilyName.set('');
+  }
+
+  toggleFamily(familyId: string): void {
+    const idx = this.familiesDraft.indexOf(familyId);
+    if (idx === -1) {
+      this.familiesDraft.push(familyId);
+    } else {
+      this.familiesDraft.splice(idx, 1);
+    }
+  }
+
+  isFamilySelected(familyId: string): boolean {
+    return this.familiesDraft.includes(familyId);
+  }
+
+  async addNewFamily(): Promise<void> {
+    const name = this.newFamilyName().trim();
+    if (!name) return;
+    try {
+      const family = await this.admin.createFragranceFamily(name);
+      this.familiesDraft.push(family.id);
+      this.newFamilyName.set('');
+    } catch (e: any) {
+      this.familiesError.set(e?.error?.message || 'Failed to create fragrance family');
+    }
+  }
+
+  async saveFamilies(productId: string): Promise<void> {
+    this.familiesSaving.set(true);
+    this.familiesError.set('');
+    try {
+      await this.admin.updateProductFamilies(productId, this.familiesDraft);
+      this.familiesEditMode.set(false);
+      if (this.expandedSlug()) {
+        await this.admin.loadProductDetail(this.expandedSlug()!);
+      }
+    } catch (e: any) {
+      this.familiesError.set(e?.error?.message || 'Failed to update fragrance families');
+    } finally {
+      this.familiesSaving.set(false);
     }
   }
 

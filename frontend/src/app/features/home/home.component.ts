@@ -27,6 +27,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly animating = signal(false);
   readonly featuredProducts = signal<Product[]>([]);
   readonly featuredLoading = signal(false);
+  readonly discountedProducts = signal<Product[]>([]);
+  readonly discountedLoading = signal(false);
 
   readonly slides: Slide[] = [
     {
@@ -54,6 +56,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.startAuto();
     this.loadFeatured();
+    this.loadDiscounted();
   }
 
   ngOnDestroy(): void {
@@ -81,6 +84,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
   }
 
+  scrollDiscounted(direction: 'left' | 'right', el: HTMLElement): void {
+    const amount = el.clientWidth * 0.7;
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  }
+
   getPrimaryImage(product: Product): string {
     for (const v of product.variants) {
       const primary = v.images.find(i => i.isPrimary);
@@ -95,6 +103,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     return prices.length ? Math.min(...prices) : 0;
   }
 
+  getCompareAt(product: Product): number | null {
+    const variants = product.variants;
+    if (variants.length === 0) return null;
+    const cheapest = variants.reduce((a, b) => (a.price <= b.price ? a : b));
+    if (cheapest.compareAtPrice != null && cheapest.compareAtPrice > cheapest.price) {
+      return cheapest.compareAtPrice;
+    }
+    return null;
+  }
+
   private loadFeatured(): void {
     this.featuredLoading.set(true);
     this.catalog.listProducts({ limit: 8, sort: 'newest' }).subscribe({
@@ -103,6 +121,17 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.featuredLoading.set(false);
       },
       error: () => this.featuredLoading.set(false),
+    });
+  }
+
+  private loadDiscounted(): void {
+    this.discountedLoading.set(true);
+    this.catalog.listProducts({ limit: 8, discounted: true }).subscribe({
+      next: res => {
+        this.discountedProducts.set(res.data);
+        this.discountedLoading.set(false);
+      },
+      error: () => this.discountedLoading.set(false),
     });
   }
 

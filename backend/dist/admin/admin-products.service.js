@@ -305,6 +305,31 @@ let AdminProductsService = class AdminProductsService {
         });
         return { message: 'notes updated' };
     }
+    async updateFragranceFamilies(productId, dto) {
+        await this.findProduct(productId);
+        if (dto.fragranceFamilyIds.length) {
+            const count = await this.prisma.fragrance_families.count({
+                where: { id: { in: dto.fragranceFamilyIds } },
+            });
+            if (count !== dto.fragranceFamilyIds.length) {
+                throw new common_1.BadRequestException('one or more fragrance families not found');
+            }
+        }
+        await this.prisma.$transaction(async (tx) => {
+            await tx.product_fragrance_families.deleteMany({
+                where: { product_id: productId },
+            });
+            if (dto.fragranceFamilyIds.length) {
+                await tx.product_fragrance_families.createMany({
+                    data: dto.fragranceFamilyIds.map((fragranceFamilyId) => ({
+                        product_id: productId,
+                        fragrance_family_id: fragranceFamilyId,
+                    })),
+                });
+            }
+        });
+        return { message: 'fragrance families updated' };
+    }
     async findProduct(id) {
         const product = await this.prisma.products.findFirst({
             where: { id, deleted_at: null },

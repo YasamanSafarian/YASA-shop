@@ -6,6 +6,7 @@ import { UpdateVariantDto } from './dto/update-variant.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { ListAdminProductsQueryDto } from './dto/list-admin-products.query';
 import { UpdateImageDto, UpdateProductNotesDto } from './dto/product-extras.dto';
+import { UpdateProductFamiliesDto } from './dto/extras.dto';
 export declare class AdminProductsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -287,6 +288,9 @@ export declare class AdminProductsService {
         message: string;
     }>;
     updateNotes(productId: string, dto: UpdateProductNotesDto): Promise<{
+        message: string;
+    }>;
+    updateFragranceFamilies(productId: string, dto: UpdateProductFamiliesDto): Promise<{
         message: string;
     }>;
     private findProduct;

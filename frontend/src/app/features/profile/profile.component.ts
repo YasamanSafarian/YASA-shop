@@ -22,6 +22,10 @@ export class ProfileComponent implements OnInit {
 
   readonly cancellingId = signal<string | null>(null);
   readonly expandedId = signal<string | null>(null);
+  readonly copiedId = signal<string | null>(null);
+
+  readonly cardNumber = '6219-8619-3904-0365';
+  readonly cardHolder = 'یاسمن صفریان';
 
   get user() {
     return this.auth.user();
@@ -64,6 +68,24 @@ export class ProfileComponent implements OnInit {
     this.expandedId.set(this.expandedId() === id ? null : id);
   }
 
+  async copyCard(orderId: string): Promise<void> {
+    const raw = this.cardNumber.replace(/-/g, '');
+    try {
+      await navigator.clipboard.writeText(raw);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = raw;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    this.copiedId.set(orderId);
+    setTimeout(() => this.copiedId.set(null), 2000);
+  }
+
   async cancelOrder(order: Order): Promise<void> {
     this.cancellingId.set(order.id);
     try {
@@ -79,6 +101,10 @@ export class ProfileComponent implements OnInit {
     const key = `orders.status.${status}`;
     const label = this.translate.t(key);
     return label === key ? status : label;
+  }
+
+  isPending(order: Order): boolean {
+    return order.statuses.payment === 'pending' && order.statuses.order === 'pending';
   }
 
   getSteps(): StepperStep[] {

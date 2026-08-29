@@ -28,6 +28,8 @@ export class OrderConfirmationComponent implements OnInit, OnDestroy {
   readonly translate = inject(TranslateService);
 
   readonly orderNumber = signal('');
+  readonly subtotal = signal(0);
+  readonly shippingFee = signal(0);
   readonly total = signal(0);
   readonly copied = signal(false);
   readonly remaining = signal(DEADLINE_MS);
@@ -53,12 +55,16 @@ export class OrderConfirmationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const state = history.state as {
       orderNumber?: string;
+      subtotal?: number;
+      shippingFee?: number;
       total?: number;
       createdAt?: string;
     };
 
     if (state.orderNumber) {
       this.orderNumber.set(state.orderNumber);
+      this.subtotal.set(state.subtotal ?? 0);
+      this.shippingFee.set(state.shippingFee ?? 0);
       this.total.set(state.total ?? 0);
       this.orderCreatedAt = state.createdAt
         ? new Date(state.createdAt).getTime()

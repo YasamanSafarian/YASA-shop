@@ -44,6 +44,14 @@
           <span class="order-confirm__label">{{ translate.t('orderConfirm.orderNumber') }}</span>
           <span class="order-confirm__value order-confirm__value--mono">{{ orderNumber() }}</span>
         </div>
+        <div class="order-confirm__row">
+          <span class="order-confirm__label">{{ translate.t('cart.subtotal') }}</span>
+          <span class="order-confirm__value">{{ formatPrice(subtotal()) }} {{ translate.t('common.toman') }}</span>
+        </div>
+        <div class="order-confirm__row">
+          <span class="order-confirm__label">{{ translate.t('cart.shipping') }}</span>
+          <span class="order-confirm__value">{{ formatPrice(shippingFee()) }} {{ translate.t('common.toman') }}</span>
+        </div>
         <div class="order-confirm__row order-confirm__row--total">
           <span class="order-confirm__label">{{ translate.t('orderConfirm.totalAmount') }}</span>
           <span class="order-confirm__value order-confirm__value--total">{{ formatPrice(total()) }} {{ translate.t('common.toman') }}</span>
