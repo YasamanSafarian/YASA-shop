@@ -36,6 +36,13 @@
   font-weight: 700;
 }
 
+.product-card__badge--soldout {
+  inset-inline-start: auto;
+  inset-inline-end: 0.5rem;
+  background: var(--color-navy, #12223f);
+  color: #fff;
+}
+
 .product-card__media img {
   width: 100%;
   height: 100%;

@@ -650,6 +650,7 @@
     gap: 2rem;
     // padding: 3rem 2rem 3.5rem;
     min-height: min(80vh, 720px);
+    min-width: 80%;
   }
 
   .hero__subtitle {
@@ -667,7 +668,7 @@
 
   .hero__product-img {
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     height: auto;
     object-fit: contain;
     object-position: center;

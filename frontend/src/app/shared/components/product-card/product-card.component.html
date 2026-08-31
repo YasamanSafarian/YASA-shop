@@ -3,6 +3,9 @@
     @if (discountPercent(); as discount) {
       <span class="product-card__badge">-{{ discount }}%</span>
     }
+    @if (soldOut()) {
+      <span class="product-card__badge product-card__badge--soldout">{{ translate.t('products.soldOut') }}</span>
+    }
     @if (image(); as image) {
       <img [src]="image" [alt]="product().name" loading="lazy" />
     } @else {
