@@ -1,4 +1,4 @@
-import { concentration_enum, gender_enum } from '@prisma/client';
+import { concentration_enum, gender_enum, product_type_enum } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -35,6 +35,12 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsEnum(product_type_enum, {
+    message: 'productType must be one of: perfume, body_spray, charm_bag, candle',
+  })
+  productType?: product_type_enum;
 
   @IsOptional()
   @IsEnum(gender_enum, {

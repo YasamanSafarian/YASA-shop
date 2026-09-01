@@ -22,12 +22,15 @@ import { ApiError } from '../../../core/interceptors/error.interceptor';
 })
 export class ProductVariantComponent {
   readonly variant = input.required<ProductVariant>();
+  readonly productType = input<string>('perfume');
   readonly translate = inject(TranslateService);
   private readonly cart = inject(CartService);
   readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
 
   readonly adding = signal(false);
+
+  readonly isPerfume = computed(() => this.productType() === 'perfume');
 
   readonly hasComparePrice = computed(() => {
     const variant = this.variant();

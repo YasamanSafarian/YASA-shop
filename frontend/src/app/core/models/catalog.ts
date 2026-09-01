@@ -70,6 +70,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string | null;
+  productType: string;
   gender: string | null;
   concentration: string | null;
   releaseYear: number | null;
@@ -101,10 +102,17 @@ export type ProductSort =
   | 'name_asc'
   | 'name_desc';
 
+export type ProductType =
+  | 'perfume'
+  | 'body_spray'
+  | 'charm_bag'
+  | 'candle';
+
 export interface ListProductsParams {
   search?: string;
   brand?: string;
   category?: string;
+  type?: ProductType;
   gender?: 'male' | 'female' | 'unisex';
   fragranceFamily?: string;
   minPrice?: number;

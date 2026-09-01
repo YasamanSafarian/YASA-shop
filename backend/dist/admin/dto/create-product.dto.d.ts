@@ -1,4 +1,4 @@
-import { concentration_enum, gender_enum, product_format_enum } from '@prisma/client';
+import { concentration_enum, gender_enum, product_format_enum, product_type_enum } from '@prisma/client';
 export declare class CreateVariantDto {
     sku: string;
     barcode?: string;
@@ -16,6 +16,7 @@ export declare class CreateProductDto {
     name: string;
     slug?: string;
     description?: string;
+    productType?: product_type_enum;
     gender?: gender_enum;
     concentration?: concentration_enum;
     releaseYear?: number;

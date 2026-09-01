@@ -24,6 +24,7 @@ import {
   FragranceFamily,
   Product,
   ProductSort,
+  ProductType,
 } from '../../core/models/catalog';
 
 const PAGE_SIZE = 12;
@@ -59,8 +60,9 @@ export class ProductsComponent implements OnInit {
 
   readonly filterForm = this.fb.group({
     search: [''],
+    type: [''],
     brand: [''],
-    fragranceFamily: [''],
+    fragranceFamily: this.fb.control({ value: '', disabled: true }),
     gender: [''],
     sort: ['newest' as ProductSort],
   });
@@ -90,9 +92,21 @@ export class ProductsComponent implements OnInit {
     { value: 'name_desc', label: this.translate.t('products.sortNameDesc') },
   ]);
 
+  readonly typeOptions = computed<UiSelectOption[]>(() => [
+    { value: 'perfume', label: this.translate.t('products.typePerfume') },
+    { value: 'body_spray', label: this.translate.t('products.typeBodySpray') },
+    { value: 'charm_bag', label: this.translate.t('products.typeCharmBag') },
+    { value: 'candle', label: this.translate.t('products.typeCandle') },
+  ]);
+
+  readonly fragranceFamilyDisabled = computed(
+    () => this.filterForm.value.type === 'perfume',
+  );
+
   readonly filterCount = computed(
     () =>
       (this.filterForm.value.search ? 1 : 0) +
+      (this.filterForm.value.type ? 1 : 0) +
       (this.filterForm.value.brand ? 1 : 0) +
       (this.filterForm.value.fragranceFamily ? 1 : 0) +
       (this.filterForm.value.gender ? 1 : 0),
@@ -100,6 +114,12 @@ export class ProductsComponent implements OnInit {
 
   constructor() {
     this.loadFilters();
+
+    this.filterForm.controls.type.valueChanges.subscribe(() => {
+      this.syncFragranceFamilyState();
+    });
+
+    this.syncFragranceFamilyState();
 
     this.filterForm.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.page.set(1);
@@ -121,6 +141,13 @@ export class ProductsComponent implements OnInit {
         page: this.page(),
         limit: PAGE_SIZE,
         search: form.search || undefined,
+        type:
+          form.type === 'perfume' ||
+          form.type === 'body_spray' ||
+          form.type === 'charm_bag' ||
+          form.type === 'candle'
+            ? form.type
+            : undefined,
         brand: form.brand || undefined,
         fragranceFamily: form.fragranceFamily || undefined,
         gender:
@@ -158,13 +185,26 @@ export class ProductsComponent implements OnInit {
   clearFilters(): void {
     this.filterForm.setValue({
       search: '',
+      type: '',
       brand: '',
       fragranceFamily: '',
       gender: '',
       sort: 'newest',
     });
+    this.syncFragranceFamilyState();
     this.page.set(1);
     this.loadProducts();
+  }
+
+  private syncFragranceFamilyState(): void {
+    const familyControl = this.filterForm.controls.fragranceFamily;
+    const enableFamily = this.filterForm.value.type !== 'perfume';
+    if (enableFamily) {
+      familyControl.enable({ emitEvent: false });
+    } else {
+      familyControl.setValue('', { emitEvent: false });
+      familyControl.disable({ emitEvent: false });
+    }
   }
 
   @HostListener('window:keydown.escape')

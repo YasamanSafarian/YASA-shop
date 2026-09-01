@@ -55,6 +55,7 @@ export class AdminProductsService {
         slug: product.slug,
         brand: { id: product.brands.id, name: product.brands.name },
         gender: product.gender,
+        productType: product.product_type,
         concentration: product.concentration,
         categories: product.product_categories.map((pc) => ({
           id: pc.categories.id,
@@ -85,6 +86,7 @@ export class AdminProductsService {
         name: dto.name,
         slug: await this.uniqueSlug(dto.slug ?? slugify(dto.name)),
         description: dto.description,
+        product_type: dto.productType,
         gender: dto.gender,
         concentration: dto.concentration,
         release_year: dto.releaseYear,
@@ -135,6 +137,7 @@ export class AdminProductsService {
         ...(dto.description !== undefined && {
           description: dto.description,
         }),
+        ...(dto.productType !== undefined && { product_type: dto.productType }),
         ...(dto.gender !== undefined && { gender: dto.gender }),
         ...(dto.concentration !== undefined && {
           concentration: dto.concentration,

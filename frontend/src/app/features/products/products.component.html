@@ -62,9 +62,19 @@
         />
 
         <app-ui-select
+          id="product-type"
+          formControlName="type"
+          [dense]="true"
+          [label]="translate.t('products.type')"
+          [placeholder]="translate.t('products.allTypes')"
+          [options]="typeOptions()"
+        />
+
+        <app-ui-select
           id="product-fragrance-family"
           formControlName="fragranceFamily"
           [dense]="true"
+          [disabled]="fragranceFamilyDisabled()"
           [label]="translate.t('products.fragranceFamily')"
           [placeholder]="translate.t('products.allFragranceFamilies')"
           [options]="fragranceFamilyOptions()"

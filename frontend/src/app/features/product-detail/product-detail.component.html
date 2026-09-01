@@ -50,23 +50,25 @@
             <p class="product-detail__description">{{ p.description }}</p>
           }
 
-          <div class="product-detail__section">
-            <h2 class="product-detail__section-title">{{ translate.t('productDetail.notes') }}</h2>
-            <dl class="notes">
-              <div class="notes__row">
-                <dt class="notes__label">{{ translate.t('productDetail.notesTop') }}</dt>
-                <dd class="notes__value">{{ p.notes.top.join(', ') }}</dd>
-              </div>
-              <div class="notes__row">
-                <dt class="notes__label">{{ translate.t('productDetail.notesMiddle') }}</dt>
-                <dd class="notes__value">{{ p.notes.middle.join(', ') }}</dd>
-              </div>
-              <div class="notes__row">
-                <dt class="notes__label">{{ translate.t('productDetail.notesBase') }}</dt>
-                <dd class="notes__value">{{ p.notes.base.join(', ') }}</dd>
-              </div>
-            </dl>
-          </div>
+          @if (p.productType === 'perfume') {
+            <div class="product-detail__section">
+              <h2 class="product-detail__section-title">{{ translate.t('productDetail.notes') }}</h2>
+              <dl class="notes">
+                <div class="notes__row">
+                  <dt class="notes__label">{{ translate.t('productDetail.notesTop') }}</dt>
+                  <dd class="notes__value">{{ p.notes.top.join(', ') }}</dd>
+                </div>
+                <div class="notes__row">
+                  <dt class="notes__label">{{ translate.t('productDetail.notesMiddle') }}</dt>
+                  <dd class="notes__value">{{ p.notes.middle.join(', ') }}</dd>
+                </div>
+                <div class="notes__row">
+                  <dt class="notes__label">{{ translate.t('productDetail.notesBase') }}</dt>
+                  <dd class="notes__value">{{ p.notes.base.join(', ') }}</dd>
+                </div>
+              </dl>
+            </div>
+          }
 
           @if (fragranceFamilies().length > 0) {
             <div class="product-detail__section">
@@ -105,7 +107,7 @@
             <h2 class="product-detail__section-title">{{ translate.t('productDetail.variants') }}</h2>
             <div class="variant-list">
               @for (variant of variants(); track variant.id) {
-                <app-product-variant [variant]="variant" />
+                <app-product-variant [variant]="variant" [productType]="product()?.productType ?? 'perfume'" />
               }
             </div>
           </div>

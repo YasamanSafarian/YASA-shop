@@ -9,6 +9,7 @@ export interface AdminProduct {
   slug: string;
   brand: { id: string; name: string };
   gender: string | null;
+  productType: string;
   concentration: string | null;
   categories: { id: string; name: string; slug: string }[];
   isActive: boolean;
@@ -65,6 +66,7 @@ export interface ProductDetail {
   name: string;
   slug: string;
   description: string | null;
+  productType: string;
   gender: string | null;
   concentration: string | null;
   releaseYear: number | null;
@@ -84,6 +86,7 @@ export interface CreateProductPayload {
   name: string;
   slug?: string;
   description?: string;
+  productType?: string;
   gender?: string;
   concentration?: string;
   releaseYear?: number;

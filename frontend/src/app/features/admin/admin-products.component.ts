@@ -31,6 +31,7 @@ export class AdminProductsComponent implements OnInit {
   readonly editingVariantId = signal<string | null>(null);
   readonly variantError = signal('');
   readonly variantProductId = signal<string | null>(null);
+  readonly variantProductType = signal<string>('perfume');
 
   /* ── Notes editing ── */
   readonly notesEditMode = signal(false);
@@ -55,6 +56,7 @@ export class AdminProductsComponent implements OnInit {
     name: '',
     slug: '',
     description: '',
+    productType: 'perfume',
     categoryId: '',
     brandId: '',
     concentration: '',
@@ -80,6 +82,13 @@ export class AdminProductsComponent implements OnInit {
     { value: 'edp', label: 'EDP' },
     { value: 'parfum', label: 'Parfum' },
     { value: 'extrait', label: 'Extrait' },
+  ];
+
+  readonly productTypeOptions: UiSelectOption[] = [
+    { value: 'perfume', label: this.translate.t('products.typePerfume') },
+    { value: 'body_spray', label: this.translate.t('products.typeBodySpray') },
+    { value: 'charm_bag', label: this.translate.t('products.typeCharmBag') },
+    { value: 'candle', label: this.translate.t('products.typeCandle') },
   ];
 
   readonly formatOptions: UiSelectOption[] = [
@@ -116,10 +125,17 @@ export class AdminProductsComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.form = { name: '', slug: '', description: '', categoryId: '', brandId: '', concentration: '' };
+    this.form = { name: '', slug: '', description: '', productType: 'perfume', categoryId: '', brandId: '', concentration: '' };
     this.showForm.set(false);
     this.editingId.set(null);
     this.error.set('');
+  }
+
+  onProductTypeChange(type: string): void {
+    this.form.productType = type;
+    if (!this.isPerfumeType(type)) {
+      this.form.concentration = '';
+    }
   }
 
   async startEdit(product: ProductDetail): Promise<void> {
@@ -127,6 +143,7 @@ export class AdminProductsComponent implements OnInit {
       name: product.name,
       slug: product.slug,
       description: product.description || '',
+      productType: product.productType || 'perfume',
       categoryId: product.categories[0]?.id || '',
       brandId: product.brand.id,
       concentration: product.concentration || '',
@@ -150,6 +167,7 @@ export class AdminProductsComponent implements OnInit {
           name: this.form.name,
           slug: this.form.slug || undefined,
           description: this.form.description || undefined,
+          productType: this.form.productType || undefined,
           brandId: this.form.brandId,
           concentration: this.form.concentration || undefined,
           categoryIds: this.form.categoryId ? [this.form.categoryId] : undefined,
@@ -162,6 +180,7 @@ export class AdminProductsComponent implements OnInit {
           name: newName,
           slug: this.form.slug || undefined,
           description: this.form.description || undefined,
+          productType: this.form.productType || undefined,
           brandId: this.form.brandId,
           concentration: this.form.concentration || undefined,
           categoryIds: this.form.categoryId ? [this.form.categoryId] : undefined,
@@ -211,6 +230,7 @@ export class AdminProductsComponent implements OnInit {
   /* ── Variant form ── */
   openAddVariant(productId: string): void {
     this.variantProductId.set(productId);
+    this.variantProductType.set(this.productTypeOf(productId));
     this.editingVariantId.set(null);
     this.variantForm = { sku: '', format: 'original', volumeMl: 25, price: 0, compareAtPrice: 0, stockQuantity: 0, isDefault: false };
     this.variantError.set('');
@@ -219,6 +239,7 @@ export class AdminProductsComponent implements OnInit {
 
   openEditVariant(variant: ProductVariant, productId: string): void {
     this.variantProductId.set(productId);
+    this.variantProductType.set(this.productTypeOf(productId));
     this.editingVariantId.set(variant.id);
     this.variantForm = {
       sku: variant.sku,
@@ -231,6 +252,14 @@ export class AdminProductsComponent implements OnInit {
     };
     this.variantError.set('');
     this.showVariantForm.set(true);
+  }
+
+  private productTypeOf(productId: string): string {
+    return this.admin.products().find((p) => p.id === productId)?.productType ?? 'perfume';
+  }
+
+  isPerfumeType(type: string): boolean {
+    return type === 'perfume';
   }
 
   closeVariantForm(): void {
@@ -247,26 +276,25 @@ export class AdminProductsComponent implements OnInit {
 
     this.variantError.set('');
     try {
+      const isPerfume = this.isPerfumeType(this.variantProductType());
+      // Non-perfume products hide volume/format; store hidden defaults instead.
+      const payload = {
+        sku: this.variantForm.sku,
+        format: this.variantForm.format,
+        volumeMl: this.variantForm.volumeMl,
+        price: this.variantForm.price,
+        compareAtPrice: this.variantForm.compareAtPrice || null,
+        stockQuantity: this.variantForm.stockQuantity,
+        isDefault: this.variantForm.isDefault,
+      };
+      if (!isPerfume) {
+        payload.format = 'original';
+        payload.volumeMl = 1;
+      }
       if (this.editingVariantId()) {
-        await this.admin.updateVariant(this.editingVariantId()!, {
-          sku: this.variantForm.sku,
-          format: this.variantForm.format,
-          volumeMl: this.variantForm.volumeMl,
-          price: this.variantForm.price,
-          compareAtPrice: this.variantForm.compareAtPrice || null,
-          stockQuantity: this.variantForm.stockQuantity,
-          isDefault: this.variantForm.isDefault,
-        });
+        await this.admin.updateVariant(this.editingVariantId()!, payload);
       } else {
-        await this.admin.addVariant(this.variantProductId()!, {
-          sku: this.variantForm.sku,
-          format: this.variantForm.format,
-          volumeMl: this.variantForm.volumeMl,
-          price: this.variantForm.price,
-          compareAtPrice: this.variantForm.compareAtPrice || null,
-          stockQuantity: this.variantForm.stockQuantity,
-          isDefault: this.variantForm.isDefault,
-        });
+        await this.admin.addVariant(this.variantProductId()!, payload);
       }
       this.closeVariantForm();
       if (this.expandedSlug()) {
@@ -309,6 +337,21 @@ export class AdminProductsComponent implements OnInit {
 
   formatPrice(price: number): string {
     return price.toLocaleString('en-US');
+  }
+
+  productTypeLabel(type: string): string {
+    switch (type) {
+      case 'perfume':
+        return this.translate.t('products.typePerfume');
+      case 'body_spray':
+        return this.translate.t('products.typeBodySpray');
+      case 'charm_bag':
+        return this.translate.t('products.typeCharmBag');
+      case 'candle':
+        return this.translate.t('products.typeCandle');
+      default:
+        return type;
+    }
   }
 
   getPrimaryImage(variant: ProductVariant): string {

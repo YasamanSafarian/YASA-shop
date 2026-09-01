@@ -70,15 +70,28 @@
           </div>
 
           <div class="product-form__field">
-            <label>{{ translate.t('adminProducts.concentration') }}</label>
+            <label>{{ translate.t('products.type') }}</label>
             <app-ui-select
-              id="concentration-select"
-              [options]="concentrationOptions"
+              id="product-type-select"
+              [options]="productTypeOptions"
               ngModel
-              (ngModelChange)="form.concentration = $event"
-              [placeholder]="translate.t('adminProducts.concentrationPlaceholder')"
+              (ngModelChange)="onProductTypeChange($event)"
+              [placeholder]="translate.t('products.allTypes')"
             />
           </div>
+
+          @if (isPerfumeType(form.productType)) {
+            <div class="product-form__field">
+              <label>{{ translate.t('adminProducts.concentration') }}</label>
+              <app-ui-select
+                id="concentration-select"
+                [options]="concentrationOptions"
+                ngModel
+                (ngModelChange)="form.concentration = $event"
+                [placeholder]="translate.t('adminProducts.concentrationPlaceholder')"
+              />
+            </div>
+          }
         </div>
 
         <div class="product-form__actions">
@@ -113,7 +126,7 @@
                   <span class="product-row__name">{{ product.name }}</span>
                   <span class="product-row__code">{{ product.slug }}</span>
                   <span class="product-row__meta">
-                    {{ product.brand.name }} · @if (product.categories.length) { {{ categoryNames(product.categories) }} } @else { {{ product.gender || '—' }} } · {{ product.concentration || '—' }}
+                    {{ productTypeLabel(product.productType) }} · {{ product.brand.name }} · @if (product.categories.length) { {{ categoryNames(product.categories) }} } @else { {{ product.gender || '—' }} } · {{ product.concentration || '—' }}
                   </span>
                 </div>
               </div>
@@ -405,19 +418,21 @@
               <label>{{ translate.t('adminProducts.sku') }} *</label>
               <input type="text" [(ngModel)]="variantForm.sku" placeholder="SKU-001" />
             </div>
-            <div class="product-form__field">
-              <label>{{ translate.t('adminProducts.format') }}</label>
-              <app-ui-select
-                id="variant-format"
-                [options]="formatOptions"
-                ngModel
-                (ngModelChange)="variantForm.format = $event"
-              />
-            </div>
-            <div class="product-form__field">
-              <label>{{ translate.t('adminProducts.volumeMl') }}</label>
-              <input type="number" [(ngModel)]="variantForm.volumeMl" min="1" />
-            </div>
+            @if (isPerfumeType(variantProductType())) {
+              <div class="product-form__field">
+                <label>{{ translate.t('adminProducts.format') }}</label>
+                <app-ui-select
+                  id="variant-format"
+                  [options]="formatOptions"
+                  ngModel
+                  (ngModelChange)="variantForm.format = $event"
+                />
+              </div>
+              <div class="product-form__field">
+                <label>{{ translate.t('adminProducts.volumeMl') }}</label>
+                <input type="number" [(ngModel)]="variantForm.volumeMl" min="1" />
+              </div>
+            }
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.price') }}</label>
               <input type="number" [(ngModel)]="variantForm.price" min="0" />

@@ -38,6 +38,7 @@ interface SeedProduct {
   slug: string;
   description: string;
   brandSlug: string;
+  productType?: 'perfume' | 'body_spray' | 'charm_bag' | 'candle';
   gender: 'male' | 'female' | 'unisex';
   categorySlugs: string[];
   familySlugs: string[];
@@ -323,6 +324,7 @@ async function main() {
       name: product.name,
       slug: product.slug,
       description: product.description,
+      product_type: product.productType ?? 'perfume',
       gender: product.gender,
       is_active: true,
     };

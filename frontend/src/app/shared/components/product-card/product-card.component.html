@@ -13,6 +13,7 @@
     }
   </div>
   <div class="product-card__body">
+    <p class="product-card__type">{{ typeLabel() }}</p>
     <p class="product-card__brand">{{ product().brand.name }}</p>
     <h3 class="product-card__name">{{ product().name }}</h3>
     @if (minPrice(); as price) {

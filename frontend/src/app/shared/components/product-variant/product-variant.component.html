@@ -1,9 +1,11 @@
 <div class="variant">
   <div class="variant__info">
-    <span class="variant__size">
-      {{ variant().volumeMl }} {{ translate.t('productDetail.ml') }}
-    </span>
-    @if (variant().format) {
+    @if (isPerfume()) {
+      <span class="variant__size">
+        {{ variant().volumeMl }} {{ translate.t('productDetail.ml') }}
+      </span>
+    }
+    @if (isPerfume() && variant().format) {
       <span class="variant__format">{{ variant().format }}</span>
     }
   </div>

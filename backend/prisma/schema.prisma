@@ -152,6 +152,7 @@ model products {
   name                       String                       @db.VarChar(255)
   slug                       String                       @unique @db.VarChar(255)
   description                String?
+  product_type               product_type_enum   @default(perfume)
   gender                     gender_enum?
   concentration              concentration_enum?
   release_year               Int?
@@ -378,6 +379,13 @@ enum product_format_enum {
   decant
   sample
   gift_set
+}
+
+enum product_type_enum {
+  perfume
+  body_spray
+  charm_bag
+  candle
 }
 
 enum shipment_status_enum {

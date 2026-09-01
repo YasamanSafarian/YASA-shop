@@ -59,6 +59,7 @@ export interface ProductDto {
     name: string;
     slug: string;
     description: string | null;
+    productType: string;
     gender: string | null;
     concentration: string | null;
     releaseYear: number | null;
