@@ -152,18 +152,17 @@
                     <p class="product-detail__desc">{{ pd.description }}</p>
                   }
 
-                  @if (pd.fragranceFamilies.length || familiesEditMode()) {
-                    <div class="product-detail__families">
-                      <div class="product-detail__families-header">
-                        <h4>{{ translate.t('adminProducts.families') }}</h4>
-                        @if (!familiesEditMode()) {
-                          <button type="button" class="product-detail__notes-edit-btn" (click)="openFamiliesEditor(pd)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                          </button>
-                        }
-                      </div>
+                  <div class="product-detail__families">
+                    <div class="product-detail__families-header">
+                      <h4>{{ translate.t('adminProducts.families') }}</h4>
+                      @if (!familiesEditMode()) {
+                        <button type="button" class="product-detail__notes-edit-btn" (click)="openFamiliesEditor(pd)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                        </button>
+                      }
+                    </div>
 
-                      @if (familiesEditMode()) {
+                    @if (familiesEditMode()) {
                         <div class="product-detail__notes-editor">
                           @if (familiesError()) {
                             <div class="product-form__error">{{ familiesError() }}</div>
@@ -199,16 +198,19 @@
                           </div>
                         </div>
                       } @else {
-                        <div class="product-detail__families-list">
-                          @for (fam of pd.fragranceFamilies; track fam.id) {
-                            <span class="product-detail__family-chip">{{ fam.name }}</span>
-                          }
-                        </div>
+                        @if (pd.fragranceFamilies.length) {
+                          <div class="product-detail__families-list">
+                            @for (fam of pd.fragranceFamilies; track fam.id) {
+                              <span class="product-detail__family-chip">{{ fam.name }}</span>
+                            }
+                          </div>
+                        } @else {
+                          <span class="product-detail__none">{{ translate.t('adminProducts.noFamilies') }}</span>
+                        }
                       }
                     </div>
-                  }
 
-                  @if (pd.notes.top.length || pd.notes.middle.length || pd.notes.base.length || notesEditMode()) {
+                    @if (pd.notes.top.length || pd.notes.middle.length || pd.notes.base.length || notesEditMode()) {
                     <div class="product-detail__notes">
                       <div class="product-detail__notes-header">
                         <h4>{{ translate.t('adminProducts.notes') }}</h4>

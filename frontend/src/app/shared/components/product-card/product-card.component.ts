@@ -14,22 +14,6 @@ export class ProductCardComponent {
   readonly product = input.required<Product>();
   readonly translate = inject(TranslateService);
 
-  readonly typeLabel = computed<string>(() => {
-    const type = this.product().productType;
-    switch (type) {
-      case 'perfume':
-        return this.translate.t('products.typePerfume');
-      case 'body_spray':
-        return this.translate.t('products.typeBodySpray');
-      case 'charm_bag':
-        return this.translate.t('products.typeCharmBag');
-      case 'candle':
-        return this.translate.t('products.typeCandle');
-      default:
-        return type;
-    }
-  });
-
   readonly image = computed<string | null>(() => {
     for (const variant of this.product().variants) {
       const primary = variant.images.find((img) => img.isPrimary);
