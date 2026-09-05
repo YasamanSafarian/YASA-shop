@@ -1,77 +1,115 @@
 <section class="auth">
   <div class="container auth__inner">
     <div class="auth__card">
-      <p class="eyebrow">{{ translate.t('register.eyebrow') }}</p>
-      <h1 class="auth__title">{{ translate.t('register.title') }}</h1>
-      <p class="auth__lead">{{ translate.t('register.lead') }}</p>
+      @if (!sessionId()) {
+        <p class="eyebrow">{{ translate.t('register.eyebrow') }}</p>
+        <h1 class="auth__title">{{ translate.t('register.title') }}</h1>
+        <p class="auth__lead">{{ translate.t('register.lead') }}</p>
 
-      @if (errorMessage()) {
-        <app-ui-alert [message]="errorMessage()" />
+        @if (errorMessage()) {
+          <app-ui-alert [message]="errorMessage()" />
+        }
+
+        <form [formGroup]="form" (ngSubmit)="requestOtp()" novalidate>
+          <app-ui-input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            autocomplete="given-name"
+            [label]="translate.t('register.firstNameLabel')"
+            [placeholder]="translate.t('register.firstNamePlaceholder')"
+          />
+
+          <app-ui-input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            autocomplete="family-name"
+            [label]="translate.t('register.lastNameLabel')"
+            [placeholder]="translate.t('register.lastNamePlaceholder')"
+          />
+
+          <app-ui-input
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            [label]="translate.t('register.phoneLabel') + ' *'"
+            [placeholder]="translate.t('register.phonePlaceholder')"
+            [error]="phone.invalid && phone.touched ? translate.t('register.phoneError') : null"
+          />
+
+          <app-ui-input
+            id="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            [label]="translate.t('register.emailLabel')"
+            [placeholder]="translate.t('register.emailPlaceholder')"
+            [error]="email.invalid && email.touched ? translate.t('register.emailError') : null"
+          />
+
+          <app-ui-input
+            id="password"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+            [label]="translate.t('register.passwordLabel') + ' *'"
+            [placeholder]="translate.t('register.passwordPlaceholder')"
+            [error]="password.invalid && password.touched ? translate.t('register.passwordError') : null"
+          />
+
+          <app-ui-button
+            type="submit"
+            [block]="true"
+            size="lg"
+            [disabled]="submitting()"
+          >
+            {{ submitting() ? translate.t('register.submitting') : translate.t('register.submit') }}
+          </app-ui-button>
+        </form>
+      } @else {
+        <p class="eyebrow">{{ translate.t('register.verifyEyebrow') }}</p>
+        <h1 class="auth__title">{{ translate.t('register.verifyTitle') }}</h1>
+        <p class="auth__lead">{{ translate.t('register.verifyLead', [pendingPhone]) }}</p>
+
+        @if (errorMessage()) {
+          <app-ui-alert [message]="errorMessage()" />
+        }
+
+        <form [formGroup]="otpForm" (ngSubmit)="submitOtp()" novalidate>
+          <app-ui-input
+            id="otp"
+            type="text"
+            formControlName="otp"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            [label]="translate.t('register.otpLabel') + ' *'"
+            [placeholder]="translate.t('register.otpPlaceholder')"
+            [error]="otp.invalid && otp.touched ? translate.t('register.otpError') : null"
+          />
+
+          <app-ui-button
+            type="submit"
+            [block]="true"
+            size="lg"
+            [disabled]="submitting()"
+          >
+            {{ submitting() ? translate.t('register.verifying') : translate.t('register.verifySubmit') }}
+          </app-ui-button>
+        </form>
+
+        <p class="auth__footer">
+          <a href="#" class="link" (click)="backToForm(); $event.preventDefault()">{{ translate.t('register.changeNumber') }}</a>
+        </p>
       }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-ui-input
-          id="firstName"
-          type="text"
-          formControlName="firstName"
-          autocomplete="given-name"
-          [label]="translate.t('register.firstNameLabel')"
-          [placeholder]="translate.t('register.firstNamePlaceholder')"
-        />
-
-        <app-ui-input
-          id="lastName"
-          type="text"
-          formControlName="lastName"
-          autocomplete="family-name"
-          [label]="translate.t('register.lastNameLabel')"
-          [placeholder]="translate.t('register.lastNamePlaceholder')"
-        />
-
-        <app-ui-input
-          id="phone"
-          type="tel"
-          formControlName="phone"
-          autocomplete="tel"
-          [label]="translate.t('register.phoneLabel') + ' *'"
-          [placeholder]="translate.t('register.phonePlaceholder')"
-          [error]="phone.invalid && phone.touched ? translate.t('register.phoneError') : null"
-        />
-
-        <app-ui-input
-          id="email"
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-          [label]="translate.t('register.emailLabel')"
-          [placeholder]="translate.t('register.emailPlaceholder')"
-          [error]="email.invalid && email.touched ? translate.t('register.emailError') : null"
-        />
-
-        <app-ui-input
-          id="password"
-          type="password"
-          formControlName="password"
-          autocomplete="new-password"
-          [label]="translate.t('register.passwordLabel') + ' *'"
-          [placeholder]="translate.t('register.passwordPlaceholder')"
-          [error]="password.invalid && password.touched ? translate.t('register.passwordError') : null"
-        />
-
-        <app-ui-button
-          type="submit"
-          [block]="true"
-          size="lg"
-          [disabled]="submitting()"
-        >
-          {{ submitting() ? translate.t('register.submitting') : translate.t('register.submit') }}
-        </app-ui-button>
-      </form>
-
-      <p class="auth__footer">
-        {{ translate.t('register.haveAccount') }}
-        <a routerLink="/login" class="link">{{ translate.t('register.signIn') }}</a>
-      </p>
+      @if (!sessionId()) {
+        <p class="auth__footer">
+          {{ translate.t('register.haveAccount') }}
+          <a routerLink="/login" class="link">{{ translate.t('register.signIn') }}</a>
+        </p>
+      }
     </div>
   </div>
 </section>

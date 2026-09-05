@@ -43,11 +43,17 @@ export class TranslateService {
     this.applyToDocument();
   }
 
-  t(key: string): string {
+  t(key: string, params?: Array<string | number>): string {
     const dictionaries = this.dictionaries();
     const current = dictionaries[this.lang()];
     const english = dictionaries['en'];
-    return current?.[key] ?? english?.[key] ?? key;
+    let text = current?.[key] ?? english?.[key] ?? key;
+    if (params) {
+      params.forEach((value, index) => {
+        text = text.split(`{${index}}`).join(String(value));
+      });
+    }
+    return text;
   }
 
   private async loadDictionary(lang: Lang): Promise<Dictionary> {

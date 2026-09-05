@@ -22,6 +22,7 @@ const refresh_dto_1 = require("./dto/refresh.dto");
 const logout_dto_1 = require("./dto/logout.dto");
 const forgot_password_dto_1 = require("./dto/forgot-password.dto");
 const reset_password_dto_1 = require("./dto/reset-password.dto");
+const verify_otp_dto_1 = require("./dto/verify-otp.dto");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 let AuthController = class AuthController {
     authService;
@@ -29,7 +30,10 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     register(dto) {
-        return this.authService.register(dto);
+        return this.authService.requestRegister(dto);
+    }
+    verifyRegister(dto) {
+        return this.authService.verifyRegister(dto);
     }
     login(dto) {
         return this.authService.login(dto);
@@ -58,6 +62,14 @@ __decorate([
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('verify-register'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [verify_otp_dto_1.VerifyOtpDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "verifyRegister", null);
 __decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

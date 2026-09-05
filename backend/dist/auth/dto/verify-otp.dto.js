@@ -9,28 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResetPasswordDto = void 0;
+exports.VerifyOtpDto = void 0;
 const class_validator_1 = require("class-validator");
-class ResetPasswordDto {
+class VerifyOtpDto {
     sessionId;
     otp;
-    newPassword;
 }
-exports.ResetPasswordDto = ResetPasswordDto;
+exports.VerifyOtpDto = VerifyOtpDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], ResetPasswordDto.prototype, "sessionId", void 0);
+], VerifyOtpDto.prototype, "sessionId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(3, { message: 'verification code must be at least 3 digits' }),
     (0, class_validator_1.MaxLength)(8),
     __metadata("design:type", String)
-], ResetPasswordDto.prototype, "otp", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(8, { message: 'password must be at least 8 characters' }),
-    (0, class_validator_1.MaxLength)(72),
-    __metadata("design:type", String)
-], ResetPasswordDto.prototype, "newPassword", void 0);
-//# sourceMappingURL=reset-password.dto.js.map
+], VerifyOtpDto.prototype, "otp", void 0);
+//# sourceMappingURL=verify-otp.dto.js.map

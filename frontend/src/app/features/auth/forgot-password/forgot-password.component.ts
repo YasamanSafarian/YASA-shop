@@ -30,7 +30,10 @@ export class ForgotPasswordComponent {
   });
 
   readonly resetForm = this.fb.nonNullable.group({
-    token: ['', [Validators.required]],
+    otp: [
+      '',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(8)],
+    ],
     newPassword: [
       '',
       [Validators.required, Validators.minLength(8), Validators.maxLength(72)],
@@ -39,17 +42,14 @@ export class ForgotPasswordComponent {
 
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
-  readonly resetId = signal<string | null>(null);
-  readonly resetToken = signal<string | null>(null);
-  readonly copied = signal(false);
-  readonly expiredInSeconds = signal<number | null>(null);
+  readonly sessionId = signal<string | null>(null);
 
   get identifier() {
     return this.identifierForm.controls.identifier;
   }
 
-  get token() {
-    return this.resetForm.controls.token;
+  get otp() {
+    return this.resetForm.controls.otp;
   }
 
   get newPassword() {
@@ -57,11 +57,9 @@ export class ForgotPasswordComponent {
   }
 
   onReset() {
-    this.resetId.set(null);
-    this.resetToken.set(null);
-    this.expiredInSeconds.set(null);
-    this.copied.set(false);
+    this.sessionId.set(null);
     this.errorMessage.set(null);
+    this.resetForm.reset();
   }
 
   async requestReset(): Promise<void> {
@@ -77,9 +75,7 @@ export class ForgotPasswordComponent {
       const result = await this.auth.forgotPassword(
         this.identifierForm.getRawValue().identifier,
       );
-      this.resetId.set(result.resetId);
-      this.resetToken.set(result.token);
-      this.expiredInSeconds.set(result.expiresInSeconds);
+      this.sessionId.set(result.sessionId);
     } catch (error) {
       this.errorMessage.set(getErrorMessage(error));
     } finally {
@@ -88,7 +84,8 @@ export class ForgotPasswordComponent {
   }
 
   async submitReset(): Promise<void> {
-    if (this.resetForm.invalid) {
+    const sessionId = this.sessionId();
+    if (!sessionId || this.resetForm.invalid) {
       this.resetForm.markAllAsTouched();
       return;
     }
@@ -99,9 +96,8 @@ export class ForgotPasswordComponent {
     try {
       const value = this.resetForm.getRawValue();
       await this.auth.resetPassword({
-        identifier: this.identifierForm.getRawValue().identifier,
-        resetId: this.resetId()!,
-        token: value.token.trim(),
+        sessionId,
+        otp: value.otp.trim(),
         newPassword: value.newPassword,
       });
       await this.router.navigate(['/login']);
@@ -109,22 +105,6 @@ export class ForgotPasswordComponent {
       this.errorMessage.set(getErrorMessage(error));
     } finally {
       this.submitting.set(false);
-    }
-  }
-
-  async copyToken(): Promise<void> {
-    const token = this.resetToken();
-    if (!token) {
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(token);
-      this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 2000);
-    } catch {
-      this.errorMessage.set(
-        this.translate.t('forgotPassword.copyFailed'),
-      );
     }
   }
 }

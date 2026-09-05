@@ -49,22 +49,25 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = __importStar(require("bcryptjs"));
 const node_crypto_1 = require("node:crypto");
 const prisma_service_1 = require("../database/prisma.service");
+const mrotp_service_1 = require("../otp/mrotp.service");
+const otp_session_store_1 = require("../otp/otp-session.store");
 const refresh_token_store_1 = require("./refresh-token.store");
-const password_reset_store_1 = require("./password-reset.store");
 let AuthService = class AuthService {
     prisma;
     jwtService;
     configService;
     refreshTokenStore;
-    passwordResetStore;
-    constructor(prisma, jwtService, configService, refreshTokenStore, passwordResetStore) {
+    mrotp;
+    otpSessionStore;
+    constructor(prisma, jwtService, configService, refreshTokenStore, mrotp, otpSessionStore) {
         this.prisma = prisma;
         this.jwtService = jwtService;
         this.configService = configService;
         this.refreshTokenStore = refreshTokenStore;
-        this.passwordResetStore = passwordResetStore;
+        this.mrotp = mrotp;
+        this.otpSessionStore = otpSessionStore;
     }
-    async register(dto) {
+    async requestRegister(dto) {
         const email = dto.email?.toLowerCase().trim() || null;
         if (email) {
             const byEmail = await this.prisma.users.findUnique({ where: { email } });
@@ -78,21 +81,60 @@ let AuthService = class AuthService {
         if (byPhone) {
             throw new common_1.ConflictException('phone already in use');
         }
+        const passwordHash = await bcrypt.hash(dto.password, this.configService.getOrThrow('bcryptRounds'));
+        const sessionId = (0, node_crypto_1.randomUUID)();
+        const expiresInSeconds = 180;
+        this.otpSessionStore.save(sessionId, {
+            phone: dto.phone,
+            purpose: 'register',
+            pending: {
+                email,
+                passwordHash,
+                firstName: dto.firstName ?? null,
+                lastName: dto.lastName ?? null,
+            },
+            expiresAt: Date.now() + expiresInSeconds * 1000,
+        });
+        await this.mrotp.sendOtp(dto.phone);
+        return { sessionId, expiresInSeconds };
+    }
+    async verifyRegister(dto) {
+        const session = this.otpSessionStore.consume(dto.sessionId);
+        if (!session || session.purpose !== 'register' || !session.pending) {
+            throw new common_1.UnauthorizedException('invalid or expired session');
+        }
+        const verified = await this.mrotp.verifyOtp(session.phone, dto.otp);
+        if (!verified.ok) {
+            throw new common_1.UnauthorizedException('invalid verification code');
+        }
+        const pending = session.pending;
+        const email = pending.email;
+        if (email) {
+            const byEmail = await this.prisma.users.findUnique({ where: { email } });
+            if (byEmail) {
+                throw new common_1.ConflictException('email already in use');
+            }
+        }
+        const byPhone = await this.prisma.users.findUnique({
+            where: { phone: session.phone },
+        });
+        if (byPhone) {
+            throw new common_1.ConflictException('phone already in use');
+        }
         const customerRole = await this.prisma.roles.findUnique({
             where: { name: 'customer' },
         });
         if (!customerRole) {
             throw new common_1.InternalServerErrorException('customer role is not configured');
         }
-        const passwordHash = await bcrypt.hash(dto.password, this.configService.getOrThrow('bcryptRounds'));
         const user = await this.prisma.users.create({
             data: {
                 role_id: customerRole.id,
-                phone: dto.phone,
+                phone: session.phone,
                 email,
-                first_name: dto.firstName ?? null,
-                last_name: dto.lastName ?? null,
-                password_hash: passwordHash,
+                first_name: pending.firstName ?? null,
+                last_name: pending.lastName ?? null,
+                password_hash: pending.passwordHash,
             },
             include: { roles: true },
         });
@@ -154,39 +196,35 @@ let AuthService = class AuthService {
                 deleted_at: null,
             },
         });
-        if (!user || !user.is_active) {
+        if (!user || !user.is_active || !user.phone) {
             throw new common_1.UnauthorizedException('account not found or disabled');
         }
-        const token = (0, node_crypto_1.randomBytes)(32).toString('hex');
-        const tokenHash = await bcrypt.hash(token, 10);
-        const expiresInSeconds = 600;
-        const expiresAt = Date.now() + expiresInSeconds * 1000;
-        const resetId = (0, node_crypto_1.randomUUID)();
-        this.passwordResetStore.save(resetId, user.id, tokenHash, expiresAt);
-        return { resetId, token, expiresInSeconds };
+        const sessionId = (0, node_crypto_1.randomUUID)();
+        const expiresInSeconds = 180;
+        this.otpSessionStore.save(sessionId, {
+            phone: user.phone,
+            purpose: 'reset-password',
+            userId: user.id,
+            expiresAt: Date.now() + expiresInSeconds * 1000,
+        });
+        await this.mrotp.sendOtp(user.phone);
+        return { sessionId, expiresInSeconds };
     }
     async resetPassword(dto) {
-        const identifier = dto.identifier.trim().toLowerCase();
-        const user = await this.prisma.users.findFirst({
-            where: {
-                OR: [{ email: identifier }, { phone: identifier }],
-                deleted_at: null,
-            },
-        });
-        if (!user || !user.is_active) {
-            throw new common_1.UnauthorizedException('account not found or disabled');
+        const session = this.otpSessionStore.consume(dto.sessionId);
+        if (!session || session.purpose !== 'reset-password' || !session.userId) {
+            throw new common_1.UnauthorizedException('invalid or expired session');
         }
-        const tokenHash = await bcrypt.hash(dto.token, 10);
-        const entry = this.passwordResetStore.consume(dto.resetId, tokenHash);
-        if (!entry || entry.userId !== user.id) {
-            throw new common_1.UnauthorizedException('invalid or expired reset token');
+        const verified = await this.mrotp.verifyOtp(session.phone, dto.otp);
+        if (!verified.ok) {
+            throw new common_1.UnauthorizedException('invalid verification code');
         }
         const passwordHash = await bcrypt.hash(dto.newPassword, this.configService.getOrThrow('bcryptRounds'));
         await this.prisma.users.update({
-            where: { id: user.id },
+            where: { id: session.userId },
             data: { password_hash: passwordHash },
         });
-        this.refreshTokenStore.deleteForUser(user.id);
+        this.refreshTokenStore.deleteForUser(session.userId);
         return { message: 'password has been reset' };
     }
     async getProfile(userId) {
@@ -250,6 +288,7 @@ exports.AuthService = AuthService = __decorate([
         jwt_1.JwtService,
         config_1.ConfigService,
         refresh_token_store_1.RefreshTokenStore,
-        password_reset_store_1.PasswordResetStore])
+        mrotp_service_1.MrotpService,
+        otp_session_store_1.OtpSessionStore])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

@@ -15,6 +15,7 @@ import { RefreshDto } from './dto/refresh.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -24,7 +25,13 @@ export class AuthController {
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+    return this.authService.requestRegister(dto);
+  }
+
+  @Post('verify-register')
+  @HttpCode(HttpStatus.OK)
+  verifyRegister(@Body() dto: VerifyOtpDto) {
+    return this.authService.verifyRegister(dto);
   }
 
   @Post('login')

@@ -21,15 +21,25 @@ export interface RegisterPayload {
   lastName?: string;
 }
 
-export interface ForgotPasswordResponse {
-  resetId: string;
-  token: string;
+/** Response of POST /auth/register (OTP requested, account not yet created). */
+export interface RegisterOtpResponse {
+  sessionId: string;
   expiresInSeconds: number;
 }
 
+/** Response of POST /auth/forgot-password (OTP requested). */
+export interface ForgotPasswordResponse {
+  sessionId: string;
+  expiresInSeconds: number;
+}
+
+export interface VerifyOtpPayload {
+  sessionId: string;
+  otp: string;
+}
+
 export interface ResetPasswordPayload {
-  identifier: string;
-  resetId: string;
-  token: string;
+  sessionId: string;
+  otp: string;
   newPassword: string;
 }

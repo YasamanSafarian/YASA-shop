@@ -6,28 +6,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PasswordResetStore = void 0;
+exports.OtpSessionStore = void 0;
 const common_1 = require("@nestjs/common");
-let PasswordResetStore = class PasswordResetStore {
+let OtpSessionStore = class OtpSessionStore {
     store = new Map();
-    save(resetId, userId, tokenHash, expiresAt) {
-        this.store.set(resetId, { userId, tokenHash, expiresAt });
+    save(sessionId, session) {
+        this.store.set(sessionId, session);
     }
-    consume(resetId, tokenHash) {
-        const entry = this.store.get(resetId);
-        if (!entry) {
+    get(sessionId) {
+        const session = this.store.get(sessionId);
+        if (!session) {
             return null;
         }
-        if (entry.expiresAt <= Date.now() || entry.tokenHash !== tokenHash) {
-            this.store.delete(resetId);
+        if (session.expiresAt <= Date.now()) {
+            this.store.delete(sessionId);
             return null;
         }
-        this.store.delete(resetId);
-        return entry;
+        return session;
+    }
+    consume(sessionId) {
+        const session = this.get(sessionId);
+        if (session) {
+            this.store.delete(sessionId);
+        }
+        return session;
     }
 };
-exports.PasswordResetStore = PasswordResetStore;
-exports.PasswordResetStore = PasswordResetStore = __decorate([
+exports.OtpSessionStore = OtpSessionStore;
+exports.OtpSessionStore = OtpSessionStore = __decorate([
     (0, common_1.Injectable)()
-], PasswordResetStore);
-//# sourceMappingURL=password-reset.store.js.map
+], OtpSessionStore);
+//# sourceMappingURL=otp-session.store.js.map
