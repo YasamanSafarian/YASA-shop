@@ -3,18 +3,13 @@ import { RouterLink } from '@angular/router';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { TranslateService } from '../../core/services/translate.service';
 import { CatalogService } from '../../core/services/catalog.service';
-import { Product, ProductType } from '../../core/models/catalog';
+import { Product } from '../../core/models/catalog';
 
 interface Slide {
   image: string;
   titleKey: string;
   subtitleKey: string;
   link: string[];
-}
-
-interface TypeSection {
-  type: ProductType;
-  titleKey: string;
 }
 
 @Component({
@@ -34,15 +29,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly featuredLoading = signal(false);
   readonly discountedProducts = signal<Product[]>([]);
   readonly discountedLoading = signal(false);
-
-  readonly typeSections: TypeSection[] = [
-    { type: 'perfume', titleKey: 'home.types.perfume' },
-    { type: 'body_spray', titleKey: 'home.types.bodySpray' },
-    { type: 'charm_bag', titleKey: 'home.types.charmBag' },
-    { type: 'candle', titleKey: 'home.types.candle' },
-  ];
-  readonly typeProducts = signal<Record<string, Product[]>>({});
-  readonly typeLoading = signal<Record<string, boolean>>({});
+  readonly mostPopularPerfumes = signal<Product[]>([]);
+  readonly mostPopularLoading = signal(false);
 
   readonly slides: Slide[] = [
     {
@@ -71,7 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.startAuto();
     this.loadFeatured();
     this.loadDiscounted();
-    this.typeSections.forEach((section) => this.loadTypeSection(section.type));
+    this.loadMostPopularPerfumes();
   }
 
   ngOnDestroy(): void {
@@ -150,27 +138,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  typeProductsOf(type: string): Product[] {
-    return this.typeProducts()[type] ?? [];
-  }
-
-  typeLoadingOf(type: string): boolean {
-    return this.typeLoading()[type] ?? false;
-  }
-
-  scrollTypeSection(direction: 'left' | 'right', el: HTMLElement): void {
-    const amount = el.clientWidth * 0.7;
-    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
-  }
-
-  private loadTypeSection(type: ProductType): void {
-    this.typeLoading.update(m => ({ ...m, [type]: true }));
-    this.catalog.listProducts({ type, limit: 8, sort: 'newest' }).subscribe({
+  private loadMostPopularPerfumes(): void {
+    this.mostPopularLoading.set(true);
+    this.catalog.listProducts({ type: 'perfume', limit: 8, sort: 'newest' }).subscribe({
       next: res => {
-        this.typeProducts.update(m => ({ ...m, [type]: res.data }));
-        this.typeLoading.update(m => ({ ...m, [type]: false }));
+        this.mostPopularPerfumes.set(res.data);
+        this.mostPopularLoading.set(false);
       },
-      error: () => this.typeLoading.update(m => ({ ...m, [type]: false })),
+      error: () => this.mostPopularLoading.set(false),
     });
   }
 

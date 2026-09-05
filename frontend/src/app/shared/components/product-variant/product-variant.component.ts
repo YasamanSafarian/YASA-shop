@@ -29,6 +29,7 @@ export class ProductVariantComponent {
   private readonly toast = inject(ToastService);
 
   readonly adding = signal(false);
+  readonly quantity = signal(1);
 
   readonly isPerfume = computed(() => this.productType() === 'perfume');
 
@@ -45,6 +46,12 @@ export class ProductVariantComponent {
     return price.toLocaleString('en-US');
   }
 
+  adjustQuantity(delta: number): void {
+    this.quantity.update((current) =>
+      Math.min(this.variant().stockQuantity, Math.max(1, current + delta)),
+    );
+  }
+
   async addToCart(): Promise<void> {
     if (!this.isAvailable()) {
       this.toast.error(this.translate.t('cart.addSoldOut'));
@@ -52,7 +59,8 @@ export class ProductVariantComponent {
     }
     this.adding.set(true);
     try {
-      await this.cart.addItem(this.variant().id);
+      await this.cart.addItem(this.variant().id, this.quantity());
+      this.quantity.set(1);
     } catch (err) {
       const status = (err as ApiError)?.status;
       const message = (err as ApiError)?.message ?? '';

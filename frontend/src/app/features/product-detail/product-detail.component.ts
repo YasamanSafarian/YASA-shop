@@ -36,7 +36,6 @@ export class ProductDetailComponent implements OnInit {
   readonly loading = signal(true);
   readonly notFound = signal(false);
   readonly error = signal<string | null>(null);
-
   readonly primaryImage = computed<string | null>(() => {
     const product = this.product();
     if (!product) {
