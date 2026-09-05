@@ -52,6 +52,20 @@ export class AuthService {
     this.applyTokens(response);
   }
 
+  async forgotPassword(identifier: string): Promise<ForgotPasswordResponse> {
+    return firstValueFrom(
+      this.api.post<ForgotPasswordResponse>('/auth/forgot-password', {
+        identifier,
+      }),
+    );
+  }
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<void> {
+    await firstValueFrom(
+      this.api.post<{ message: string }>('/auth/reset-password', payload),
+    );
+  }
+
   async logout(): Promise<void> {
     const refreshToken = this.refreshTokenSignal();
     if (refreshToken) {

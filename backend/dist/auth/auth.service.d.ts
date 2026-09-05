@@ -3,7 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RefreshTokenStore } from './refresh-token.store';
+import { PasswordResetStore } from './password-reset.store';
 export interface AuthUser {
     id: string;
     email: string | null;
@@ -22,13 +25,22 @@ export declare class AuthService {
     private readonly jwtService;
     private readonly configService;
     private readonly refreshTokenStore;
-    constructor(prisma: PrismaService, jwtService: JwtService, configService: ConfigService, refreshTokenStore: RefreshTokenStore);
+    private readonly passwordResetStore;
+    constructor(prisma: PrismaService, jwtService: JwtService, configService: ConfigService, refreshTokenStore: RefreshTokenStore, passwordResetStore: PasswordResetStore);
     register(dto: RegisterDto): Promise<TokenResponse>;
     login(dto: LoginDto): Promise<TokenResponse>;
     refresh(refreshToken: string): Promise<TokenResponse>;
     logout(refreshToken: string): {
         message: string;
     };
+    forgotPassword(dto: ForgotPasswordDto): Promise<{
+        resetId: string;
+        token: string;
+        expiresInSeconds: number;
+    }>;
+    resetPassword(dto: ResetPasswordDto): Promise<{
+        message: string;
+    }>;
     getProfile(userId: string): Promise<AuthUser>;
     private issueTokens;
     private toAuthUser;

@@ -29,6 +29,14 @@ export class RefreshTokenStore {
     this.store.delete(token);
   }
 
+  deleteForUser(userId: string): void {
+    for (const [token, entry] of this.store) {
+      if (entry.userId === userId) {
+        this.store.delete(token);
+      }
+    }
+  }
+
   clearExpired(): void {
     const now = Date.now();
     for (const [token, entry] of this.store) {

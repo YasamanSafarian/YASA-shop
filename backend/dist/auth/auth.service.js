@@ -50,16 +50,19 @@ const bcrypt = __importStar(require("bcryptjs"));
 const node_crypto_1 = require("node:crypto");
 const prisma_service_1 = require("../database/prisma.service");
 const refresh_token_store_1 = require("./refresh-token.store");
+const password_reset_store_1 = require("./password-reset.store");
 let AuthService = class AuthService {
     prisma;
     jwtService;
     configService;
     refreshTokenStore;
-    constructor(prisma, jwtService, configService, refreshTokenStore) {
+    passwordResetStore;
+    constructor(prisma, jwtService, configService, refreshTokenStore, passwordResetStore) {
         this.prisma = prisma;
         this.jwtService = jwtService;
         this.configService = configService;
         this.refreshTokenStore = refreshTokenStore;
+        this.passwordResetStore = passwordResetStore;
     }
     async register(dto) {
         const email = dto.email?.toLowerCase().trim() || null;
@@ -143,6 +146,49 @@ let AuthService = class AuthService {
         this.refreshTokenStore.delete(refreshToken);
         return { message: 'logged out' };
     }
+    async forgotPassword(dto) {
+        const identifier = dto.identifier.trim().toLowerCase();
+        const user = await this.prisma.users.findFirst({
+            where: {
+                OR: [{ email: identifier }, { phone: identifier }],
+                deleted_at: null,
+            },
+        });
+        if (!user || !user.is_active) {
+            throw new common_1.UnauthorizedException('account not found or disabled');
+        }
+        const token = (0, node_crypto_1.randomBytes)(32).toString('hex');
+        const tokenHash = await bcrypt.hash(token, 10);
+        const expiresInSeconds = 600;
+        const expiresAt = Date.now() + expiresInSeconds * 1000;
+        const resetId = (0, node_crypto_1.randomUUID)();
+        this.passwordResetStore.save(resetId, user.id, tokenHash, expiresAt);
+        return { resetId, token, expiresInSeconds };
+    }
+    async resetPassword(dto) {
+        const identifier = dto.identifier.trim().toLowerCase();
+        const user = await this.prisma.users.findFirst({
+            where: {
+                OR: [{ email: identifier }, { phone: identifier }],
+                deleted_at: null,
+            },
+        });
+        if (!user || !user.is_active) {
+            throw new common_1.UnauthorizedException('account not found or disabled');
+        }
+        const tokenHash = await bcrypt.hash(dto.token, 10);
+        const entry = this.passwordResetStore.consume(dto.resetId, tokenHash);
+        if (!entry || entry.userId !== user.id) {
+            throw new common_1.UnauthorizedException('invalid or expired reset token');
+        }
+        const passwordHash = await bcrypt.hash(dto.newPassword, this.configService.getOrThrow('bcryptRounds'));
+        await this.prisma.users.update({
+            where: { id: user.id },
+            data: { password_hash: passwordHash },
+        });
+        this.refreshTokenStore.deleteForUser(user.id);
+        return { message: 'password has been reset' };
+    }
     async getProfile(userId) {
         const user = await this.prisma.users.findFirst({
             where: { id: userId, deleted_at: null },
@@ -203,6 +249,7 @@ exports.AuthService = AuthService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
         config_1.ConfigService,
-        refresh_token_store_1.RefreshTokenStore])
+        refresh_token_store_1.RefreshTokenStore,
+        password_reset_store_1.PasswordResetStore])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

@@ -277,13 +277,19 @@ export class AdminProductsComponent implements OnInit {
     this.variantError.set('');
     try {
       const isPerfume = this.isPerfumeType(this.variantProductType());
+      const price = this.variantForm.price;
+      const rawCompare = this.variantForm.compareAtPrice;
+      // chk_discount requires (compare_at_price IS NULL) OR (compare_at_price >= price),
+      // so only send a compare price when it forms a valid discount.
+      const compareAtPrice =
+        price > 0 && rawCompare && rawCompare > price ? rawCompare : null;
       // Non-perfume products hide volume/format; store hidden defaults instead.
       const payload = {
         sku: this.variantForm.sku,
         format: this.variantForm.format,
         volumeMl: this.variantForm.volumeMl,
-        price: this.variantForm.price,
-        compareAtPrice: this.variantForm.compareAtPrice || null,
+        price,
+        compareAtPrice,
         stockQuantity: this.variantForm.stockQuantity,
         isDefault: this.variantForm.isDefault,
       };
@@ -302,7 +308,9 @@ export class AdminProductsComponent implements OnInit {
       }
       this.admin.loadProducts(this.admin.productsPage());
     } catch (e: any) {
-      this.variantError.set(e?.error?.message || this.translate.t('adminProducts.errorCreate'));
+      const msg = e?.error?.message;
+      const text = Array.isArray(msg) ? msg.join(' ') : msg;
+      this.variantError.set(text || this.translate.t('adminProducts.errorCreate'));
     }
   }
 

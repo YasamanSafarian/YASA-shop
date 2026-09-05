@@ -20,3 +20,16 @@ export interface RegisterPayload {
   firstName?: string;
   lastName?: string;
 }
+
+export interface ForgotPasswordResponse {
+  resetId: string;
+  token: string;
+  expiresInSeconds: number;
+}
+
+export interface ResetPasswordPayload {
+  identifier: string;
+  resetId: string;
+  token: string;
+  newPassword: string;
+}

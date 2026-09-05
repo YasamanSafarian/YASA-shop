@@ -3,12 +3,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshTokenStore } from './refresh-token.store';
+import { PasswordResetStore } from './password-reset.store';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [JwtModule.register({ global: true })],
   controllers: [AuthController],
-  providers: [AuthService, RefreshTokenStore, JwtAuthGuard],
+  providers: [AuthService, RefreshTokenStore, PasswordResetStore, JwtAuthGuard],
   exports: [JwtAuthGuard],
 })
 export class AuthModule {}

@@ -12,6 +12,7 @@ const jwt_1 = require("@nestjs/jwt");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 const refresh_token_store_1 = require("./refresh-token.store");
+const password_reset_store_1 = require("./password-reset.store");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 let AuthModule = class AuthModule {
 };
@@ -20,7 +21,7 @@ exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [jwt_1.JwtModule.register({ global: true })],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, refresh_token_store_1.RefreshTokenStore, jwt_auth_guard_1.JwtAuthGuard],
+        providers: [auth_service_1.AuthService, refresh_token_store_1.RefreshTokenStore, password_reset_store_1.PasswordResetStore, jwt_auth_guard_1.JwtAuthGuard],
         exports: [jwt_auth_guard_1.JwtAuthGuard],
     })
 ], AuthModule);
