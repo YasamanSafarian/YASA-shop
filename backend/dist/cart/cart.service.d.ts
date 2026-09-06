@@ -71,6 +71,8 @@ export interface CartDto {
         distinctItems: number;
         itemCount: number;
         subtotal: number;
+        shippingFee: number;
+        grandTotal: number;
     };
     createdAt: string;
     updatedAt: string;

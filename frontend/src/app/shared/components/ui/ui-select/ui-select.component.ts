@@ -1,6 +1,7 @@
 import {
   Component,
   Injector,
+  Input,
   forwardRef,
   inject,
   input,
@@ -36,7 +37,7 @@ export class UiSelectComponent implements ControlValueAccessor {
   private readonly injector = inject(Injector);
 
   value = '';
-  disabled = false;
+  @Input() disabled = false;
   onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};
 

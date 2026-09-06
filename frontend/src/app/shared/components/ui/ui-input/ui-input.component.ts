@@ -1,9 +1,11 @@
 import {
   Component,
   Injector,
+  computed,
   forwardRef,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 
@@ -32,6 +34,9 @@ export class UiInputComponent implements ControlValueAccessor {
   readonly hint = input<string | null>(null);
   readonly dense = input(false);
 
+  readonly isPassword = computed(() => this.type() === 'password');
+  readonly showPassword = signal(false);
+
   private readonly injector = inject(Injector);
 
   value = '';
@@ -48,6 +53,14 @@ export class UiInputComponent implements ControlValueAccessor {
       this.error() !== null ||
       (!!ngControl?.control?.invalid && !!ngControl?.control?.touched)
     );
+  }
+
+  get effectiveType(): string {
+    return this.isPassword() && this.showPassword() ? 'text' : this.type();
+  }
+
+  togglePassword(): void {
+    this.showPassword.update((value) => !value);
   }
 
   writeValue(value: string): void {

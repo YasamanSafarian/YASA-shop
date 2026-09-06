@@ -45,6 +45,7 @@ export interface ProductDto {
   name: string;
   slug: string;
   description: string | null;
+  productType: string;
   gender: string | null;
   concentration: string | null;
   releaseYear: number | null;
@@ -188,6 +189,7 @@ export class ProductsService {
       name: product.name,
       slug: product.slug,
       description: product.description,
+      productType: product.product_type,
       gender: product.gender,
       concentration: product.concentration,
       releaseYear: product.release_year,
@@ -269,6 +271,10 @@ export class ProductsService {
 
     if (query.gender) {
       where.gender = query.gender;
+    }
+
+    if (query.type) {
+      where.product_type = query.type;
     }
 
     if (query.fragranceFamily) {

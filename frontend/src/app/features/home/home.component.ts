@@ -29,6 +29,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly featuredLoading = signal(false);
   readonly discountedProducts = signal<Product[]>([]);
   readonly discountedLoading = signal(false);
+  readonly mostPopularPerfumes = signal<Product[]>([]);
+  readonly mostPopularLoading = signal(false);
 
   readonly slides: Slide[] = [
     {
@@ -57,6 +59,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.startAuto();
     this.loadFeatured();
     this.loadDiscounted();
+    this.loadMostPopularPerfumes();
   }
 
   ngOnDestroy(): void {
@@ -126,12 +129,23 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadDiscounted(): void {
     this.discountedLoading.set(true);
-    this.catalog.listProducts({ limit: 8, discounted: true }).subscribe({
+    this.catalog.listProducts({ limit: 100, discounted: true }).subscribe({
       next: res => {
         this.discountedProducts.set(res.data);
         this.discountedLoading.set(false);
       },
       error: () => this.discountedLoading.set(false),
+    });
+  }
+
+  private loadMostPopularPerfumes(): void {
+    this.mostPopularLoading.set(true);
+    this.catalog.listProducts({ type: 'perfume', limit: 8, sort: 'newest' }).subscribe({
+      next: res => {
+        this.mostPopularPerfumes.set(res.data);
+        this.mostPopularLoading.set(false);
+      },
+      error: () => this.mostPopularLoading.set(false),
     });
   }
 

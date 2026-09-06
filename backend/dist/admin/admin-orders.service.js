@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminOrdersService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../database/prisma.service");
+const order_state_1 = require("../common/utils/order-state");
 const adminOrderInclude = {
     order_items: { orderBy: { created_at: 'asc' } },
     users: true,
@@ -69,6 +70,11 @@ let AdminOrdersService = class AdminOrdersService {
         }
         if (!dto.orderStatus && !dto.paymentStatus && !dto.shipmentStatus) {
             throw new common_1.BadRequestException('nothing to update');
+        }
+        if (dto.orderStatus === 'cancelled' &&
+            existing.order_status !== 'cancelled' &&
+            !(0, order_state_1.canCancelOrder)(existing)) {
+            throw new common_1.BadRequestException('order cannot be cancelled once it has been shipped or is past the cancellable state');
         }
         const order = await this.prisma.$transaction(async (tx) => {
             const data = { updated_at: new Date() };

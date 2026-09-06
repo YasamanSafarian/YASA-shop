@@ -12,5 +12,8 @@ exports.default = () => ({
         refreshExpiresIn: parseInt(process.env.JWT_REFRESH_EXPIRES_IN ?? '604800', 10),
     },
     bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS ?? '10', 10),
+    mrotp: {
+        apiKey: process.env.MROTP_API_KEY ?? '',
+    },
 });
 //# sourceMappingURL=configuration.js.map

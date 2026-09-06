@@ -5,3 +5,45 @@
 :host .form-field--dense {
   margin-bottom: 0;
 }
+
+.form-control-wrap {
+  position: relative;
+}
+
+.form-control.is-password {
+  padding-inline-end: 2.75rem;
+}
+
+.form-control-toggle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0.5rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.form-control-toggle:hover {
+  color: var(--color-text);
+}
+
+.form-control-toggle:focus-visible {
+  outline: 2px solid var(--color-rose-gold);
+  outline-offset: 1px;
+  color: var(--color-text);
+}
+
+.form-control-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}

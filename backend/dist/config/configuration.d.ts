@@ -10,5 +10,8 @@ declare const _default: () => {
         refreshExpiresIn: number;
     };
     bcryptRounds: number;
+    mrotp: {
+        apiKey: string;
+    };
 };
 export default _default;

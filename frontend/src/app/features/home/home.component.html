@@ -118,13 +118,70 @@
     </div>
   </div>
 </section>
+@if (discountedLoading() || discountedProducts().length) {
+<section class="section section--discount">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <p class="eyebrow">{{ translate.t('home.discounted.eyebrow') }}</p>
+        <h2>{{ translate.t('home.discounted.title') }}</h2>
+      </div>
+      <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
+    </div>
 
+    @if (discountedLoading()) {
+      <p class="featured__loading">{{ translate.t('home.featured.loading') }}</p>
+    } @else {
+      <div class="featured__slider-wrap">
+        <button type="button" class="featured__arrow featured__arrow--left" (click)="scrollDiscounted('left', discountedSlider)" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+
+        <div class="featured__slider" #discountedSlider>
+          @for (product of discountedProducts(); track product.id) {
+            <a [routerLink]="['/products', product.slug]" class="featured__card">
+              <div class="featured__card-img">
+                @if (getPrimaryImage(product)) {
+                  <img [src]="getPrimaryImage(product)" [alt]="product.name" loading="lazy" />
+                } @else {
+                  <div class="featured__card-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                  </div>
+                }
+              </div>
+              <div class="featured__card-body">
+                <span class="featured__card-brand">{{ product.brand.name }}</span>
+                <span class="featured__card-name">{{ product.name }}</span>
+                <span class="featured__card-meta">
+                  {{ product.gender || '' }} · {{ product.concentration || '' }}
+                </span>
+                @if (getCompareAt(product); as compare) {
+                  <span class="featured__card-price featured__card-price--discount">
+                    <span class="featured__card-compare">{{ compare.toLocaleString('en-US') }}</span>
+                    {{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}
+                  </span>
+                } @else {
+                  <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
+                }
+              </div>
+            </a>
+          }
+        </div>
+
+        <button type="button" class="featured__arrow featured__arrow--right" (click)="scrollDiscounted('right', discountedSlider)" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    }
+  </div>
+</section>
+}
 <section class="section">
   <div class="container">
     <div class="section__head">
       <div>
-        <p class="eyebrow">{{ translate.t('home.featured.eyebrow') }}</p>
-        <h2>{{ translate.t('home.featured.title') }}</h2>
+        <p class="eyebrow">{{ translate.t('home.newest.eyebrow') }}</p>
+        <h2>{{ translate.t('home.newest.title') }}</h2>
       </div>
       <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
     </div>
@@ -169,26 +226,27 @@
   </div>
 </section>
 
-<section class="section section--discount">
+@if (mostPopularLoading() || mostPopularPerfumes().length) {
+<section class="section">
   <div class="container">
     <div class="section__head">
       <div>
-        <p class="eyebrow">{{ translate.t('home.discounted.eyebrow') }}</p>
-        <h2>{{ translate.t('home.discounted.title') }}</h2>
+        <p class="eyebrow">{{ translate.t('home.mostPopular.eyebrow') }}</p>
+        <h2>{{ translate.t('home.mostPopular.title') }}</h2>
       </div>
       <a routerLink="/products" class="link">{{ translate.t('home.collections.viewAll') }}</a>
     </div>
 
-    @if (discountedLoading()) {
+    @if (mostPopularLoading()) {
       <p class="featured__loading">{{ translate.t('home.featured.loading') }}</p>
-    } @else if (discountedProducts().length) {
+    } @else {
       <div class="featured__slider-wrap">
-        <button type="button" class="featured__arrow featured__arrow--left" (click)="scrollDiscounted('left', discountedSlider)" aria-label="Previous">
+        <button type="button" class="featured__arrow featured__arrow--left" (click)="scrollFeatured('left', mostPopularSlider)" aria-label="Previous">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
 
-        <div class="featured__slider" #discountedSlider>
-          @for (product of discountedProducts(); track product.id) {
+        <div class="featured__slider" #mostPopularSlider>
+          @for (product of mostPopularPerfumes(); track product.id) {
             <a [routerLink]="['/products', product.slug]" class="featured__card">
               <div class="featured__card-img">
                 @if (getPrimaryImage(product)) {
@@ -202,29 +260,20 @@
               <div class="featured__card-body">
                 <span class="featured__card-brand">{{ product.brand.name }}</span>
                 <span class="featured__card-name">{{ product.name }}</span>
-                <span class="featured__card-meta">
-                  {{ product.gender || '' }} · {{ product.concentration || '' }}
-                </span>
-                @if (getCompareAt(product); as compare) {
-                  <span class="featured__card-price featured__card-price--discount">
-                    <span class="featured__card-compare">{{ getMinPrice(product).toLocaleString('en-US') }}</span>
-                    {{ compare.toLocaleString('en-US') }}
-                  </span>
-                } @else {
-                  <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
-                }
+                <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
               </div>
             </a>
           }
         </div>
 
-        <button type="button" class="featured__arrow featured__arrow--right" (click)="scrollDiscounted('right', discountedSlider)" aria-label="Next">
+        <button type="button" class="featured__arrow featured__arrow--right" (click)="scrollFeatured('right', mostPopularSlider)" aria-label="Next">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       </div>
     }
   </div>
 </section>
+}
 
 <section class="section">
   <div class="container">
@@ -246,6 +295,7 @@
         </div>
       </a>
       <a routerLink="/products" class="promo promo--yasa">
+        <span class="promo__badge">{{ translate.t('home.promo.yasa.comingSoon') }}</span>
         <div class="promo__body">
           <p class="promo__eyebrow">{{ translate.t('home.promo.yasa.eyebrow') }}</p>
           <h3 class="promo__title">{{ translate.t('home.promo.yasa.title') }}</h3>

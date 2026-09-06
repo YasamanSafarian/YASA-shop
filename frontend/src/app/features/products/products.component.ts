@@ -24,6 +24,7 @@ import {
   FragranceFamily,
   Product,
   ProductSort,
+  ProductType,
 } from '../../core/models/catalog';
 
 const PAGE_SIZE = 12;
@@ -59,9 +60,11 @@ export class ProductsComponent implements OnInit {
 
   readonly filterForm = this.fb.group({
     search: [''],
+    type: [''],
     brand: [''],
-    fragranceFamily: [''],
+    fragranceFamily: this.fb.control({ value: '', disabled: true }),
     gender: [''],
+    availability: [''],
     sort: ['newest' as ProductSort],
   });
 
@@ -82,6 +85,13 @@ export class ProductsComponent implements OnInit {
     { value: 'unisex', label: this.translate.t('products.genderUnisex') },
   ]);
 
+  readonly availabilityOptions = computed<UiSelectOption[]>(() => [
+    {
+      value: 'in_stock',
+      label: this.translate.t('products.availabilityInStock'),
+    },
+  ]);
+
   readonly sortOptions = computed<UiSelectOption[]>(() => [
     { value: 'newest', label: this.translate.t('products.sortNewest') },
     { value: 'price_asc', label: this.translate.t('products.sortPriceAsc') },
@@ -90,16 +100,35 @@ export class ProductsComponent implements OnInit {
     { value: 'name_desc', label: this.translate.t('products.sortNameDesc') },
   ]);
 
+  readonly typeOptions = computed<UiSelectOption[]>(() => [
+    { value: 'perfume', label: this.translate.t('products.typePerfume') },
+    { value: 'body_spray', label: this.translate.t('products.typeBodySpray') },
+    { value: 'charm_bag', label: this.translate.t('products.typeCharmBag') },
+    { value: 'candle', label: this.translate.t('products.typeCandle') },
+  ]);
+
+  readonly fragranceFamilyDisabled = computed(
+    () => this.filterForm.value.type === 'perfume',
+  );
+
   readonly filterCount = computed(
     () =>
       (this.filterForm.value.search ? 1 : 0) +
+      (this.filterForm.value.type ? 1 : 0) +
       (this.filterForm.value.brand ? 1 : 0) +
       (this.filterForm.value.fragranceFamily ? 1 : 0) +
-      (this.filterForm.value.gender ? 1 : 0),
+      (this.filterForm.value.gender ? 1 : 0) +
+      (this.filterForm.value.availability ? 1 : 0),
   );
 
   constructor() {
     this.loadFilters();
+
+    this.filterForm.controls.type.valueChanges.subscribe(() => {
+      this.syncFragranceFamilyState();
+    });
+
+    this.syncFragranceFamilyState();
 
     this.filterForm.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.page.set(1);
@@ -121,6 +150,13 @@ export class ProductsComponent implements OnInit {
         page: this.page(),
         limit: PAGE_SIZE,
         search: form.search || undefined,
+        type:
+          form.type === 'perfume' ||
+          form.type === 'body_spray' ||
+          form.type === 'charm_bag' ||
+          form.type === 'candle'
+            ? form.type
+            : undefined,
         brand: form.brand || undefined,
         fragranceFamily: form.fragranceFamily || undefined,
         gender:
@@ -129,6 +165,7 @@ export class ProductsComponent implements OnInit {
           form.gender === 'unisex'
             ? form.gender
             : undefined,
+        availability: form.availability === 'in_stock' ? 'in_stock' : undefined,
         sort: form.sort || undefined,
       })
       .subscribe({
@@ -158,13 +195,27 @@ export class ProductsComponent implements OnInit {
   clearFilters(): void {
     this.filterForm.setValue({
       search: '',
+      type: '',
       brand: '',
       fragranceFamily: '',
       gender: '',
+      availability: '',
       sort: 'newest',
     });
+    this.syncFragranceFamilyState();
     this.page.set(1);
     this.loadProducts();
+  }
+
+  private syncFragranceFamilyState(): void {
+    const familyControl = this.filterForm.controls.fragranceFamily;
+    const enableFamily = this.filterForm.value.type !== 'perfume';
+    if (enableFamily) {
+      familyControl.enable({ emitEvent: false });
+    } else {
+      familyControl.setValue('', { emitEvent: false });
+      familyControl.disable({ emitEvent: false });
+    }
   }
 
   @HostListener('window:keydown.escape')

@@ -58,6 +58,14 @@ export class ProductCardComponent {
     return Math.round(((compare - min) / compare) * 100);
   });
 
+  readonly soldOut = computed<boolean>(() => {
+    const variants = this.product().variants;
+    if (variants.length === 0) {
+      return true;
+    }
+    return variants.every((v) => !v.isActive || v.stockQuantity <= 0);
+  });
+
   formatPrice(price: number): string {
     return price.toLocaleString('en-US');
   }

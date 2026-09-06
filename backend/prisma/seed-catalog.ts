@@ -22,6 +22,7 @@ interface SeedCategory {
   slug: string;
   parentSlug?: string;
   sortOrder: number;
+  imageUrl: string;
 }
 
 interface SeedVariant {
@@ -37,6 +38,7 @@ interface SeedProduct {
   slug: string;
   description: string;
   brandSlug: string;
+  productType?: 'perfume' | 'body_spray' | 'charm_bag' | 'candle';
   gender: 'male' | 'female' | 'unisex';
   categorySlugs: string[];
   familySlugs: string[];
@@ -54,9 +56,9 @@ const BRANDS = [
 ];
 
 const CATEGORIES: SeedCategory[] = [
-  { name: 'زنانه', slug: 'women', sortOrder: 1 },
-  { name: 'مردانه', slug: 'men', sortOrder: 2 },
-  { name: 'یونیسکس', slug: 'unisex', sortOrder: 3 },
+  { name: 'زنانه', slug: 'women', sortOrder: 1, imageUrl: '/assets/images/categories/women.png' },
+  { name: 'مردانه', slug: 'men', sortOrder: 2, imageUrl: '/assets/images/categories/men.png' },
+  { name: 'یونیسکس', slug: 'unisex', sortOrder: 3, imageUrl: '/assets/images/categories/unisex.png' },
 ];
 
 const FRAGRANCE_FAMILIES: SeedFamily[] = [
@@ -261,6 +263,7 @@ async function main() {
       name: category.name,
       slug: category.slug,
       sort_order: category.sortOrder,
+      image_url: category.imageUrl,
       is_active: true,
       parent_id: category.parentSlug ? parentId.get(category.parentSlug) : null,
     };
@@ -321,6 +324,7 @@ async function main() {
       name: product.name,
       slug: product.slug,
       description: product.description,
+      product_type: product.productType ?? 'perfume',
       gender: product.gender,
       is_active: true,
     };

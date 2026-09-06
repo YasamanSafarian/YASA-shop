@@ -21,3 +21,12 @@
   background-size: 14px;
   cursor: pointer;
 }
+
+:host select.form-control:disabled {
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+  background-color: transparent;
+  border-color: var(--color-border);
+  opacity: 0.6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2363718a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}

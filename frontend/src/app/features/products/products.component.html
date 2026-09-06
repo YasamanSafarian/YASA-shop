@@ -62,9 +62,19 @@
         />
 
         <app-ui-select
+          id="product-type"
+          formControlName="type"
+          [dense]="true"
+          [label]="translate.t('products.type')"
+          [placeholder]="translate.t('products.allTypes')"
+          [options]="typeOptions()"
+        />
+
+        <app-ui-select
           id="product-fragrance-family"
           formControlName="fragranceFamily"
           [dense]="true"
+          [disabled]="fragranceFamilyDisabled()"
           [label]="translate.t('products.fragranceFamily')"
           [placeholder]="translate.t('products.allFragranceFamilies')"
           [options]="fragranceFamilyOptions()"
@@ -77,6 +87,15 @@
           [label]="translate.t('products.gender')"
           [placeholder]="translate.t('products.allGenders')"
           [options]="genderOptions()"
+        />
+
+        <app-ui-select
+          id="product-availability"
+          formControlName="availability"
+          [dense]="true"
+          [label]="translate.t('products.availability')"
+          [placeholder]="translate.t('products.availabilityAll')"
+          [options]="availabilityOptions()"
         />
 
         <app-ui-select

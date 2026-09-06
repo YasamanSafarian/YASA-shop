@@ -13,4 +13,7 @@ export default () => ({
     ),
   },
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS ?? '10', 10),
+  mrotp: {
+    apiKey: process.env.MROTP_API_KEY ?? '',
+  },
 });

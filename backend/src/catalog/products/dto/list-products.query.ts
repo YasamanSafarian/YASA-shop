@@ -10,7 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { gender_enum } from '@prisma/client';
+import { gender_enum, product_type_enum } from '@prisma/client';
 
 export type SortOption =
   'newest' | 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc';
@@ -35,6 +35,10 @@ export class ListProductsQueryDto {
   @IsOptional()
   @IsEnum(gender_enum)
   gender?: gender_enum;
+
+  @IsOptional()
+  @IsEnum(product_type_enum)
+  type?: product_type_enum;
 
   @IsOptional()
   @IsString()

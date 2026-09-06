@@ -20,6 +20,7 @@ export declare class AdminProductsService {
                 name: string;
             };
             gender: import("@prisma/client").$Enums.gender_enum | null;
+            productType: import("@prisma/client").$Enums.product_type_enum;
             concentration: import("@prisma/client").$Enums.concentration_enum | null;
             categories: {
                 id: string;
@@ -124,6 +125,7 @@ export declare class AdminProductsService {
         gender: import("@prisma/client").$Enums.gender_enum | null;
         brand_id: string;
         slug: string;
+        product_type: import("@prisma/client").$Enums.product_type_enum;
         concentration: import("@prisma/client").$Enums.concentration_enum | null;
         release_year: number | null;
         seasons: string[];
@@ -216,6 +218,7 @@ export declare class AdminProductsService {
         gender: import("@prisma/client").$Enums.gender_enum | null;
         brand_id: string;
         slug: string;
+        product_type: import("@prisma/client").$Enums.product_type_enum;
         concentration: import("@prisma/client").$Enums.concentration_enum | null;
         release_year: number | null;
         seasons: string[];

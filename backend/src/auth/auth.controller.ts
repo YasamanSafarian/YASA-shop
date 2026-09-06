@@ -13,6 +13,9 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { LogoutDto } from './dto/logout.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
@@ -22,7 +25,13 @@ export class AuthController {
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+    return this.authService.requestRegister(dto);
+  }
+
+  @Post('verify-register')
+  @HttpCode(HttpStatus.OK)
+  verifyRegister(@Body() dto: VerifyOtpDto) {
+    return this.authService.verifyRegister(dto);
   }
 
   @Post('login')
@@ -41,6 +50,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   logout(@Body() dto: LogoutDto) {
     return this.authService.logout(dto.refreshToken);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto);
   }
 
   @Get('me')

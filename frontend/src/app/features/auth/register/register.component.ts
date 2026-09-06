@@ -39,8 +39,16 @@ export class RegisterComponent {
     ],
   });
 
+  readonly otpForm = this.fb.nonNullable.group({
+    otp: [
+      '',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(8)],
+    ],
+  });
+
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly sessionId = signal<string | null>(null);
 
   get phone() {
     return this.form.controls.phone;
@@ -54,7 +62,21 @@ export class RegisterComponent {
     return this.form.controls.password;
   }
 
-  async submit(): Promise<void> {
+  get otp() {
+    return this.otpForm.controls.otp;
+  }
+
+  get pendingPhone() {
+    return this.form.getRawValue().phone;
+  }
+
+  backToForm() {
+    this.sessionId.set(null);
+    this.errorMessage.set(null);
+    this.otpForm.reset();
+  }
+
+  async requestOtp(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -65,12 +87,35 @@ export class RegisterComponent {
 
     try {
       const value = this.form.getRawValue();
-      await this.auth.register({
+      const response = await this.auth.requestRegister({
         phone: value.phone,
         password: value.password,
         ...(value.firstName ? { firstName: value.firstName } : {}),
         ...(value.lastName ? { lastName: value.lastName } : {}),
         ...(value.email ? { email: value.email } : {}),
+      });
+      this.sessionId.set(response.sessionId);
+    } catch (error) {
+      this.errorMessage.set(getErrorMessage(error));
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  async submitOtp(): Promise<void> {
+    const sessionId = this.sessionId();
+    if (!sessionId || this.otpForm.invalid) {
+      this.otpForm.markAllAsTouched();
+      return;
+    }
+
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+
+    try {
+      await this.auth.verifyRegister({
+        sessionId,
+        otp: this.otpForm.getRawValue().otp.trim(),
       });
       await this.router.navigate(['/']);
     } catch (error) {

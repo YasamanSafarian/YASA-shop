@@ -4,9 +4,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshTokenStore } from './refresh-token.store';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { OtpModule } from '../otp/otp.module';
 
 @Module({
-  imports: [JwtModule.register({ global: true })],
+  imports: [JwtModule.register({ global: true }), OtpModule],
   controllers: [AuthController],
   providers: [AuthService, RefreshTokenStore, JwtAuthGuard],
   exports: [JwtAuthGuard],

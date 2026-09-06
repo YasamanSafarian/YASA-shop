@@ -1,0 +1,12 @@
+@if (toastService.toast(); as toast) {
+  <div
+    class="ui-toast"
+    [class.ui-toast--error]="toast.type === 'error'"
+    [class.ui-toast--success]="toast.type === 'success'"
+    [class.ui-toast--info]="toast.type === 'info'"
+    role="status"
+    (click)="toastService.dismiss()"
+  >
+    {{ toast.message }}
+  </div>
+}

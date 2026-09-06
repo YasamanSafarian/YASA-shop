@@ -43,5 +43,6 @@ exports.validationSchema = Joi.object({
     JWT_REFRESH_SECRET: Joi.string().min(16).required(),
     JWT_REFRESH_EXPIRES_IN: Joi.number().integer().positive().default(604800),
     BCRYPT_ROUNDS: Joi.number().min(4).max(15).default(10),
+    MROTP_API_KEY: Joi.string().optional(),
 });
 //# sourceMappingURL=validation.js.map

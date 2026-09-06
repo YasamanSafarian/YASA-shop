@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { AddCartItemDto } from './dto/add-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { shippingFeeForItemCount } from '../common/constants/shipping';
 
 const cartInclude = {
   cart_items: {
@@ -64,6 +65,8 @@ export interface CartDto {
     distinctItems: number;
     itemCount: number;
     subtotal: number;
+    shippingFee: number;
+    grandTotal: number;
   };
   createdAt: string;
   updatedAt: string;
@@ -229,13 +232,19 @@ export class CartService {
       };
     });
 
+    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
+    const shippingFee = shippingFeeForItemCount(itemCount);
+
     return {
       id: cart.id,
       items,
       totals: {
         distinctItems: items.length,
-        itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
-        subtotal: items.reduce((sum, item) => sum + item.lineTotal, 0),
+        itemCount,
+        subtotal,
+        shippingFee,
+        grandTotal: subtotal + shippingFee,
       },
       createdAt: cart.created_at.toISOString(),
       updatedAt: cart.updated_at.toISOString(),

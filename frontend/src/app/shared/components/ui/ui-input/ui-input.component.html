@@ -2,22 +2,50 @@
   @if (label(); as label) {
     <label class="form-label" [for]="id()">{{ label }}</label>
   }
-  <input
-    [id]="id()"
-    class="form-control"
-    [class.is-invalid]="invalid"
-    [type]="type()"
-    [value]="value"
-    [disabled]="disabled"
-    [attr.placeholder]="placeholder()"
-    [attr.autocomplete]="autocomplete()"
-    (input)="onInput($event)"
-    (blur)="onBlur()"
-  />
+  <div class="form-control-wrap">
+    <input
+      [id]="id()"
+      class="form-control"
+      [class.is-invalid]="invalid"
+      [class.is-password]="isPassword()"
+      [type]="effectiveType"
+      [value]="value"
+      [disabled]="disabled"
+      [attr.placeholder]="placeholder()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.aria-describedby]="hint() ? id() + '-hint' : null"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+    />
+    @if (isPassword()) {
+      <button
+        type="button"
+        class="form-control-toggle"
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="showPassword()"
+        tabindex="-1"
+      >
+        @if (showPassword()) {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        }
+      </button>
+    }
+  </div>
   @if (invalid && error(); as error) {
     <span class="form-error">{{ error }}</span>
   }
   @if (hint(); as hint) {
-    <span class="form-hint">{{ hint }}</span>
+    <span class="form-hint" [id]="id() + '-hint'">{{ hint }}</span>
   }
 </div>

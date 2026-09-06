@@ -114,6 +114,7 @@ let ProductsService = class ProductsService {
             name: product.name,
             slug: product.slug,
             description: product.description,
+            productType: product.product_type,
             gender: product.gender,
             concentration: product.concentration,
             releaseYear: product.release_year,
@@ -185,6 +186,9 @@ let ProductsService = class ProductsService {
         }
         if (query.gender) {
             where.gender = query.gender;
+        }
+        if (query.type) {
+            where.product_type = query.type;
         }
         if (query.fragranceFamily) {
             where.product_fragrance_families = {

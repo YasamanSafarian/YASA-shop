@@ -6,6 +6,7 @@ import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
 import { UiInputComponent } from '../../shared/components/ui/ui-input/ui-input.component';
 import { UiStateComponent } from '../../shared/components/ui/ui-state/ui-state.component';
@@ -23,6 +24,7 @@ export class CartComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly api = inject(ApiService);
   private readonly fb = inject(FormBuilder);
+  private readonly toast = inject(ToastService);
   readonly auth = inject(AuthService);
   readonly translate = inject(TranslateService);
 
@@ -45,16 +47,10 @@ export class CartComponent implements OnInit {
     return this.cartService.cart();
   }
 
-  readonly shippingCost = computed(() => {
-    const count = this.cart?.totals.itemCount ?? 0;
-    if (count <= 2) return 125000;
-    if (count <= 5) return 140000;
-    return 170000;
-  });
+  readonly shippingCost = computed(() => this.cart?.totals.shippingFee ?? 0);
 
   readonly grandTotal = computed(() => {
-    const sub = this.cart?.totals.subtotal ?? 0;
-    return sub + this.shippingCost();
+    return this.cart?.totals.grandTotal ?? this.cart?.totals.subtotal ?? 0;
   });
 
   ngOnInit(): void {
@@ -147,9 +143,11 @@ export class CartComponent implements OnInit {
           createdAt: order.createdAt,
         },
       });
+      this.toast.success(this.translate.t('cart.orderSuccess'));
     } catch (e: any) {
-      const msg = e?.error?.message;
+      const msg = e?.message || e?.error?.message;
       this.error.set(msg || this.translate.t('cart.orderError'));
+      this.toast.error(msg || this.translate.t('cart.orderError'));
     } finally {
       this.ordering.set(false);
     }

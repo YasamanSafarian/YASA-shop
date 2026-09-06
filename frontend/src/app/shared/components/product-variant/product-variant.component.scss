@@ -4,7 +4,7 @@
 
 .variant {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 1.25rem;
   padding: 1rem 1.25rem;
@@ -21,7 +21,7 @@
 }
 
 .variant__size {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-navy);
 }
 
@@ -31,11 +31,12 @@
 }
 
 .variant__price {
-  display: flex;
-  align-items: baseline;
+  display: inline-flex;
+  align-items:center;
   gap: 0.5rem;
   font-weight: 600;
   color: var(--color-navy);
+  justify-items: center;
 }
 
 .variant__compare {
@@ -59,8 +60,59 @@
   color: #c93535;
 }
 
+.variant__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.variant__qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.variant__qty-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.variant__qty-btn:hover:not(:disabled) {
+  background: var(--color-surface-alt, #f5f3ef);
+}
+
+.variant__qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.variant__qty-value {
+  min-width: 2rem;
+  padding: 0.4rem 0;
+  border-inline: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
 @media (max-width: 900px) {
   .variant {
     grid-template-columns: 1fr auto;
+  }
+
+  .variant__actions {
+    grid-column: 1 / -1;
+    justify-content:space-between;
   }
 }

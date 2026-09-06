@@ -18,6 +18,7 @@ class UpdateProductDto {
     name;
     slug;
     description;
+    productType;
     gender;
     concentration;
     releaseYear;
@@ -51,6 +52,13 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateProductDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(client_1.product_type_enum, {
+        message: 'productType must be one of: perfume, body_spray, charm_bag, candle',
+    }),
+    __metadata("design:type", String)
+], UpdateProductDto.prototype, "productType", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(client_1.gender_enum, {

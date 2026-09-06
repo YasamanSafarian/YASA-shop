@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from './api.service';
-import { AuthUser, RegisterPayload, TokenResponse } from '../models/auth';
+import { AuthUser, ForgotPasswordResponse, RegisterOtpResponse, RegisterPayload, ResetPasswordPayload, TokenResponse, VerifyOtpPayload } from '../models/auth';
 
 const ACCESS_TOKEN_KEY = 'yasa.access_token';
 const REFRESH_TOKEN_KEY = 'yasa.refresh_token';
@@ -45,11 +45,31 @@ export class AuthService {
     this.applyTokens(response);
   }
 
-  async register(payload: RegisterPayload): Promise<void> {
+  async requestRegister(payload: RegisterPayload): Promise<RegisterOtpResponse> {
+    return firstValueFrom(
+      this.api.post<RegisterOtpResponse>('/auth/register', payload),
+    );
+  }
+
+  async verifyRegister(payload: VerifyOtpPayload): Promise<void> {
     const response = await firstValueFrom(
-      this.api.post<TokenResponse>('/auth/register', payload),
+      this.api.post<TokenResponse>('/auth/verify-register', payload),
     );
     this.applyTokens(response);
+  }
+
+  async forgotPassword(identifier: string): Promise<ForgotPasswordResponse> {
+    return firstValueFrom(
+      this.api.post<ForgotPasswordResponse>('/auth/forgot-password', {
+        identifier,
+      }),
+    );
+  }
+
+  async resetPassword(payload: ResetPasswordPayload): Promise<void> {
+    await firstValueFrom(
+      this.api.post<{ message: string }>('/auth/reset-password', payload),
+    );
   }
 
   async logout(): Promise<void> {
