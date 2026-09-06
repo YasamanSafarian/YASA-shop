@@ -8,7 +8,7 @@
 }
 
 .profile__card {
-  max-width: 480px;
+  min-width: 350px;
   width: 100%;
   padding: 2.5rem 2rem;
   background: var(--color-surface);
@@ -47,6 +47,7 @@
   border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
   text-align: start;
+  max-width: 100%;
 }
 
 .profile__row {
