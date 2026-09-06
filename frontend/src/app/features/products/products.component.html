@@ -90,6 +90,15 @@
         />
 
         <app-ui-select
+          id="product-availability"
+          formControlName="availability"
+          [dense]="true"
+          [label]="translate.t('products.availability')"
+          [placeholder]="translate.t('products.availabilityAll')"
+          [options]="availabilityOptions()"
+        />
+
+        <app-ui-select
           id="product-sort"
           formControlName="sort"
           [dense]="true"

@@ -60,6 +60,7 @@ export class ProductVariantComponent {
     this.adding.set(true);
     try {
       await this.cart.addItem(this.variant().id, this.quantity());
+      this.toast.success(this.translate.t('cart.added'));
       this.quantity.set(1);
     } catch (err) {
       const status = (err as ApiError)?.status;

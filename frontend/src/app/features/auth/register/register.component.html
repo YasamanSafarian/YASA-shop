@@ -102,6 +102,11 @@
         <p class="auth__footer">
           <a href="#" class="link" (click)="backToForm(); $event.preventDefault()">{{ translate.t('register.changeNumber') }}</a>
         </p>
+
+        <p class="auth__otp-help">
+          {{ translate.t('otpHelp.text') }}
+          <a href="https://t.me/yasa_support" target="_blank" rel="noopener noreferrer" class="link">&#64;yasa_support</a>
+        </p>
       }
 
       @if (!sessionId()) {

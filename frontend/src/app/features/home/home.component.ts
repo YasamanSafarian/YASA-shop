@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadDiscounted(): void {
     this.discountedLoading.set(true);
-    this.catalog.listProducts({ limit: 8, discounted: true }).subscribe({
+    this.catalog.listProducts({ limit: 100, discounted: true }).subscribe({
       next: res => {
         this.discountedProducts.set(res.data);
         this.discountedLoading.set(false);

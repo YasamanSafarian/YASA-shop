@@ -64,6 +64,7 @@ export class ProductsComponent implements OnInit {
     brand: [''],
     fragranceFamily: this.fb.control({ value: '', disabled: true }),
     gender: [''],
+    availability: [''],
     sort: ['newest' as ProductSort],
   });
 
@@ -82,6 +83,13 @@ export class ProductsComponent implements OnInit {
     { value: 'male', label: this.translate.t('products.genderMale') },
     { value: 'female', label: this.translate.t('products.genderFemale') },
     { value: 'unisex', label: this.translate.t('products.genderUnisex') },
+  ]);
+
+  readonly availabilityOptions = computed<UiSelectOption[]>(() => [
+    {
+      value: 'in_stock',
+      label: this.translate.t('products.availabilityInStock'),
+    },
   ]);
 
   readonly sortOptions = computed<UiSelectOption[]>(() => [
@@ -109,7 +117,8 @@ export class ProductsComponent implements OnInit {
       (this.filterForm.value.type ? 1 : 0) +
       (this.filterForm.value.brand ? 1 : 0) +
       (this.filterForm.value.fragranceFamily ? 1 : 0) +
-      (this.filterForm.value.gender ? 1 : 0),
+      (this.filterForm.value.gender ? 1 : 0) +
+      (this.filterForm.value.availability ? 1 : 0),
   );
 
   constructor() {
@@ -156,6 +165,7 @@ export class ProductsComponent implements OnInit {
           form.gender === 'unisex'
             ? form.gender
             : undefined,
+        availability: form.availability === 'in_stock' ? 'in_stock' : undefined,
         sort: form.sort || undefined,
       })
       .subscribe({
@@ -189,6 +199,7 @@ export class ProductsComponent implements OnInit {
       brand: '',
       fragranceFamily: '',
       gender: '',
+      availability: '',
       sort: 'newest',
     });
     this.syncFragranceFamilyState();

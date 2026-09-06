@@ -60,42 +60,30 @@
         } @else {
         @for (item of cart.items; track item.id) {
         <div class="cart-item" [class.cart-item--updating]="updatingId() === item.id">
-          <div class="cart-item__meta">
-            <div class="cart-item__row">
-              <div class="cart-item__media ">
-                @if (item.variant.imageUrl) {
-                <img [src]="item.variant.imageUrl" [alt]="item.variant.product.name" loading="lazy" />
-                } @else {
-                <div class="cart-item__placeholder" aria-hidden="true"></div>
-                }
-              </div>
+          <div class="cart-item__row">
+            <div class="cart-item__media">
+              @if (item.variant.imageUrl) {
+              <img [src]="item.variant.imageUrl" [alt]="item.variant.product.name" loading="lazy" />
+              } @else {
+              <div class="cart-item__placeholder" aria-hidden="true"></div>
+              }
+            </div>
+            <div class="cart-item__info">
               <a class="cart-item__name" [routerLink]="['/products', item.variant.product.slug]">
                 {{ item.variant.product.name }}
-                <span class="cart-item__variant">
-                  {{ item.variant.volumeMl }}ml
-                </span>
+                <span class="cart-item__variant">{{ item.variant.volumeMl }}ml</span>
               </a>
-
-              <button type="button" class="cart-item__remove " (click)="removeItem(item)"
-                [disabled]="updatingId() === item.id" [attr.aria-label]="translate.t('cart.removeItem')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  aria-hidden="true">
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </button>
             </div>
 
+            <button type="button" class="cart-item__remove" (click)="removeItem(item)"
+              [disabled]="updatingId() === item.id" [attr.aria-label]="translate.t('cart.removeItem')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <div class="cart-item__info">
-            <!-- <div class="cart-item__meta">
-              <a class="cart-item__brand" [routerLink]="['/brands', item.variant.product.brand.slug]">
-                {{ item.variant.product.brand.name }}
-                · {{ item.variant.format }}
-              </a>
-
-            </div> -->
-          </div>
-          <div class="cart-item__row">
+          <div class="cart-item__row cart-item__row--footer">
             <div class="cart-item__price">
               {{ formatPrice(item.lineTotal) }}
             </div>
@@ -106,9 +94,7 @@
               <button type="button" class="cart-item__qty-btn" (click)="updateQuantity(item, 1)"
                 [disabled]="updatingId() === item.id" [attr.aria-label]="translate.t('cart.increaseQty')">+</button>
             </div>
-
           </div>
-
         </div>
         }
         }

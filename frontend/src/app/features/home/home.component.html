@@ -157,8 +157,8 @@
                 </span>
                 @if (getCompareAt(product); as compare) {
                   <span class="featured__card-price featured__card-price--discount">
-                    <span class="featured__card-compare">{{ getMinPrice(product).toLocaleString('en-US') }}</span>
-                    {{ compare.toLocaleString('en-US') }}
+                    <span class="featured__card-compare">{{ compare.toLocaleString('en-US') }}</span>
+                    {{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}
                   </span>
                 } @else {
                   <span class="featured__card-price">{{ getMinPrice(product).toLocaleString('en-US') }} {{ translate.t('home.featured.toman') }}</span>
