@@ -61,7 +61,7 @@ if ! grep -q '^MROTP_API_KEY=.\+' "$ENV_FILE"; then
   warn "Registration OTP and forgot-password will fail until you add MROTP_API_KEY=<key>."
 fi
 
-mkdir -p "$ROOT/uploads"
+mkdir -p "$ROOT/backend/uploads/products"
 
 echo "==> Backend: install + prisma migrate"
 cd "$ROOT/backend"
@@ -115,4 +115,4 @@ fi
 echo "==> Done."
 echo "    Static site:  $ROOT/frontend/dist/frontend/browser"
 echo "    Backend logs: $BACKEND_LOG"
-echo "    Serve the static dir with your reverse proxy; map /api -> 127.0.0.1:3001 and /uploads -> $ROOT/uploads"
+echo "    Serve the static dir with your reverse proxy; map /api -> 127.0.0.1:3001 and /uploads -> $ROOT/backend/uploads"
