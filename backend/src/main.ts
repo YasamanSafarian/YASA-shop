@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { mkdirSync } from 'fs';
 import { AppModule } from './app.module';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 
@@ -23,6 +24,7 @@ async function bootstrap() {
   app.enableCors();
   app.enableShutdownHooks();
 
+  mkdirSync(join(process.cwd(), 'uploads', 'products'), { recursive: true });
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
   await app.listen(port);

@@ -22,11 +22,17 @@ git checkout "$BRANCH"
 git pull --ff-only origin "$BRANCH"
 
 echo "==> Starting Postgres via Docker"
+DCOMPOSE=""
 if docker compose version >/dev/null 2>&1; then
-  docker compose up -d
+  DCOMPOSE="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+  DCOMPOSE="docker-compose"
 else
-  docker-compose up -d
+  die "docker compose plugin is not installed." \
+    "Install it with: sudo apt-get install -y docker-compose-v2" \
+    "(docker-ce users: sudo apt-get install -y docker-compose-plugin), then re-run."
 fi
+$DCOMPOSE up -d
 
 echo "==> Waiting for Postgres to accept connections"
 for i in $(seq 1 30); do
@@ -55,7 +61,7 @@ if ! grep -q '^MROTP_API_KEY=.\+' "$ENV_FILE"; then
   warn "Registration OTP and forgot-password will fail until you add MROTP_API_KEY=<key>."
 fi
 
-mkdir -p "$ROOT/uploads"
+mkdir -p "$ROOT/backend/uploads/products"
 
 echo "==> Backend: install + prisma migrate"
 cd "$ROOT/backend"
@@ -92,6 +98,7 @@ done
 echo "==> Frontend: install + build"
 cd "$ROOT/frontend"
 npm install --no-audit --no-fund
+export NODE_OPTIONS="--max-old-space-size=1536 ${NODE_OPTIONS:-}"
 npx ng build --configuration production
 echo "    Output: $ROOT/frontend/dist/frontend/browser"
 
@@ -108,4 +115,4 @@ fi
 echo "==> Done."
 echo "    Static site:  $ROOT/frontend/dist/frontend/browser"
 echo "    Backend logs: $BACKEND_LOG"
-echo "    Serve the static dir with your reverse proxy; map /api -> 127.0.0.1:3001 and /uploads -> $ROOT/uploads"
+echo "    Serve the static dir with your reverse proxy; map /api -> 127.0.0.1:3001 and /uploads -> $ROOT/backend/uploads"
