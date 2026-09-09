@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -85,7 +86,12 @@ export class AuthService {
       expiresAt: Date.now() + expiresInSeconds * 1000,
     });
 
-    await this.mrotp.sendOtp(dto.phone);
+    const result = await this.mrotp.sendOtp(dto.phone);
+    if (!result.ok) {
+      throw new BadGatewayException(
+        result.message || `SMS delivery failed (code ${result.code})`,
+      );
+    }
 
     return { sessionId, expiresInSeconds };
   }
@@ -232,7 +238,12 @@ export class AuthService {
       expiresAt: Date.now() + expiresInSeconds * 1000,
     });
 
-    await this.mrotp.sendOtp(user.phone);
+    const result = await this.mrotp.sendOtp(user.phone);
+    if (!result.ok) {
+      throw new BadGatewayException(
+        result.message || `SMS delivery failed (code ${result.code})`,
+      );
+    }
 
     return { sessionId, expiresInSeconds };
   }

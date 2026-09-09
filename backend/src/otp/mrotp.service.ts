@@ -2,6 +2,7 @@ import {
   BadGatewayException,
   BadRequestException,
   Injectable,
+  Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -28,6 +29,8 @@ export interface VerifyOtpResult {
  */
 @Injectable()
 export class MrotpService {
+  private readonly logger = new Logger(MrotpService.name);
+
   constructor(private readonly configService: ConfigService) {}
 
   private get apiKey(): string {
@@ -53,6 +56,11 @@ export class MrotpService {
 
     return this.request<SendOtpResult>('setRandomOTP', body, (data) => {
       const ok = Number(data.code) > 100;
+      if (!ok) {
+        this.logger.warn(
+          `setRandomOTP failed: code=${data.code} message=${data.message ?? ''}`,
+        );
+      }
       return {
         ok,
         code: data.code,

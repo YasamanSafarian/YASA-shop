@@ -57,8 +57,11 @@ if grep -q 'change-me' "$ENV_FILE"; then
 fi
 
 if ! grep -q '^MROTP_API_KEY=.\+' "$ENV_FILE"; then
-  warn "MROTP_API_KEY is not set in $ENV_FILE."
-  warn "Registration OTP and forgot-password will fail until you add MROTP_API_KEY=<key>."
+  warn "===================================================================="
+  warn " MROTP_API_KEY is NOT set in $ENV_FILE."
+  warn " Registration OTP and forgot-password will FAIL until you add:"
+  warn "   echo 'MROTP_API_KEY=<your-key>' >> backend/.env"
+  warn "===================================================================="
 fi
 
 mkdir -p "$ROOT/backend/uploads/products"
