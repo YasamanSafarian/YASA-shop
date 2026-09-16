@@ -48,6 +48,12 @@ export class AdminProductsComponent implements OnInit {
   readonly newFamilyName = signal('');
   familiesDraft: string[] = [];
 
+  /* ── Brand management ── */
+  readonly showBrandManager = signal(false);
+  readonly brandError = signal('');
+  readonly newBrandName = signal('');
+  readonly brandSaving = signal(false);
+
   /* ── Image upload ── */
   readonly uploadingImage = signal(false);
   readonly uploadingVariantId = signal<string | null>(null);
@@ -494,6 +500,43 @@ export class AdminProductsComponent implements OnInit {
       this.familiesError.set(e?.error?.message || 'Failed to update fragrance families');
     } finally {
       this.familiesSaving.set(false);
+    }
+  }
+
+  /* ── Brand management ── */
+  openBrandManager(): void {
+    this.admin.loadBrands(true);
+    this.brandError.set('');
+    this.newBrandName.set('');
+    this.showBrandManager.set(true);
+  }
+
+  closeBrandManager(): void {
+    this.showBrandManager.set(false);
+  }
+
+  async addBrand(): Promise<void> {
+    const name = this.newBrandName().trim();
+    if (!name) return;
+    this.brandSaving.set(true);
+    this.brandError.set('');
+    try {
+      await this.admin.createBrand(name);
+      this.newBrandName.set('');
+    } catch (e: any) {
+      this.brandError.set(e?.error?.message || 'Failed to create brand');
+    } finally {
+      this.brandSaving.set(false);
+    }
+  }
+
+  async deleteBrand(id: string, name: string): Promise<void> {
+    if (!confirm(this.translate.t('adminProducts.confirmDeleteBrand', [name]))) return;
+    this.brandError.set('');
+    try {
+      await this.admin.deleteBrand(id);
+    } catch (e: any) {
+      this.brandError.set(e?.error?.message || 'Failed to delete brand');
     }
   }
 

@@ -397,6 +397,11 @@
   "adminProducts.newNotePlaceholder": "New note name…",
   "adminProducts.newFamilyPlaceholder": "New family name…",
   "adminProducts.add": "Add",
+  "adminProducts.manageBrands": "Manage Brands",
+  "adminProducts.noBrands": "No brands yet.",
+  "adminProducts.newBrandPlaceholder": "New brand name…",
+  "adminProducts.confirmDeleteBrand": "Are you sure you want to delete brand \"{0}\"? All its products will be deleted too.",
+  "adminProducts.close": "Close",
   "social.instagram": "Instagram",
   "social.telegram": "Telegram",
   "social.followUs": "Follow us"

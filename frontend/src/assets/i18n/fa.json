@@ -397,6 +397,11 @@
   "adminProducts.newNotePlaceholder": "نام نت جدید…",
   "adminProducts.newFamilyPlaceholder": "نام خانواده جدید…",
   "adminProducts.add": "افزودن",
+  "adminProducts.manageBrands": "مدیریت برندها",
+  "adminProducts.noBrands": "هنوز برندی ثبت نشده است.",
+  "adminProducts.newBrandPlaceholder": "نام برند جدید…",
+  "adminProducts.confirmDeleteBrand": "آیا از حذف برند «{0}» مطمئن هستید؟ همه محصولات این برند نیز حذف خواهند شد.",
+  "adminProducts.close": "بستن",
   "social.instagram": "اینستاگرام",
   "social.telegram": "تلگرام",
   "social.followUs": "ما را دنبال کنید"

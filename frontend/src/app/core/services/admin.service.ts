@@ -237,11 +237,24 @@ export class AdminService {
   }
 
   /* ── Brands ── */
-  async loadBrands(): Promise<void> {
-    if (this.brands().length) return;
+  async loadBrands(force = false): Promise<void> {
+    if (!force && this.brands().length) return;
     const res = await firstValueFrom(this.api.get<Brand[] | { data: Brand[] }>('/brands'));
     const list = Array.isArray(res) ? res : res.data;
     this.brands.set(list);
+  }
+
+  async createBrand(name: string, slug?: string): Promise<Brand> {
+    const brand = await firstValueFrom(
+      this.api.post<Brand>('/admin/brands', { name, slug }),
+    );
+    this.brands.update(list => [...list, brand]);
+    return brand;
+  }
+
+  async deleteBrand(id: string): Promise<void> {
+    await firstValueFrom(this.api.delete(`/admin/brands/${id}`));
+    this.brands.update(list => list.filter(b => b.id !== id));
   }
 
   /* ── Categories ── */
