@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import { basename, join } from 'path';
 import { PrismaService } from '../database/prisma.service';
 import { productInclude } from '../catalog/products/products.service';
 import { slugify } from '../common/utils/slugify';
@@ -305,7 +305,7 @@ export class AdminProductsService {
       throw new NotFoundException('image not found');
     }
 
-    const filePath = join(process.cwd(), image.image_url);
+    const filePath = join(__dirname, '..', '..', 'uploads', 'products', basename(image.image_url));
     if (existsSync(filePath)) {
       unlinkSync(filePath);
     }
