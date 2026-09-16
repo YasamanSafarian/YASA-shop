@@ -4,5 +4,8 @@ node_modules
 
 /generated/prisma
 
+# Build output (compiled at deploy time)
+/dist
+
 # Uploaded product images (runtime data, not source)
 /uploads

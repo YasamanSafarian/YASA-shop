@@ -3,6 +3,9 @@
     <header class="admin-page__header">
       <div class="admin-page__title-row">
         <h1>{{ translate.t('adminProducts.title') }}</h1>
+        <app-ui-button variant="outline" size="sm" (click)="openBrandManager()">
+          {{ translate.t('adminProducts.manageBrands') }}
+        </app-ui-button>
         <app-ui-button variant="primary" size="sm" (click)="toggleForm()">
           {{ showForm() ? translate.t('adminProducts.cancel') : translate.t('adminProducts.newProduct') }}
         </app-ui-button>
@@ -455,6 +458,52 @@
             </app-ui-button>
             <app-ui-button variant="ghost" size="sm" (click)="closeVariantForm()">
               {{ translate.t('adminProducts.cancel') }}
+            </app-ui-button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showBrandManager()) {
+      <div class="variant-modal" (click)="closeBrandManager()">
+        <div class="variant-modal__content" (click)="$event.stopPropagation()">
+          <h3>{{ translate.t('adminProducts.manageBrands') }}</h3>
+
+          @if (brandError()) {
+            <div class="product-form__error">{{ brandError() }}</div>
+          }
+
+          <div class="brand-manager__list">
+            @for (brand of admin.brands(); track brand.id) {
+              <div class="brand-manager__item">
+                <span class="brand-manager__name">{{ brand.name }}</span>
+                <span class="brand-manager__slug">{{ brand.slug }}</span>
+                <button type="button" class="variant-row__img-btn variant-row__img-btn--danger" title="Delete" (click)="deleteBrand(brand.id, brand.name)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+              </div>
+            } @empty {
+              <p class="brand-manager__empty">{{ translate.t('adminProducts.noBrands') }}</p>
+            }
+          </div>
+
+          <div class="brand-manager__add">
+            <input
+              type="text"
+              class="notes-editor__add-input"
+              [value]="newBrandName()"
+              (input)="newBrandName.set($any($event.target).value)"
+              (keydown.enter)="addBrand()"
+              [placeholder]="translate.t('adminProducts.newBrandPlaceholder')"
+            />
+            <app-ui-button variant="outline" size="sm" [disabled]="brandSaving()" (click)="addBrand()">
+              {{ brandSaving() ? '…' : translate.t('adminProducts.add') }}
+            </app-ui-button>
+          </div>
+
+          <div class="product-form__actions">
+            <app-ui-button variant="ghost" size="sm" (click)="closeBrandManager()">
+              {{ translate.t('adminProducts.close') }}
             </app-ui-button>
           </div>
         </div>
