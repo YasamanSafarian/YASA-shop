@@ -24,8 +24,8 @@ async function bootstrap() {
   app.enableCors();
   app.enableShutdownHooks();
 
-  mkdirSync(join(process.cwd(), 'uploads', 'products'), { recursive: true });
-  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
+  mkdirSync(join(__dirname, '..', '..', 'uploads', 'products'), { recursive: true });
+  app.useStaticAssets(join(__dirname, '..', '..', 'uploads'), { prefix: '/uploads' });
 
   await app.listen(port);
   Logger.log(`Backend is running on http://localhost:${port}`, 'Bootstrap');
