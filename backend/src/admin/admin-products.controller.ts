@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
@@ -98,7 +98,7 @@ export class AdminProductsController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads/products',
+        destination: join(__dirname, '..', '..', 'uploads', 'products'),
         filename: (_req, file, cb) => {
           const unique = randomUUID();
           const ext = extname(file.originalname).toLowerCase();
