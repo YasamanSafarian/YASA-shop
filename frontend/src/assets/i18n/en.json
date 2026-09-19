@@ -239,6 +239,7 @@
   "cart.addError": "Could not add to cart. Please try again.",
   "cart.added": "Added to cart.",
   "cart.loginRequired": "Sign in to view your cart",
+  "cart.signInToCheckout": "Sign in to checkout",
   "cart.signIn": "Sign In",
   "cart.empty": "Your cart is empty",
   "cart.shopNow": "Browse Products",

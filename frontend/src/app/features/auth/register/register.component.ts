@@ -4,13 +4,15 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UiAlertComponent } from '../../../shared/components/ui/ui-alert/ui-alert.component';
 import { UiButtonComponent } from '../../../shared/components/ui/ui-button/ui-button.component';
 import { UiInputComponent } from '../../../shared/components/ui/ui-input/ui-input.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { TranslateService } from '../../../core/services/translate.service';
 import { getErrorMessage } from '../../../shared/utils/errors';
+import { safeInternalRedirect } from '../../../shared/utils/navigation';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +24,9 @@ import { getErrorMessage } from '../../../shared/utils/errors';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly cart = inject(CartService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   readonly translate = inject(TranslateService);
 
   readonly form = this.fb.nonNullable.group({
@@ -49,6 +53,11 @@ export class RegisterComponent {
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly sessionId = signal<string | null>(null);
+
+  readonly loginLinkParams = (() => {
+    const redirect = this.route.snapshot.queryParamMap.get('redirect');
+    return redirect ? { redirect } : {};
+  })();
 
   get phone() {
     return this.form.controls.phone;
@@ -117,7 +126,11 @@ export class RegisterComponent {
         sessionId,
         otp: this.otpForm.getRawValue().otp.trim(),
       });
-      await this.router.navigate(['/']);
+      await this.cart.syncAfterLogin();
+      const redirect = safeInternalRedirect(
+        this.route.snapshot.queryParamMap.get('redirect'),
+      );
+      await this.router.navigateByUrl(redirect);
     } catch (error) {
       this.errorMessage.set(getErrorMessage(error));
     } finally {

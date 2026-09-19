@@ -5,10 +5,9 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { ProductVariant } from '../../../core/models/catalog';
+import { Product, ProductVariant } from '../../../core/models/catalog';
 import { TranslateService } from '../../../core/services/translate.service';
 import { CartService } from '../../../core/services/cart.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UiButtonComponent } from '../ui/ui-button/ui-button.component';
 import { ApiError } from '../../../core/interceptors/error.interceptor';
@@ -22,10 +21,10 @@ import { ApiError } from '../../../core/interceptors/error.interceptor';
 })
 export class ProductVariantComponent {
   readonly variant = input.required<ProductVariant>();
+  readonly product = input.required<Product>();
   readonly productType = input<string>('perfume');
   readonly translate = inject(TranslateService);
   private readonly cart = inject(CartService);
-  readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
 
   readonly adding = signal(false);
@@ -59,7 +58,33 @@ export class ProductVariantComponent {
     }
     this.adding.set(true);
     try {
-      await this.cart.addItem(this.variant().id, this.quantity());
+      const variant = this.variant();
+      const product = this.product();
+      const primary =
+        variant.images.find((img) => img.isPrimary) ?? variant.images[0];
+
+      await this.cart.addItem(variant.id, this.quantity(), {
+        sku: variant.sku,
+        format: variant.format,
+        volumeMl: variant.volumeMl,
+        price: variant.price,
+        compareAtPrice: variant.compareAtPrice,
+        stockQuantity: variant.stockQuantity,
+        weight: variant.weight,
+        imageUrl: primary?.imageUrl ?? null,
+        product: {
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          gender: product.gender,
+          concentration: product.concentration,
+          brand: {
+            id: product.brand.id,
+            name: product.brand.name,
+            slug: product.brand.slug,
+          },
+        },
+      });
       this.toast.success(this.translate.t('cart.added'));
       this.quantity.set(1);
     } catch (err) {

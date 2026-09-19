@@ -35,6 +35,7 @@ export class HeaderComponent {
   async logout(): Promise<void> {
     this.mobileOpen = false;
     await this.auth.logout();
+    this.cart.onLogout();
     await this.router.navigate(['/']);
   }
 }

@@ -25,7 +25,6 @@
     }
   </div>
   @if (isAvailable()) {
-  @if (auth.isAuthenticated()) {
   <div class="variant__actions">
     <app-ui-button variant="primary" size="sm" [disabled]="adding()" (click)="addToCart()">
       @if (adding()) {
@@ -42,12 +41,6 @@
         [disabled]="adding() || quantity() >= variant().stockQuantity"
         [attr.aria-label]="translate.t('cart.increaseQty')">+</button>
     </div>
-
   </div>
-  } @else {
-  <app-ui-button variant="outline" size="sm" [link]="['/login']">
-    {{ translate.t('cart.loginToAdd') }}
-  </app-ui-button>
-  }
   }
 </div>

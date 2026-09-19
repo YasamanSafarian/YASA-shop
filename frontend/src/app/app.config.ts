@@ -23,6 +23,8 @@ export const appConfig: ApplicationConfig = {
       useFactory: (auth: AuthService, cart: CartService) => async () => {
         await auth.restore();
         if (auth.isAuthenticated()) {
+          await cart.syncAfterLogin();
+        } else {
           await cart.load();
         }
       },

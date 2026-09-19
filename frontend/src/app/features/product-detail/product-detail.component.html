@@ -105,7 +105,11 @@
           <!-- <h2 class="product-detail__section-title">{{ translate.t('productDetail.variants') }}</h2> -->
           <div class="variant-list">
             @for (variant of variants(); track variant.id) {
-            <app-product-variant [variant]="variant" [productType]="product()?.productType ?? 'perfume'" />
+            <app-product-variant
+              [variant]="variant"
+              [product]="p"
+              [productType]="p.productType"
+            />
             }
           </div>
         </div>

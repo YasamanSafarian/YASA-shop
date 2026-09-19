@@ -5,8 +5,10 @@ import { UiAlertComponent } from '../../../shared/components/ui/ui-alert/ui-aler
 import { UiButtonComponent } from '../../../shared/components/ui/ui-button/ui-button.component';
 import { UiInputComponent } from '../../../shared/components/ui/ui-input/ui-input.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
 import { TranslateService } from '../../../core/services/translate.service';
 import { getErrorMessage } from '../../../shared/utils/errors';
+import { safeInternalRedirect } from '../../../shared/utils/navigation';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +20,7 @@ import { getErrorMessage } from '../../../shared/utils/errors';
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly cart = inject(CartService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   readonly translate = inject(TranslateService);
@@ -29,6 +32,11 @@ export class LoginComponent {
 
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
+
+  readonly registerLinkParams = (() => {
+    const redirect = this.route.snapshot.queryParamMap.get('redirect');
+    return redirect ? { redirect } : {};
+  })();
 
   get identifier() {
     return this.form.controls.identifier;
@@ -50,8 +58,11 @@ export class LoginComponent {
     try {
       const { identifier, password } = this.form.getRawValue();
       await this.auth.login(identifier, password);
-      const redirect = this.route.snapshot.queryParamMap.get('redirect');
-      await this.router.navigate([redirect ?? '/']);
+      await this.cart.syncAfterLogin();
+      const redirect = safeInternalRedirect(
+        this.route.snapshot.queryParamMap.get('redirect'),
+      );
+      await this.router.navigateByUrl(redirect);
     } catch (error) {
       this.errorMessage.set(getErrorMessage(error));
     } finally {

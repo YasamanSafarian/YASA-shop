@@ -19,11 +19,7 @@
       }
     </header>
 
-    @if (!auth.isAuthenticated()) {
-    <app-ui-state state="empty" [message]="translate.t('cart.loginRequired')">
-      <app-ui-button [link]="['/login']">{{ translate.t('cart.signIn') }}</app-ui-button>
-    </app-ui-state>
-    } @else if (loading()) {
+    @if (loading()) {
     <app-ui-state state="loading" [message]="translate.t('cart.loading')" />
     } @else if (!cart || cart.items.length === 0) {
     <app-ui-state state="empty" [message]="translate.t('cart.empty')">
@@ -128,7 +124,11 @@
         </app-ui-button>
         } @else {
         <app-ui-button variant="primary" size="lg" [block]="true" (click)="goToAddress()">
+          @if (auth.isAuthenticated()) {
           {{ translate.t('cart.placeOrder') }}
+          } @else {
+          {{ translate.t('cart.signInToCheckout') }}
+          }
         </app-ui-button>
         <app-ui-button variant="link" size="sm" (click)="clearCart()">
           {{ translate.t('cart.clearCart') }}
