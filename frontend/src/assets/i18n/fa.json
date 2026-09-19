@@ -239,6 +239,7 @@
   "cart.addError": "افزودن به سبد انجام نشد. لطفاً دوباره تلاش کنید.",
   "cart.added": "به سبد خرید اضافه شد.",
   "cart.loginRequired": "برای مشاهده سبد خرید وارد حساب خود شوید",
+  "cart.signInToCheckout": " ثبت نهایی ",
   "cart.signIn": "ورود",
   "cart.empty": "سبد خرید شما خالی است",
   "cart.shopNow": "مشاهده محصولات",

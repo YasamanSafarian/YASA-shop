@@ -112,7 +112,11 @@
       @if (!sessionId()) {
         <p class="auth__footer">
           {{ translate.t('register.haveAccount') }}
-          <a routerLink="/login" class="link">{{ translate.t('register.signIn') }}</a>
+          <a
+            class="link"
+            [routerLink]="['/login']"
+            [queryParams]="loginLinkParams"
+          >{{ translate.t('register.signIn') }}</a>
         </p>
       }
     </div>

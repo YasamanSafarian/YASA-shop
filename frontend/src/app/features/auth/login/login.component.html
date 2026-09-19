@@ -42,7 +42,11 @@
 
       <p class="auth__footer">
         {{ translate.t('login.newTo') }}
-        <a routerLink="/register" class="link">{{ translate.t('login.createAccount') }}</a>
+        <a
+          class="link"
+          [routerLink]="['/register']"
+          [queryParams]="registerLinkParams"
+        >{{ translate.t('login.createAccount') }}</a>
       </p>
 
       <p class="auth__footer">

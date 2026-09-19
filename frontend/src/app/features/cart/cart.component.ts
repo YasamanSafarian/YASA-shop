@@ -11,6 +11,7 @@ import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-butto
 import { UiInputComponent } from '../../shared/components/ui/ui-input/ui-input.component';
 import { UiStateComponent } from '../../shared/components/ui/ui-state/ui-state.component';
 import { CartItem } from '../../core/models/cart';
+import { getErrorMessage } from '../../shared/utils/errors';
 
 @Component({
   selector: 'app-cart',
@@ -54,11 +55,7 @@ export class CartComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    if (this.auth.isAuthenticated()) {
-      this.cartService.load().finally(() => this.loading.set(false));
-    } else {
-      this.loading.set(false);
-    }
+    this.cartService.load().finally(() => this.loading.set(false));
   }
 
   formatPrice(price: number): string {
@@ -73,8 +70,8 @@ export class CartComponent implements OnInit {
     this.updatingId.set(item.id);
     try {
       await this.cartService.updateItem(item.id, newQty);
-    } catch {
-      // handled by interceptor
+    } catch (err) {
+      this.toast.error(getErrorMessage(err) || this.translate.t('cart.addSoldOut'));
     } finally {
       this.updatingId.set(null);
     }
@@ -84,8 +81,8 @@ export class CartComponent implements OnInit {
     this.updatingId.set(item.id);
     try {
       await this.cartService.removeItem(item.id);
-    } catch {
-      // handled by interceptor
+    } catch (err) {
+      this.toast.error(getErrorMessage(err) || this.translate.t('cart.addError'));
     } finally {
       this.updatingId.set(null);
     }
@@ -96,6 +93,12 @@ export class CartComponent implements OnInit {
   }
 
   goToAddress(): void {
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/login'], {
+        queryParams: { redirect: '/cart' },
+      });
+      return;
+    }
     this.error.set(null);
     this.step.set('address');
   }
@@ -106,6 +109,13 @@ export class CartComponent implements OnInit {
   }
 
   async placeOrder(): Promise<void> {
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/login'], {
+        queryParams: { redirect: '/cart' },
+      });
+      return;
+    }
+
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
       return;
@@ -115,11 +125,6 @@ export class CartComponent implements OnInit {
     this.error.set(null);
 
     try {
-      const user = this.auth.user();
-      const name = user
-        ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.phone
-        : '';
-
       const addr = await firstValueFrom(
         this.api.post<{ id: string }>(
           '/users/me/addresses',
@@ -134,6 +139,8 @@ export class CartComponent implements OnInit {
         ),
       );
 
+      await this.cartService.load();
+
       this.router.navigate(['/order-confirmation'], {
         state: {
           orderNumber: order.orderNumber,
@@ -144,10 +151,10 @@ export class CartComponent implements OnInit {
         },
       });
       this.toast.success(this.translate.t('cart.orderSuccess'));
-    } catch (e: any) {
-      const msg = e?.message || e?.error?.message;
-      this.error.set(msg || this.translate.t('cart.orderError'));
-      this.toast.error(msg || this.translate.t('cart.orderError'));
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e) || this.translate.t('cart.orderError');
+      this.error.set(msg);
+      this.toast.error(msg);
     } finally {
       this.ordering.set(false);
     }

@@ -64,6 +64,25 @@
   line-height: 1.6;
 }
 
+.footer__phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+.footer__phone svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.footer__phone:hover {
+  color: var(--color-rose-gold-400);
+}
+
 .footer__socials {
   display: flex;
   gap: 1rem;
