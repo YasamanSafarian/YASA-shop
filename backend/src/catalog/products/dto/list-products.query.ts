@@ -11,22 +11,16 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { gender_enum } from '@prisma/client';
+import {
+  PRODUCT_TYPE_VALUES,
+} from '../../../common/constants/product-types';
+import type { ProductTypeValue } from '../../../common/constants/product-types';
 
 export type SortOption =
   'newest' | 'price_asc' | 'price_desc' | 'name_asc' | 'name_desc';
 export type AvailabilityOption = 'in_stock';
-
-/** Keep in sync with prisma `product_type_enum`. */
-export const PRODUCT_TYPE_FILTER_VALUES = [
-  'perfume',
-  'body_spray',
-  'charm_bag',
-  'candle',
-  'cream_lotion',
-  'gift_box',
-] as const;
-
-export type ProductTypeFilter = (typeof PRODUCT_TYPE_FILTER_VALUES)[number];
+export type ProductTypeFilter = ProductTypeValue;
+export const PRODUCT_TYPE_FILTER_VALUES = PRODUCT_TYPE_VALUES;
 
 export class ListProductsQueryDto {
   @IsOptional()

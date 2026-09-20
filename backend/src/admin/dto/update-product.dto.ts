@@ -1,10 +1,11 @@
-import { concentration_enum, gender_enum, product_type_enum } from '@prisma/client';
+import { concentration_enum, gender_enum } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -14,6 +15,11 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import {
+  PRODUCT_TYPE_VALUES,
+  PRODUCT_TYPE_VALUES_MESSAGE,
+} from '../../common/constants/product-types';
+import type { ProductTypeValue } from '../../common/constants/product-types';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -37,10 +43,10 @@ export class UpdateProductDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(product_type_enum, {
-    message: 'productType must be one of: perfume, body_spray, charm_bag, candle, cream_lotion, gift_box',
+  @IsIn(PRODUCT_TYPE_VALUES, {
+    message: PRODUCT_TYPE_VALUES_MESSAGE,
   })
-  productType?: product_type_enum;
+  productType?: ProductTypeValue;
 
   @IsOptional()
   @IsEnum(gender_enum, {
