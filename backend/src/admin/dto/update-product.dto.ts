@@ -38,7 +38,7 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsEnum(product_type_enum, {
-    message: 'productType must be one of: perfume, body_spray, charm_bag, candle',
+    message: 'productType must be one of: perfume, body_spray, charm_bag, candle, cream_lotion, gift_box',
   })
   productType?: product_type_enum;
 

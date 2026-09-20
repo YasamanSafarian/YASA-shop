@@ -386,6 +386,8 @@ enum product_type_enum {
   body_spray
   charm_bag
   candle
+  cream_lotion
+  gift_box
 }
 
 enum shipment_status_enum {

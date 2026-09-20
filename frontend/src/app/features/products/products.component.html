@@ -135,6 +135,11 @@
             state="error"
             [message]="error()"
           />
+        } @else if (showComingSoon()) {
+          <app-ui-state
+            state="empty"
+            [message]="comingSoonMessage()"
+          />
         } @else if (products().length === 0) {
           <app-ui-state
             state="empty"

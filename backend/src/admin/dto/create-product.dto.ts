@@ -4,7 +4,7 @@ import {
   product_format_enum,
   product_type_enum,
 } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
@@ -20,6 +20,7 @@ import {
   MaxLength,
   Min,
   MinLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 
@@ -51,10 +52,16 @@ export class CreateVariantDto {
   price!: number;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => {
+    if (value === undefined) return undefined;
+    if (value === null || value === '') return null;
+    const n = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(n) ? n : null;
+  })
+  @ValidateIf((_, value) => value !== null && value !== undefined)
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
-  compareAtPrice?: number;
+  compareAtPrice?: number | null;
 
   @IsOptional()
   @Type(() => Number)
@@ -98,7 +105,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsEnum(product_type_enum, {
-    message: 'productType must be one of: perfume, body_spray, charm_bag, candle',
+    message: 'productType must be one of: perfume, body_spray, charm_bag, candle, cream_lotion, gift_box',
   })
   productType?: product_type_enum;
 

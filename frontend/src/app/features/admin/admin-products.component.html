@@ -360,7 +360,13 @@
                         <div class="variant-row__info">
                           <span class="variant-row__sku">{{ variant.sku }}</span>
                           <span class="variant-row__meta">
-                            {{ variant.volumeMl }}ml · {{ variant.format }} · {{ formatPrice(variant.price) }}
+                            @if (isPerfumeType(pd.productType)) {
+                              {{ variant.volumeMl }}ml · {{ variant.format }} ·
+                            }
+                            @if (variant.compareAtPrice && variant.compareAtPrice > variant.price) {
+                              <span class="variant-row__compare">{{ formatPrice(variant.compareAtPrice) }}</span>
+                            }
+                            {{ formatPrice(variant.price) }}
                           </span>
                         </div>
                         <div class="variant-row__stock">
@@ -440,11 +446,11 @@
             }
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.price') }}</label>
-              <input type="number" [(ngModel)]="variantForm.price" min="0" />
+              <input type="number" [(ngModel)]="variantForm.price" min="0" step="1" />
             </div>
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.compareAtPrice') }}</label>
-              <input type="number" [(ngModel)]="variantForm.compareAtPrice" min="0" placeholder="0" />
+              <input type="number" [(ngModel)]="variantForm.compareAtPrice" min="0" step="1" placeholder="0" />
             </div>
             <div class="product-form__field">
               <label>{{ translate.t('adminProducts.stockQuantity') }}</label>
