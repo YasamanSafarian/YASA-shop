@@ -15,10 +15,6 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import {
-  PRODUCT_TYPE_VALUES,
-  PRODUCT_TYPE_VALUES_MESSAGE,
-} from '../../common/constants/product-types';
 import type { ProductTypeValue } from '../../common/constants/product-types';
 
 export class UpdateProductDto {
@@ -43,8 +39,16 @@ export class UpdateProductDto {
   description?: string;
 
   @IsOptional()
-  @IsIn(PRODUCT_TYPE_VALUES, {
-    message: PRODUCT_TYPE_VALUES_MESSAGE,
+  @IsIn([
+    'perfume',
+    'body_spray',
+    'charm_bag',
+    'candle',
+    'cream_lotion',
+    'gift_box',
+  ], {
+    message:
+      'productType must be one of: perfume, body_spray, charm_bag, candle, cream_lotion, gift_box',
   })
   productType?: ProductTypeValue;
 

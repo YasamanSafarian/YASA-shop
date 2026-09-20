@@ -86,7 +86,7 @@ export class AdminProductsService {
         name: dto.name,
         slug: await this.uniqueSlug(dto.slug ?? slugify(dto.name)),
         description: dto.description,
-        product_type: dto.productType,
+        product_type: (dto.productType ?? 'perfume') as never,
         gender: dto.gender,
         concentration: dto.concentration,
         release_year: dto.releaseYear,

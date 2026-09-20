@@ -1,5 +1,6 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
+import { PRODUCT_TYPE_VALUES } from '../common/constants/product-types';
 
 @Controller('health')
 export class HealthController {
@@ -14,5 +15,11 @@ export class HealthController {
     }
 
     return { status: 'ok' };
+  }
+
+  /** Deploy check: confirms API accepts cream_lotion / gift_box. */
+  @Get('product-types')
+  productTypes() {
+    return { productTypes: PRODUCT_TYPE_VALUES };
   }
 }
