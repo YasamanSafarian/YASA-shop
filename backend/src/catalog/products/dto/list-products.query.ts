@@ -43,9 +43,14 @@ export class ListProductsQueryDto {
   gender?: gender_enum;
 
   @IsOptional()
-  @IsIn(PRODUCT_TYPE_FILTER_VALUES, {
-    message: `type must be one of the following values: ${PRODUCT_TYPE_FILTER_VALUES.join(', ')}`,
-  })
+  @IsIn([
+    'perfume',
+    'body_spray',
+    'charm_bag',
+    'candle',
+    'cream_lotion',
+    'gift_box',
+  ])
   type?: ProductTypeFilter;
 
   @IsOptional()
