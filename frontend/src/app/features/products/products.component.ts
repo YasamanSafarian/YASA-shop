@@ -134,13 +134,7 @@ export class ProductsComponent implements OnInit {
   );
 
   readonly comingSoonMessage = computed(() => {
-    const type = this.selectedType();
-    if (!type) {
-      return this.translate.t('products.comingSoon');
-    }
-    return this.translate.t('products.comingSoonForType', [
-      this.translate.t(PRODUCT_TYPE_LABEL_KEYS[type]),
-    ]);
+    return this.translate.t('products.comingSoon');
   });
 
   readonly fragranceFamilyDisabled = computed(
@@ -214,6 +208,16 @@ export class ProductsComponent implements OnInit {
           this.loading.set(false);
         },
         error: (err) => {
+          // Empty / not-yet-migrated product types should show Coming soon, not a validation error.
+          if (isProductType(form.type)) {
+            this.products.set([]);
+            this.page.set(1);
+            this.totalPages.set(1);
+            this.total.set(0);
+            this.error.set(null);
+            this.loading.set(false);
+            return;
+          }
           this.error.set(getErrorMessage(err));
           this.loading.set(false);
         },
