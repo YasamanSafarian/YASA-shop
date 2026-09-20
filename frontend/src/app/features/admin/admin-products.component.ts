@@ -205,8 +205,11 @@ export class AdminProductsComponent implements OnInit {
           if (pd) this.openNotesEditor(pd);
         }
       }
-    } catch (e: any) {
-      this.error.set(e?.error?.message || this.translate.t('adminProducts.errorCreate'));
+    } catch (e: unknown) {
+      const err = e as { message?: string | string[]; error?: { message?: string | string[] } };
+      const msg = err?.message ?? err?.error?.message;
+      const text = Array.isArray(msg) ? msg.join(' ') : msg;
+      this.error.set(text || this.translate.t('adminProducts.errorCreate'));
     }
   }
 
