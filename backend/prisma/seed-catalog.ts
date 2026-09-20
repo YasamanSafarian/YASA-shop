@@ -38,7 +38,7 @@ interface SeedProduct {
   slug: string;
   description: string;
   brandSlug: string;
-  productType?: 'perfume' | 'body_spray' | 'charm_bag' | 'candle';
+  productType?: 'perfume' | 'body_spray' | 'charm_bag' | 'candle' | 'cream_lotion' | 'gift_box';
   gender: 'male' | 'female' | 'unisex';
   categorySlugs: string[];
   familySlugs: string[];

@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { UiButtonComponent } from '../../shared/components/ui/ui-button/ui-button.component';
@@ -25,9 +26,19 @@ import {
   Product,
   ProductSort,
   ProductType,
+  isProductType,
 } from '../../core/models/catalog';
 
 const PAGE_SIZE = 12;
+
+const PRODUCT_TYPE_LABEL_KEYS: Record<ProductType, string> = {
+  perfume: 'products.typePerfume',
+  body_spray: 'products.typeBodySpray',
+  charm_bag: 'products.typeCharmBag',
+  candle: 'products.typeCandle',
+  cream_lotion: 'products.typeCreamLotion',
+  gift_box: 'products.typeGiftBox',
+};
 
 @Component({
   selector: 'app-products',
@@ -46,6 +57,8 @@ const PAGE_SIZE = 12;
 export class ProductsComponent implements OnInit {
   private readonly catalog = inject(CatalogService);
   private readonly fb = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly translate = inject(TranslateService);
 
   readonly products = signal<Product[]>([]);
@@ -100,12 +113,35 @@ export class ProductsComponent implements OnInit {
     { value: 'name_desc', label: this.translate.t('products.sortNameDesc') },
   ]);
 
-  readonly typeOptions = computed<UiSelectOption[]>(() => [
-    { value: 'perfume', label: this.translate.t('products.typePerfume') },
-    { value: 'body_spray', label: this.translate.t('products.typeBodySpray') },
-    { value: 'charm_bag', label: this.translate.t('products.typeCharmBag') },
-    { value: 'candle', label: this.translate.t('products.typeCandle') },
-  ]);
+  readonly typeOptions = computed<UiSelectOption[]>(() =>
+    (Object.keys(PRODUCT_TYPE_LABEL_KEYS) as ProductType[]).map((type) => ({
+      value: type,
+      label: this.translate.t(PRODUCT_TYPE_LABEL_KEYS[type]),
+    })),
+  );
+
+  readonly selectedType = computed<ProductType | null>(() => {
+    const type = this.filterForm.value.type;
+    return isProductType(type) ? type : null;
+  });
+
+  readonly showComingSoon = computed(
+    () =>
+      !this.loading() &&
+      !this.error() &&
+      this.products().length === 0 &&
+      this.selectedType() !== null,
+  );
+
+  readonly comingSoonMessage = computed(() => {
+    const type = this.selectedType();
+    if (!type) {
+      return this.translate.t('products.comingSoon');
+    }
+    return this.translate.t('products.comingSoonForType', [
+      this.translate.t(PRODUCT_TYPE_LABEL_KEYS[type]),
+    ]);
+  });
 
   readonly fragranceFamilyDisabled = computed(
     () => this.filterForm.value.type === 'perfume',
@@ -132,11 +168,18 @@ export class ProductsComponent implements OnInit {
 
     this.filterForm.valueChanges.pipe(debounceTime(400)).subscribe(() => {
       this.page.set(1);
+      this.syncTypeQueryParam();
       this.loadProducts();
     });
   }
 
   ngOnInit(): void {
+    const type = this.route.snapshot.queryParamMap.get('type');
+    if (isProductType(type)) {
+      this.filterForm.patchValue({ type }, { emitEvent: false });
+      this.syncFragranceFamilyState();
+    }
+
     this.loadProducts();
   }
 
@@ -150,13 +193,7 @@ export class ProductsComponent implements OnInit {
         page: this.page(),
         limit: PAGE_SIZE,
         search: form.search || undefined,
-        type:
-          form.type === 'perfume' ||
-          form.type === 'body_spray' ||
-          form.type === 'charm_bag' ||
-          form.type === 'candle'
-            ? form.type
-            : undefined,
+        type: isProductType(form.type) ? form.type : undefined,
         brand: form.brand || undefined,
         fragranceFamily: form.fragranceFamily || undefined,
         gender:
@@ -204,7 +241,17 @@ export class ProductsComponent implements OnInit {
     });
     this.syncFragranceFamilyState();
     this.page.set(1);
+    this.syncTypeQueryParam();
     this.loadProducts();
+  }
+
+  private syncTypeQueryParam(): void {
+    const type = this.filterForm.value.type;
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: isProductType(type) ? { type } : {},
+      replaceUrl: true,
+    });
   }
 
   private syncFragranceFamilyState(): void {

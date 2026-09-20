@@ -637,6 +637,12 @@
   color: var(--color-text-muted);
 }
 
+.variant-row__compare {
+  margin-inline-end: 0.35rem;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
 .variant-row__stock {
   display: flex;
   align-items: center;

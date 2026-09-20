@@ -211,7 +211,10 @@ export class AdminProductsService {
         ...(dto.volumeMl !== undefined && { volume_ml: dto.volumeMl }),
         ...(dto.price !== undefined && { price: dto.price }),
         ...(dto.compareAtPrice !== undefined && {
-          compare_at_price: dto.compareAtPrice,
+          compare_at_price:
+            dto.compareAtPrice === null || dto.compareAtPrice <= 0
+              ? null
+              : dto.compareAtPrice,
         }),
         ...(dto.stockQuantity !== undefined && {
           stock_quantity: dto.stockQuantity,
@@ -450,13 +453,18 @@ export class AdminProductsService {
   }
 
   private mapVariant(dto: CreateVariantDto) {
+    const compareAtPrice =
+      dto.compareAtPrice == null || dto.compareAtPrice <= 0
+        ? null
+        : dto.compareAtPrice;
+
     return {
       sku: dto.sku,
       barcode: dto.barcode,
       format: dto.format,
       volume_ml: dto.volumeMl,
       price: dto.price,
-      compare_at_price: dto.compareAtPrice,
+      compare_at_price: compareAtPrice,
       stock_quantity: dto.stockQuantity ?? 0,
       weight: dto.weight,
       is_default: dto.isDefault ?? false,

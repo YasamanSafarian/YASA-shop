@@ -95,6 +95,8 @@ export class AdminProductsComponent implements OnInit {
     { value: 'body_spray', label: this.translate.t('products.typeBodySpray') },
     { value: 'charm_bag', label: this.translate.t('products.typeCharmBag') },
     { value: 'candle', label: this.translate.t('products.typeCandle') },
+    { value: 'cream_lotion', label: this.translate.t('products.typeCreamLotion') },
+    { value: 'gift_box', label: this.translate.t('products.typeGiftBox') },
   ];
 
   readonly formatOptions: UiSelectOption[] = [
@@ -283,20 +285,39 @@ export class AdminProductsComponent implements OnInit {
     this.variantError.set('');
     try {
       const isPerfume = this.isPerfumeType(this.variantProductType());
-      const price = this.variantForm.price;
-      const rawCompare = this.variantForm.compareAtPrice;
+      const price = Number(this.variantForm.price);
+      const rawCompare = Number(this.variantForm.compareAtPrice);
       // chk_discount requires (compare_at_price IS NULL) OR (compare_at_price >= price),
       // so only send a compare price when it forms a valid discount.
+      // Coerce with Number() — HTML number inputs can bind as strings and break `>`.
       const compareAtPrice =
-        price > 0 && rawCompare && rawCompare > price ? rawCompare : null;
+        Number.isFinite(price) &&
+        price > 0 &&
+        Number.isFinite(rawCompare) &&
+        rawCompare > price
+          ? rawCompare
+          : null;
+
+      if (
+        Number.isFinite(rawCompare) &&
+        rawCompare > 0 &&
+        Number.isFinite(price) &&
+        rawCompare <= price
+      ) {
+        this.variantError.set(
+          this.translate.t('adminProducts.compareAtPriceError'),
+        );
+        return;
+      }
+
       // Non-perfume products hide volume/format; store hidden defaults instead.
       const payload = {
         sku: this.variantForm.sku,
         format: this.variantForm.format,
-        volumeMl: this.variantForm.volumeMl,
-        price,
+        volumeMl: Number(this.variantForm.volumeMl) || 1,
+        price: Number.isFinite(price) ? price : 0,
         compareAtPrice,
-        stockQuantity: this.variantForm.stockQuantity,
+        stockQuantity: Number(this.variantForm.stockQuantity) || 0,
         isDefault: this.variantForm.isDefault,
       };
       if (!isPerfume) {
@@ -313,8 +334,9 @@ export class AdminProductsComponent implements OnInit {
         await this.admin.loadProductDetail(this.expandedSlug()!);
       }
       this.admin.loadProducts(this.admin.productsPage());
-    } catch (e: any) {
-      const msg = e?.error?.message;
+    } catch (e: unknown) {
+      const err = e as { message?: string | string[]; error?: { message?: string | string[] } };
+      const msg = err?.message ?? err?.error?.message;
       const text = Array.isArray(msg) ? msg.join(' ') : msg;
       this.variantError.set(text || this.translate.t('adminProducts.errorCreate'));
     }
@@ -363,6 +385,10 @@ export class AdminProductsComponent implements OnInit {
         return this.translate.t('products.typeCharmBag');
       case 'candle':
         return this.translate.t('products.typeCandle');
+      case 'cream_lotion':
+        return this.translate.t('products.typeCreamLotion');
+      case 'gift_box':
+        return this.translate.t('products.typeGiftBox');
       default:
         return type;
     }

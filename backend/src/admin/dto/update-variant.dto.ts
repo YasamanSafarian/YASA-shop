@@ -1,5 +1,5 @@
 import { product_format_enum } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -11,7 +11,20 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateIf,
 } from 'class-validator';
+
+/** Keep null as null; otherwise coerce to number (HTML/JSON often send strings). */
+function toNullableNumber({ value }: { value: unknown }): number | null | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (value === null || value === '') {
+    return null;
+  }
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
 
 export class UpdateVariantDto {
   @IsOptional()
@@ -45,10 +58,11 @@ export class UpdateVariantDto {
   price?: number;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(toNullableNumber)
+  @ValidateIf((_, value) => value !== null && value !== undefined)
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
-  compareAtPrice?: number;
+  compareAtPrice?: number | null;
 
   @IsOptional()
   @Type(() => Number)

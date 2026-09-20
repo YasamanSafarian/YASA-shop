@@ -106,7 +106,22 @@ export type ProductType =
   | 'perfume'
   | 'body_spray'
   | 'charm_bag'
-  | 'candle';
+  | 'candle'
+  | 'cream_lotion'
+  | 'gift_box';
+
+export const PRODUCT_TYPES: ProductType[] = [
+  'perfume',
+  'body_spray',
+  'charm_bag',
+  'candle',
+  'cream_lotion',
+  'gift_box',
+];
+
+export function isProductType(value: string | null | undefined): value is ProductType {
+  return !!value && (PRODUCT_TYPES as string[]).includes(value);
+}
 
 export interface ListProductsParams {
   search?: string;
