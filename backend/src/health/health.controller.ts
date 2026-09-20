@@ -14,10 +14,14 @@ export class HealthController {
       throw new ServiceUnavailableException('database unreachable');
     }
 
-    return { status: 'ok' };
+    // productTypes on /health so deploy checks work even if a reverse proxy
+    // or old process mishandles nested routes.
+    return {
+      status: 'ok',
+      productTypes: PRODUCT_TYPE_VALUES,
+    };
   }
 
-  /** Deploy check: confirms API accepts cream_lotion / gift_box. */
   @Get('product-types')
   productTypes() {
     return { productTypes: PRODUCT_TYPE_VALUES };
